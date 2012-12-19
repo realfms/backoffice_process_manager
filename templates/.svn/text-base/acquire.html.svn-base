@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}User acquisition{% endblock %}
+
+{% block content %}
+
+    <div id="subscribe-form">
+
+	    <h3>Please enter your details to subscribe</h3>
+	    <br />
+	    <br />
+	
+	    <form action="/" method="post">{% csrf_token %}
+	        {{ form.as_p }}
+	        
+	        <input class="required" id="acceptconditions" name="acceptconditions" type="checkbox" />
+	         I've read and accept the 
+	         <a href="http://cloud.telefonica.com/instantservers/terms_and_conditions.html" style="padding-right: 2px;color: #A0A0A0;font: 14px 'TelefonicaHeadlineLightRg';text-decoration: underline;" target="_blank">Terms and Conditions and Privacy Policy</a>
+	        <br />
+	        <br />
+	        
+	        <p id="botonesform">
+                <a href="#" id="cancelform" onclick="">Cancel</a>
+                <input type="submit" value="Submit" />
+            </p>
+	        
+	    </form>
+	    
+	    <br />
+        <br />
+    
+    </div>
+{% endblock %}

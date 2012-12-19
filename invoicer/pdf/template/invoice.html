@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset='UTF-8'>
+	
+	<title>Instant Servers Invoice</title>
+
+  <style>
+
+
+    @page {
+        margin: 1cm;
+        margin-bottom: 3.8cm;
+        margin-top: 4cm
+        @frame header {
+            -pdf-frame-content: header;
+            top: 1cm;
+            margin-left: 1cm;
+            height: 3.5cm;
+        }
+        @frame footer {
+            -pdf-frame-content: footer;
+            bottom: 0cm;
+            height: 3.0cm;
+        }
+        @frame pagination {
+            -pdf-frame-content: pagination;
+            height: 1cm;
+            bottom: 2.6cm;
+            margin-right: 1cm;
+        }
+    }
+
+    #pagination {
+        text-align: right;
+    }
+
+    * { margin: 0; padding: 0; }
+
+    body { 
+        width: 800px;
+        margin: 0 auto;
+        font-family: Times New-Roman;
+        font-size: 11pt;
+    }
+
+    #footer {
+        text-align: center;
+        background-color: #F3F3F3;
+        border-top: 20px;
+        border-bottom: 20px;
+        padding: 0px;
+        margin: 0px;
+        font-size: 10px;
+    }
+
+    textarea { border: 0; font: 14px Georgia, Serif; overflow: hidden; resize: none; }
+    table { border-collapse: collapse; }
+    table td, table th { border: 1px solid #005777; padding: 5px; }
+
+    .result td {
+      border-spacing: 2px;
+      padding: 2px;    
+      border: 0px;
+    }
+
+    #items { clear: both; width: 100%; margin: 30px 0 0 0; border: 1px solid #005777; }
+    #items th { background: #F3F3F3; }
+    #items textarea { width: 80px; height: 50px; }
+    #items tr.item-row td { border: 0; vertical-align: top; }
+    #items td.description { width: 300px; }
+    #items td.item-name { width: 175px; }
+    #items td.description textarea, #items td.item-name textarea { width: 100%; }
+    #items td.total-line { border-right: 0; text-align: right; }
+    #items td.total-value { border-left: 0; padding: 10px; }
+    #items td.total-value textarea { height: 20px; background: none; }
+    #items td.balance { background: #eee; }
+    #items td.blank { border: 0; }
+
+    #terms { text-align: center; margin: 20px 0 0 0; }
+    #terms h5 { text-transform: uppercase; font: 13px Helvetica, Sans-Serif; letter-spacing: 10px; border-bottom: 1px solid black; padding: 0 0 8px 0; margin: 0 0 8px 0; }
+    #terms textarea { width: 100%; text-align: center;}
+
+  </style>
+
+</head>
+
+<body>
+     
+    <div id="header"> 
+        <img src="{{ invoice.logo }}" width="800px" height="150px"/>
+    </div>
+
+    <div id="content">
+
+    <table border="0">
+      <tr>
+        <td style="border: 0px" valign="top">
+          <strong>Customer</strong></br>
+          {{ customer.name }}</br>
+          {{ customer.address }}</br>
+          {{ customer.city }}, {{ customer.postal_code }}</br>
+          {{ customer.country }}</br></br>
+          <strong>Email</strong></br>
+          {{ customer.email }}</br>
+        </td>
+        <td style="border: 0px">
+            <table id="meta">
+                  <tr>
+                      <td class="meta-head">Invoice No</td>
+                      <td><textarea>#{{ invoice.number }}</textarea></td>
+                  </tr>
+                  <tr>
+
+                      <td class="meta-head">Issue date</td>
+                      <td><textarea id="date">{{ invoice.date }}</textarea></td>
+                  </tr>        
+
+              </table>
+        </td>
+      </tr>
+    </table>
+
+		<table id="items">		
+		  <tr>
+              <th width="15%">Item Code</th>
+		      <th width="45%">Description</th>
+              <th width="10%">Qty</th>
+		      <th width="10%">Unit</th>
+		      <th width="20%">Net</th>
+		  </tr>
+
+        {% for item in items %}
+		  
+		  <tr class="item-row">
+              <td>{{ item.concept }}</td>
+		      <td>{{ item.description }}</td>
+              <td>{{ item.price }} €</td>
+              <td>{{ item.amount }}</td>
+              <td>{{ item.total }} € </td>
+		  </tr>
+
+        {% endfor %}
+		  
+      </table>
+
+      </br>
+      </br>
+		  
+      <table border="0" class="result">
+		  <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><strong>Subtotal</strong></td>
+		      <td>{{ subtotal }} €</td>
+		  </tr>
+		  <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><strong>VAT</strong> ({{ tax_rate }} %)</td>
+		      <td> {{ taxes }} €</td>
+		  </tr>
+		  <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><strong>TOTAL DUE</strong></td>
+		      <td> {{ total }} €</td>
+		  </tr>
+		
+		</table> 
+
+    </div>
+
+        <div id="pagination">
+            Página <pdf:pagenumber>
+        </div>
+
+        <div id="footer">
+
+                Telefónica Digital UK Ltd VAT Reg No: GB 999 9999 99</br>
+                20 Air St London W1B, London, United Kingdom</br>
+                <br />
+
+                Contact us at <a href="mailto:support@telefonica.com">support@telefonica.com</a> | <a href="http://teldigital-developer-edition.na9.force.com/terms_and_conditions.html">Terms and conditions</a>
+
+        </div>
+	
+</body>
+
+</html>

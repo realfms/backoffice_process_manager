@@ -1,0 +1,265 @@
+#!/usr/bin/python
+#coding=utf-8 
+
+"""
+Copyright 2012 Telefonica Investigación y Desarrollo, S.A.U
+
+This file is part of Billing_PoC.
+
+Billing_PoC is free software: you can redistribute it and/or modify it under the terms 
+of the GNU Affero General Public License as published by the Free Software Foundation, either 
+version 3 of the License, or (at your option) any later version.
+Billing_PoC is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero 
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with Billing_PoC. 
+If not, see http://www.gnu.org/licenses/.
+
+For those usages not covered by the GNU Affero General Public License please contact with::mac@tid.es
+"""  
+
+'''
+Created on 15/10/2012
+
+@author: mac@tid.es
+'''
+
+XML = """
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<fichero_consumos_variables>
+<fecha_envio>2012-07-27T15:34:54.198Z</fecha_envio>
+<consumos_variables total_registros="4">
+    <consumo_variable>
+        <id>1</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10052</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>348.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones>
+    </consumo_variable>
+    <consumo_variable>
+        <id>2</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10053</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>1.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones>
+    </consumo_variable>
+    <consumo_variable
+        <id>3</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10054</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>339.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones>
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10075</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10076</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10077</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10078</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10016</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10017</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10017</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10079</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10079</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10083</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10083</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10061</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10061</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10007</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10007</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10007</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10021</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+        <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10021</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+    <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10021</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+        <consumo_variable>
+        <id>4</id>
+        <contrato>test1</contrato>
+        <servicio_comercial>0</servicio_comercial>
+        <concepto_facturable>10069</concepto_facturable>
+        <fecha_consumo>2012-07Z</fecha_consumo>
+        <unidades>187.0</unidades>
+        <posicion>1</posicion>
+        <total_posiciones>1</total_posiciones
+    </consumo_variable>
+</consumos_variables>
+</fichero_consumos_variables>
+"""

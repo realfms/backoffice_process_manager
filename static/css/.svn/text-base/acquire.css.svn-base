@@ -1,0 +1,9 @@
+#subscribe-form form p {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#subscribe-form .errorlist {
+	padding-top: 0px;
+	color: red;
+}

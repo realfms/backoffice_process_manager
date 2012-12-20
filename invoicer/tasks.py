@@ -32,7 +32,6 @@ from pdf.invoice         import generate_pdf_and_upload
 from customer.localDB    import customer_details
 from customer.salesforce import customer_details_from_sf
 from email.email         import send_email
-from charging.charging   import charge
 
 @task(ignore_result=True)
 def download_and_parse_sdr_task(bucket_key):
@@ -59,12 +58,8 @@ def uploadOrderLineToSalesForce(json):
 def send_email_task(json):
     return send_email(json)
 
-@task(ignore_result=True)
-def charge_task(json):
-    return charge(json)
-
 def start_process_from_s3(bucket_key):
-    chain = download_and_parse_sdr_task.s(bucket_key) | get_customer_details_task.s() | generate_pdf_and_upload_task.s() | send_email_task.s() | charge_task.s() | uploadOrderLineToSalesForce.s()
+    chain = download_and_parse_sdr_task.s(bucket_key) | get_customer_details_task.s() | generate_pdf_and_upload_task.s() | send_email_task.s() | uploadOrderLineToSalesForce.s()
             
     chain()
 
@@ -73,4 +68,3 @@ def start_sync_process_from_s3(bucket_key):
     json = get_customer_details_task(json)
     json = generate_pdf_and_upload_task(json) 
     json = send_email_task(json)
-    json = charge_task(json)

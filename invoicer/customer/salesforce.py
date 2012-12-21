@@ -31,16 +31,16 @@ def get_customer_details_from_sf(account_id):
     
     (contact, account) = get_customers(account_id)
     
-    if contact == None:
+    if not contact:
         return {}
 
     return {
-            'name'       : account.Name, 
-            'address'    : account.BillingStreet, 
-            'city'       : account.BillingCity, 
-            'postal_code': account.BillingPostalCode, 
-            'email'      : contact.Email,
-            'country'    : account.BillingCountry,
+            'name'       : account.Name[0],
+            'address'    : account.BillingStreet[0],
+            'city'       : account.BillingCity[0],
+            'postal_code': account.BillingPostalCode[0],
+            'email'      : contact.Email[0],
+            'country'    : account.BillingCountry[0],
             'order'      : 'f4f5e91595'
     }
 

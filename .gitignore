@@ -43,3 +43,6 @@ nosetests.xml
 
 # celery
 celerybeat-schedule
+
+# Environment variables
+.env

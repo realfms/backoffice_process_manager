@@ -31,14 +31,9 @@ from os import environ
 
 SF_PRICELIST_ID = 'a13J0000000CtwvIAC'
 
-SF_WSDL_PATH = 'resources/wsdl/salesforce-enterprise.wsdl'
-SF_LOGIN     = environ.get('SF_LOGIN')
-SF_PWD       = environ.get('SF_PWD')
-SF_TOKEN     = environ.get('SF_TOKEN')
-
 def connect():
-    c = SforceEnterpriseClient(SF_WSDL_PATH)
-    c.login(SF_LOGIN, SF_PWD, SF_TOKEN)
+    c = SforceEnterpriseClient(environ.get('SF_WSDL_PATH'))
+    c.login(environ.get('SF_LOGIN'), environ.get('SF_PWD'), environ.get('SF_TOKEN'))
     
     return c
 
@@ -48,18 +43,18 @@ def get_customers(account_id):
     
     soql = """SELECT Email, Account.Name, Account.BillingCity, Account.BillingCountry, Account.BillingPostalCode, 
                      Account.BillingState, Account.BillingStreet 
-              FROM   Contact 
+              FROM   Contact
               WHERE  AccountId='{0}'""".format(account_id)
 
     results = c.query(soql)
     
-    if (results.size != 1):
-        return (None. None)
+    if results.size < 1:
+        return None, None
     
     contact = results.records[0]
-    account = contact.Account
+    account = contact.Account[0]
     
-    return (contact, account)
+    return contact, account
 
 def get_catalogue():
     c = connect()

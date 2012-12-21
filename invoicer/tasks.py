@@ -29,7 +29,6 @@ from celery import task
  
 from rating.rating       import download_and_parse_sdr
 from pdf.invoice         import generate_pdf_and_upload
-from customer.localDB    import customer_details
 from customer.salesforce import customer_details_from_sf
 from email.email         import send_email
 
@@ -40,10 +39,6 @@ def download_and_parse_sdr_task(bucket_key):
 @task(ignore_result=True)
 def generate_pdf_and_upload_task(invoiceJson):
     return generate_pdf_and_upload(invoiceJson)
-
-@task(ignore_result=True)
-def get_customer_details_task(json):
-    return customer_details(json)
 
 @task(ignore_result=True)
 def get_customer_details_from_sf_task(json):
@@ -59,12 +54,12 @@ def send_email_task(json):
     return send_email(json)
 
 def start_process_from_s3(bucket_key):
-    chain = download_and_parse_sdr_task.s(bucket_key) | get_customer_details_task.s() | generate_pdf_and_upload_task.s() | send_email_task.s() | uploadOrderLineToSalesForce.s()
+    chain = download_and_parse_sdr_task.s(bucket_key) | get_customer_details_from_sf_task.s() | generate_pdf_and_upload_task.s() | send_email_task.s() | uploadOrderLineToSalesForce.s()
             
     chain()
 
 def start_sync_process_from_s3(bucket_key):
     json = download_and_parse_sdr_task(bucket_key)
-    json = get_customer_details_task(json)
+    json = get_customer_details_from_sf_task(json)
     json = generate_pdf_and_upload_task(json) 
     json = send_email_task(json)

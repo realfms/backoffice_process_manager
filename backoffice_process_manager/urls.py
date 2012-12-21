@@ -4,14 +4,14 @@ from django.conf.urls import patterns, include, url
 # from django.contrib import admin
 # admin.autodiscover()
 
+import settings
+
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'backoffice_process_manager.views.home', name='home'),
-    # url(r'^backoffice_process_manager/', include('backoffice_process_manager.foo.urls')),
 
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^$',                    'invoicer.views.index'),
 
-    # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
+    url(r'^launchInvoice/$',      'invoicer.views.launchInvoice'),
+    url(r'^launchSyncInvoice/$',  'invoicer.views.launchSyncInvoice'),
+
+    url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT, 'show_indexes':True}),
 )

@@ -14,6 +14,8 @@ FOLDER = os.getcwd()
 AWS_ACCESS_KEY_ID     = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
+print "AWS: %s" % AWS_ACCESS_KEY_ID
+
 EMAIL_BACKEND = 'django_ses.SESBackend'
 
 ######################################################

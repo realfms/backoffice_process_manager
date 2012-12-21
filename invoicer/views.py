@@ -30,6 +30,9 @@ from django.db        import transaction
 
 from services import add_invoice_tasks_from_s3, invoice_1_task_from_s3
 
+def index(request):
+    return render(request, 'index.html', {})
+
 @transaction.commit_on_success
 def launchInvoice(request):
     
@@ -39,8 +42,8 @@ def launchInvoice(request):
 
 @transaction.commit_on_success
 def launchSyncInvoice(request):
-    
+
     invoice_1_task_from_s3()
-    
+
     return render(request, 'invoicing.html', {})
     

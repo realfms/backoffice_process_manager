@@ -27,23 +27,38 @@ Created on 30/10/2012
 
 from django.shortcuts import render
 from django.db        import transaction
+from django.http      import HttpResponse
 
-from services import add_invoice_tasks_from_s3, invoice_1_task_from_s3
+from services import start_order_to_cash, sync_first_order_to_cash, start_collections
 
 def index(request):
     return render(request, 'index.html', {})
 
 @transaction.commit_on_success
-def launchInvoice(request):
-    
-    add_invoice_tasks_from_s3()
+def launchInvoicing(request):
+    start_order_to_cash()
     
     return render(request, 'invoicing.html', {})
 
 @transaction.commit_on_success
 def launchSyncInvoice(request):
-
-    invoice_1_task_from_s3()
+    sync_first_order_to_cash()
 
     return render(request, 'invoicing.html', {})
+
+@transaction.commit_on_success
+def chargingCallback(request):
+
+    if request.method == 'GET':
+
+        params = request.GET.get
+
+        data = params('data', None)
+
+        if (not data):
+            return HttpResponse('ERROR',  mimetype="application/json", status=405)
+
+    start_collections(data)
+
+    return HttpResponse('OK',  mimetype="application/json")
     

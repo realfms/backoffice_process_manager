@@ -25,21 +25,22 @@ Created on 16/10/2012
 @author: mac@tid.es
 '''
 
-from common.aws.s3 import get_sdr_request_keys
-from invoicer.tasks import start_process_from_s3, start_sync_process_from_s3
+from common.aws.s3   import get_sdr_request_keys
+from processes.tasks import start_order_to_cash_process, sync_order_to_cash, start_collections_process
     
-def add_invoice_tasks_from_s3():
-    
+def start_order_to_cash():
     keys = get_sdr_request_keys()
     
     for key in keys:
-        start_process_from_s3(key)
+        start_order_to_cash_process(key)
 
    
-def invoice_1_task_from_s3():
-    
+def sync_first_order_to_cash():
     keys = get_sdr_request_keys()
     
     for key in keys:
-        start_sync_process_from_s3(key)
+        sync_order_to_cash(key)
         break
+
+def start_collections(json):
+    start_collections_process(json)

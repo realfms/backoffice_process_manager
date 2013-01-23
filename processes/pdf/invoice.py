@@ -29,8 +29,8 @@ from xhtml2pdf import pisa
 from jinja2 import Template
 from datetime import date
 
-TEMPLATE_PATH = 'invoicer/pdf/template/invoice.html'
-LOGO_PATH     = 'invoicer/pdf/template/logo.png'
+TEMPLATE_PATH = 'processes/pdf/template/invoice.html'
+LOGO_PATH     = 'processes/pdf/template/logo.png'
 
 import codecs
 

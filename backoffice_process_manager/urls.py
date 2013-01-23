@@ -8,10 +8,12 @@ import settings
 
 urlpatterns = patterns('',
 
-    url(r'^$',                    'invoicer.views.index'),
+    url(r'^$', 'processes.views.index'),
 
-    url(r'^launchInvoice/$',      'invoicer.views.launchInvoice'),
-    url(r'^launchSyncInvoice/$',  'invoicer.views.launchSyncInvoice'),
+    url(r'^launchInvoicing/$',      'processes.views.launchInvoicing'),
+    url(r'^launchSyncInvoicing/$',  'processes.views.launchSyncInvoice'),
+
+    url(r'^chargingCallback/$',   'processes.views.chargingCallback'),
 
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT, 'show_indexes':True}),
 )

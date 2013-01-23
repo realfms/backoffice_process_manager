@@ -32,7 +32,7 @@ from common.salesforce.salesforce import get_catalogue
 import codecs
 
 TEMPLATE_PATH  = "catalogue/catalogue.tpl"
-CATALOGUE_PATH = "invoicer/rating/catalogue.py"
+CATALOGUE_PATH = "processes/rating/catalogue.py"
 
 def generate_catalogue_from_sf():
     

@@ -30,7 +30,7 @@ from django.utils import unittest
 from test1_sdr import XML
 from catalogue import CATALOGUE, TAX
 
-from invoicer.rating.rating import parse_sdr
+from processes.rating.rating import parse_sdr
 
 class TestSdrs(unittest.TestCase):
     

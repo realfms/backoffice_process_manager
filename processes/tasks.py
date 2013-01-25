@@ -74,7 +74,7 @@ def sync_order_to_cash(bucket_key):
     json = charge_user_task(json)
 
 ######################################################
-# COLLECTIONS TASKSs
+# COLLECTIONS TASKS
 ######################################################
 
 @task(ignore_result=True)

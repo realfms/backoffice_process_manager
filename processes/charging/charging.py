@@ -25,5 +25,45 @@ Created on 22/01/2013
 @author: mac@tid.es
 '''
 
+import httplib, urllib
+
+from django.conf import settings
+
+import uuid
+
 def charge_user(json):
+    total = json.total * 100
+    order = compute_order_id()
+
+
+    invoke_payment_enabler(order, "1928jj2js", "EUR",
+                           total, "BR", "January invoice")
+
     return json
+
+def invoke_payment_enabler(order_code, tef_account, currency, total, country, statement):
+
+    data = {'order_code': order_code, 'tef_account': tef_account,
+            'currency': currency, 'total': total,
+            'country': country,  'statement': statement}
+
+    params = urllib.urlencode(data)
+
+    headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+    conn = httplib.HTTPConnection(settings.PAYMENT_ENABLER)
+
+    conn.request("POST", "/recurrent", params, headers)
+
+    response = conn.getresponse()
+
+    print response.status, response.reason
+
+    data = response.read()
+    conn.close()
+
+# TODO: Assure uid is unique among different nodes where is function may run
+def compute_order_id():
+    uid = uuid.uuid4()
+
+    # Order = ten first characters of uuid
+    return uid.hex[:10]

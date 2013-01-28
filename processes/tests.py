@@ -27,8 +27,6 @@ Created on 16/01/2013
 
 from django.test import TestCase
 
-import httplib, urllib
-
 class TestGenerator(TestCase):
     
     def test_charging_invocation(self):

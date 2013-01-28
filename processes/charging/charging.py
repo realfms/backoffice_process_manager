@@ -32,9 +32,8 @@ from django.conf import settings
 import uuid
 
 def charge_user(json):
-    total = json.total * 100
+    total = int(json['total'] * 100)
     order = compute_order_id()
-
 
     invoke_payment_enabler(order, "1928jj2js", "EUR",
                            total, "BR", "January invoice")
@@ -61,7 +60,7 @@ def invoke_payment_enabler(order_code, tef_account, currency, total, country, st
     data = response.read()
     conn.close()
 
-# TODO: Assure uid is unique among different nodes where is function may run
+# TODO: Guarantee uid is unique among different nodes if this code is distributed
 def compute_order_id():
     uid = uuid.uuid4()
 

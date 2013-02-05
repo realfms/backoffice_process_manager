@@ -25,6 +25,12 @@ Created on 16/01/2013
 @author: mac@tid.es
 """
 
+import manage
+import urllib, httplib
+
+# Loading environment variables prior to initialice django framework
+manage.read_env('../.env')
+
 from django.test import TestCase
 
 class TestGenerator(TestCase):

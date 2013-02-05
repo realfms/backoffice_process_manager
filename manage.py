@@ -3,14 +3,14 @@ import os
 import sys
 import re
 
-def read_env():
+def read_env(path):
     """Pulled from Honcho code with minor updates, reads local default
     environment variables from a .env file located in the project root
     directory.
 
     """
     try:
-        with open('.env') as f:
+        with open(path) as f:
             content = f.read()
     except IOError:
         content = ''
@@ -32,6 +32,6 @@ if __name__ == "__main__":
 
     from django.core.management import execute_from_command_line
 
-    read_env()
+    read_env('.env')
 
     execute_from_command_line(sys.argv)

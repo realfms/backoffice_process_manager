@@ -29,18 +29,19 @@ from common.salesforce.salesforce import get_customers
 
 def get_customer_details_from_sf(account_id):
     
-    (contact, account) = get_customers(account_id)
+    contact = get_customers(account_id)
     
     if not contact:
         return {}
 
     return {
-            'name'       : account.Name[0],
-            'address'    : account.BillingStreet[0],
-            'city'       : account.BillingCity[0],
-            'postal_code': account.BillingPostalCode[0],
+            'name'       : contact.Name[0],
+            'address'    : contact.MailingStreet[0],
+            'city'       : contact.MailingCity[0],
+            'postal_code': contact.MailingPostalCode[0],
             'email'      : contact.Email[0],
-            'country'    : account.BillingCountry[0],
+            'country'    : contact.MailingCountry[0],
+            'tef_account': contact.TefAccount__c[0],
             'order'      : 'f4f5e91595'
     }
 

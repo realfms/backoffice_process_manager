@@ -33,8 +33,31 @@ from customer.salesforce import customer_details_from_sf
 from email.email         import send_email
 from charging.charging   import charge_user
 
+from common.salesforce.salesforce import update_contact
+
 ######################################################
-# ORDER TO CASH TASKS
+# DATA ACQUISITION
+######################################################
+
+@task(ignore_result=True)
+def notify_salesforce_task(status, contact_id):
+    return update_contact(status, contact_id)
+
+@task(ignore_result=True)
+def notify_tef_accounts_task(status, contact_id):
+    return status
+
+
+######################################################
+# RECURRENT CHARGING
+######################################################
+
+@task(ignore_result=True)
+def payment_gateway_invocation_task(charging_result):
+    return charging_result
+
+######################################################
+# ORDER TO CASH
 ######################################################
 
 @task(ignore_result=True)
@@ -58,22 +81,6 @@ def send_email_task(json):
     return send_email(json)
 
 ######################################################
-# ORDER TO CASH PROCESS
-######################################################
-
-def start_order_to_cash_process(bucket_key):
-    chain = download_and_parse_sdr_task.s(bucket_key) | get_customer_details_from_sf_task.s() | generate_pdf_and_upload_task.s() | send_email_task.s() | charge_user_task.s()
-            
-    chain()
-
-def sync_order_to_cash(bucket_key):
-    json = download_and_parse_sdr_task(bucket_key)
-    json = get_customer_details_from_sf_task(json)
-    json = generate_pdf_and_upload_task(json) 
-    json = send_email_task(json)
-    json = charge_user_task(json)
-
-######################################################
 # COLLECTIONS TASKS
 ######################################################
 
@@ -84,12 +91,3 @@ def update_charging_result(charging_result):
 @task(ignore_result=True)
 def create_financial_accounting_record(json):
     return json
-
-######################################################
-# COLLECTIONS PROCESS
-######################################################
-
-def start_collections_process(json):
-    chain = update_charging_result.s(json) | create_financial_accounting_record.s()
-
-    chain()

@@ -38,13 +38,13 @@ def index(request):
 def launchInvoicing(request):
     start_order_to_cash()
     
-    return render(request, 'invoicing.html', {})
+    return render(request, 'processes/invoicing.html', {})
 
 @transaction.commit_on_success
 def launchSyncInvoice(request):
     sync_first_order_to_cash()
 
-    return render(request, 'invoicing.html', {})
+    return render(request, 'processes/invoicing.html', {})
 
 @transaction.commit_on_success
 def chargingCallback(request):
@@ -58,7 +58,9 @@ def chargingCallback(request):
         if (not data):
             return HttpResponse('ERROR',  mimetype="application/json", status=405)
 
-    start_collections(data)
+        start_collections(data)
 
-    return HttpResponse('OK',  mimetype="application/json")
+        return HttpResponse('OK',  mimetype="application/json")
+    else:
+        return HttpResponse('ERROR',  mimetype="application/json", status=405)
     

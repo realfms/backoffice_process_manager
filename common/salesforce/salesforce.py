@@ -40,21 +40,11 @@ def connect():
 def get_customers(account_id):
     
     c = connect()
-    
-    soql = """SELECT Email, Account.Name, Account.BillingCity, Account.BillingCountry, Account.BillingPostalCode, 
-                     Account.BillingState, Account.BillingStreet 
-              FROM   Contact
-              WHERE  AccountId='{0}'""".format(account_id)
 
-    results = c.query(soql)
-    
-    if results.size < 1:
-        return None, None
-    
-    contact = results.records[0]
-    account = contact.Account[0]
-    
-    return contact, account
+    result = c.retrieve('Name, Email, MailingCountry, MailingPostalCode, MailingCity, MailingStreet, TefAccount__c',
+                        'Contact', (account_id))
+
+    return result
 
 def get_catalogue():
     c = connect()
@@ -80,3 +70,15 @@ def get_catalogue():
     catalogue['products'] = products
     
     return catalogue
+
+def update_contact(status, contact_id):
+    c = connect()
+
+    new_contact    = c.generateObject('Contact')
+    new_contact.Id = contact_id
+
+    new_contact.PaymentState__c = status
+
+    c.update(new_contact)
+
+    return True

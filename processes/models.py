@@ -25,3 +25,17 @@ Created on 16/10/2012
 @author: mac@tid.es
 '''
 
+
+from django.db import models
+
+class PaymentProcess(models.Model):
+
+    bo_process_id = models.IntegerField(null=True)
+    callback      = models.CharField(max_length = 200, null=True)
+
+    tef_account = models.CharField(max_length = 20)
+    amount      = models.IntegerField()
+    currency    = models.IntegerField()
+    country     = models.IntegerField()
+
+    result = models.TextField()

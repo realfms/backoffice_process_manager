@@ -25,40 +25,29 @@ Created on 22/01/2013
 @author: mac@tid.es
 '''
 
-import httplib, urllib
-
-from django.conf import settings
+from payment_gateways.api_format import OrderData
+from payment_gateways.services import process_recurrent_payment
 
 import uuid
 
 def charge_user(json):
-    total = int(json['total'] * 100)
-    order = compute_order_id()
+    customer_data = json['customer']
 
-    invoke_payment_enabler(order, "1928jj2js", "EUR",
-                           total, "BR", "January invoice")
+    total    = int(json['total'] * 100)
+    currency = 'EUR'
+
+    tef_account = customer_data['tef_account']
+    country     = customer_data['country']
+    statement   = "statement"
+    order_code  = compute_order_id()
+
+    print order_code
+
+    data = OrderData(tef_account, total, currency, country, statement, order_code)
+
+    process_recurrent_payment(data)
 
     return json
-
-def invoke_payment_enabler(order_code, tef_account, currency, total, country, statement):
-
-    data = {'order_code': order_code, 'tef_account': tef_account,
-            'currency': currency, 'total': total,
-            'country': country,  'statement': statement}
-
-    params = urllib.urlencode(data)
-
-    headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-    conn = httplib.HTTPConnection(settings.PAYMENT_ENABLER)
-
-    conn.request("POST", "/recurrent", params, headers)
-
-    response = conn.getresponse()
-
-    print response.status, response.reason
-
-    data = response.read()
-    conn.close()
 
 # TODO: Guarantee uid is unique among different nodes if this code is distributed
 def compute_order_id():

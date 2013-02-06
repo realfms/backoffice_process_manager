@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# coding=utf-8 
+#coding=utf-8 
 
 """
 Copyright 2012 Telefonica Investigación y Desarrollo, S.A.U
@@ -18,30 +18,3 @@ If not, see http://www.gnu.org/licenses/.
 
 For those usages not covered by the GNU Affero General Public License please contact with::mac@tid.es
 """ 
-
-'''
-Created on 16/10/2012
-
-@author: mac@tid.es
-'''
-
-from common.aws.s3   import get_sdr_request_keys
-
-from processes import start_order_to_cash_process, sync_order_to_cash, start_collections_process
-
-def start_order_to_cash():
-    keys = get_sdr_request_keys()
-    
-    for key in keys:
-        start_order_to_cash_process(key)
-
-   
-def sync_first_order_to_cash():
-    keys = get_sdr_request_keys()
-    
-    for key in keys:
-        sync_order_to_cash(key)
-        break
-
-def start_collections(json):
-    start_collections_process(json)

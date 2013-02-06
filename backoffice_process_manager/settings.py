@@ -7,6 +7,19 @@ import os
 
 FOLDER = os.getcwd()
 
+#######################################################
+# ADYEN PAYMENT GATEWAY
+#######################################################
+
+ADYEN_MERCHANT_ACCOUNT = os.environ.get('ADYEN_MERCHANT_ACCOUNT')
+ADYEN_MERCHANT_SECRET  = os.environ.get('ADYEN_MERCHANT_SECRET')
+
+ADYEN_DEFAULT_SKIN = os.environ.get('ADYEN_DEFAULT_SKIN')
+
+ADYEN_API_USERNAME = os.environ.get('ADYEN_API_USERNAME')
+ADYEN_API_PASSWORD = os.environ.get('ADYEN_API_PASSWORD')
+
+
 ######################################################
 # AMAZON WEB SERVICES (AWS)
 ######################################################
@@ -135,6 +148,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'payment_gateways',
     'processes',
     'djcelery',
     'kombu.transport.django',

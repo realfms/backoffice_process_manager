@@ -1,0 +1,33 @@
+{% extends "processes/base.html" %}
+
+{% block title %}Choose payment method{% endblock %}
+
+{% block content %}
+
+    <div id="subscribe-form">
+
+	    <h3>Please select your preferred payment method:</h3>
+
+        <form method="post" action="/acquire/redirect" class="top bottom">
+
+            {% csrf_token %}
+
+            <label>Payment method:</label>
+            <select name="payment_method">
+              <option value="cc">Credit card</option>
+              <option value="phone">Telephone bill</option>
+            </select>
+            <br />
+
+            <label>Value:</label>
+            <input name="payment_value" type="text">
+
+            <input name="token" type="hidden" value={{ code }}>
+
+            <div class="center">
+                <button>Continue</button>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}

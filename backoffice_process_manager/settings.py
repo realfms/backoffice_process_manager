@@ -30,12 +30,6 @@ AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 EMAIL_BACKEND = 'django_ses.SESBackend'
 
 ######################################################
-# CHARGING SERVICE: PAYMENT ENABLER URL
-######################################################
-
-PAYMENT_ENABLER = os.environ.get('PAYMENT_ENABLER')
-
-######################################################
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

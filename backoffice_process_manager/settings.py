@@ -7,6 +7,8 @@ import os
 
 FOLDER = os.getcwd()
 
+DEPLOY_URL =  os.environ.get('DEPLOY_URL')
+
 #######################################################
 # ADYEN PAYMENT GATEWAY
 #######################################################

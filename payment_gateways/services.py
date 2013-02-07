@@ -28,6 +28,8 @@ Created on 30/10/2012
 from models     import PaymentGateway, MasterInformation, Order, AcquiredData
 from api_format import UserData
 
+from django.conf import settings
+
 import importlib
 import uuid
 
@@ -165,7 +167,7 @@ def generate_form_url(user_data):
 
     acquired_data.save()
 
-    return "http://payment-enabler.herokuapp.com/acquire/form/" + token
+    return settings.DEPLOY_URL + "/payment/acquire/form/" + token
 
 
 def compute_unique_id():

@@ -114,3 +114,6 @@ class Worldpay_Charger (PaymentGateway):
             return
 
         print doc
+
+    def update_order_status(self, data, status):
+        pass

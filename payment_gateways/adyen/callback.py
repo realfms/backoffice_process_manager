@@ -1,4 +1,4 @@
-from payment_gateways.services import change_order_status
+from payment_gateways.services import get_charger_by_name
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -17,7 +17,6 @@ def pending(request):
 def error(request):
     return render(request, 'payment_gateways/error.html', {})
 
-
 @csrf_exempt
 def callback(request):
 
@@ -28,16 +27,17 @@ def callback(request):
             return success(request)
         else:
             return error(request)
-    elif request.method == 'POST':
+
+    if request.method == 'POST':
         data = request.POST.dict()
 
-        if data['success']:
+        (charger, gw) = get_charger_by_name('ADYEN')
+
+        result = charger.update_order_status(data, "VALIDATED")
+
+        if result:
             print "VALID"
-            sys.stdout.flush()
-            change_order_status(data['merchantReference'], "VALIDATED")
             return HttpResponse("[accepted]", mimetype="text/plain")
         else:
             print "ERROR"
-            sys.stdout.flush()
-            change_order_status(data['merchantReference'], "ERROR")
             return HttpResponse("[error]", mimetype="text/plain")

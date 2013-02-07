@@ -31,20 +31,74 @@ from api_format import UserData
 import importlib
 import uuid
 
+def get_charger_by_name(name):
+    gw = get_gateway_by_name(name)
+
+    if gw == None:
+        return (None, None)
+
+    return (dynamically_loading_charger(gw), gw)
+
+def get_first_available_charger_by_country(country):
+    gw = get_gateway_by_country(country)
+
+    if gw == None:
+        return (None, None)
+
+    return (dynamically_loading_charger(gw), gw)
+
+def get_charger_by_tef_account_and_country(tef_account, country):
+    master_info = get_master_info_by_tef_account_and_country(tef_account, country)
+
+    if master_info == None:
+        return (None, None)
+
+    gw = master_info.gateway
+
+    return (dynamically_loading_charger(gw), master_info)
+
+def get_gateway_by_name(name):
+    gws = PaymentGateway.objects.filter(name=name)
+
+    if len(gws) == 0:
+        return None
+
+    return gws[0]
+
+def get_gateway_by_country(country):
+    gws = PaymentGateway.objects.filter(country=country)
+
+    if len(gws) == 0:
+        return None
+
+    # If several, getting the first one
+    return gws[0]
+
+def get_master_info_by_tef_account_and_country(tef_account, country):
+    master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country)
+
+    if len(master_infos) == 0:
+        return None
+
+    # If several, getting the first one
+    return master_infos[0]
+
+def get_charger_by_master_information(country):
+    gw = get_gateway_by_country(country)
+
+    if gw == None:
+        return None
+
+    return dynamically_loading_charger(gw)
+
 
 def initial_payment_url(token):
 
     user_data = get_user_data(token)
 
-    gws = PaymentGateway.objects.filter(country=user_data.country)
-
-    if len(gws) == 0:
+    (charger, gw) = get_first_available_charger_by_country(user_data.country)
+    if (charger == None):
         return "/error"
-
-    # If several, getting the first one
-    gw = gws[0]
-
-    charger = dynamically_loading_charger(gw)
 
     url = charger.get_redirect_url(user_data)
 
@@ -60,17 +114,9 @@ def process_recurrent_payment(order_data):
     tef_account = order_data.tef_account
     country     = order_data.country
 
-    master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country)
-
-    if len(master_infos) == 0:
+    (charger, master_info) = get_charger_by_tef_account_and_country(tef_account, country)
+    if charger == None:
         return False
-
-    # If several, getting the first one
-    master_info = master_infos[0]
-
-    gw = master_info.gateway
-
-    charger = dynamically_loading_charger(gw)
 
     charger.recurrent_payment(order_data, master_info)
 
@@ -94,6 +140,7 @@ def store_order(order_data):
 def dynamically_loading_charger(gw):
     charger_module = importlib.import_module(gw.module_name)
     charger = getattr(charger_module, gw.class_name)(gw)
+
     return charger
 
 
@@ -125,8 +172,3 @@ def compute_unique_id():
     uid = uuid.uuid4()
     return uid.hex[:10]
 
-
-def change_order_status(order_code, status):
-    order = MasterInformation.objects.get(recurrent_order_code=order_code)
-    order.status = status
-    order.save()

@@ -44,6 +44,8 @@ class PaymentGateway(object):
 
         self.order = self.compute_order_id()
 
+        self.gw = model
+
     def get_order(self):
         return self.order
     
@@ -61,4 +63,7 @@ class PaymentGateway(object):
         pass
     
     def recurrent_payment(self, order_data, master_info):
+        pass
+
+    def update_order_status(self, data, status):
         pass

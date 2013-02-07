@@ -28,7 +28,7 @@
   }, 
   {"pk": 1, 
   "model": "payment_gateways.masterinformation", 
-  "fields": { "status": "PENDING", 
+  "fields": { "status": "VALIDATED",
   			  "recurrent_order_code": "a6f5512", 
   			  "gateway": 2, 
   			  "tef_account": "1928jj2js", 

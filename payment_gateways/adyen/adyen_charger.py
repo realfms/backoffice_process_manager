@@ -33,6 +33,8 @@ from py_adyen.api import Api
 
 from payment_gateways.gateway_interface.PaymentGateway import PaymentGateway
 
+from payment_gateways.models import Order, MasterInformation
+
 class Adyen_Charger (PaymentGateway):
 
     def __init__(self, model):
@@ -70,3 +72,34 @@ class Adyen_Charger (PaymentGateway):
 
         ws.authorise_recurring_payment(reference, statement, amount, currency, shopper_reference, shopper_email,
                                        shopper_ip=None, recurring_detail_reference='LATEST')
+
+    def update_order_status(self, data, status):
+        order_code = data['merchantReference']
+
+        print order_code
+
+        master_infos = MasterInformation.objects.filter(recurrent_order_code=order_code, status='PENDING')
+
+        if len(master_infos) == 1:
+            # Callback of payment data acquisition flow
+
+            master_info = master_infos[0]
+
+            master_info.status = status
+            master_info.save()
+
+            return True
+
+        # Callback of recurrent payment flow
+        orders = Order.objects.filter(order_code=order_code, status='PENDING')
+
+        if len(orders) == 1:
+            order = orders[0]
+
+            order.status = status
+            order.save()
+
+            return True
+        else:
+            # Neither data acquistion flow nor recurrent payment flow, this is an error!
+            return False

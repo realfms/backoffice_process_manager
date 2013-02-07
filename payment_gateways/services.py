@@ -167,7 +167,11 @@ def generate_form_url(user_data):
 
     acquired_data.save()
 
-    return settings.DEPLOY_URL + "/payment/acquire/form/" + token
+    url = settings.DEPLOY_URL + "/payment/acquire/form/" + token
+
+    print url
+
+    return url
 
 
 def compute_unique_id():

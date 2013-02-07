@@ -83,6 +83,8 @@ class Adyen_Charger (PaymentGateway):
         if len(master_infos) == 1:
             # Callback of payment data acquisition flow
 
+            print "DATA ACQUISITION FLOW"
+
             master_info = master_infos[0]
 
             master_info.status = status
@@ -94,6 +96,8 @@ class Adyen_Charger (PaymentGateway):
         orders = Order.objects.filter(order_code=order_code, status='PENDING')
 
         if len(orders) == 1:
+            print "RECURRENT ORDER FLOW"
+
             order = orders[0]
 
             order.status = status
@@ -102,4 +106,6 @@ class Adyen_Charger (PaymentGateway):
             return True
         else:
             # Neither data acquistion flow nor recurrent payment flow, this is an error!
+            print "ERROR"
+            print len(orders)
             return False

@@ -35,9 +35,9 @@ def callback(request):
 
         result = charger.update_order_status(data, "VALIDATED")
 
+        print "CALLBACK RESULT: " + result
+
         if result:
-            print "VALID"
             return HttpResponse("[accepted]", mimetype="text/plain")
         else:
-            print "ERROR"
             return HttpResponse("[error]", mimetype="text/plain")

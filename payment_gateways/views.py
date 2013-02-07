@@ -46,9 +46,6 @@ def acquire_service(request):
 
         body = request.body
 
-        print body
-        sys.stdout.flush()
-
         json = simplejson.loads(body)
 
         tef_account = json.get('tef_account', None)
@@ -62,16 +59,6 @@ def acquire_service(request):
         if (not tef_account or not city or not address or not postal_code or
             not country or not phone or not email):
             return HttpResponse('<h1>Insufficient parameters!</h1>', status=405)
-
-        print "VALIDATED"
-        print tef_account
-        print city
-        print address
-        print postal_code
-        print country
-        print phone
-        print email
-        sys.stdout.flush()
 
         user_data = UserData(tef_account, city, address, postal_code, country, phone, email)
 

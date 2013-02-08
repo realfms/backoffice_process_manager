@@ -34,16 +34,16 @@ from tasks import notify_salesforce_task, notify_tef_accounts_task, payment_gate
 # DATA ACQUISITION PROCESS
 ######################################################
 
-def start_notify_data_acquisition_result(state):
-    chain = notify_salesforce_task.s(state) | notify_tef_accounts_task.s(state)
+def start_notify_data_acquisition_result(status, contact_id):
+    chain = notify_salesforce_task.s(status, contact_id) | notify_tef_accounts_task.s(status, contact_id)
 
     chain()
 
-def sync_notify_data_acquisition_result(state):
-    json = notify_salesforce_task(state)
-    json = notify_tef_accounts_task(state)
+def sync_notify_data_acquisition_result(status, contact_id):
+    result = notify_salesforce_task(status, contact_id)
+    result = notify_tef_accounts_task(status, contact_id)
 
-    return json
+    return result
 
 ######################################################
 # RECURRENT PAYMENT PROCESSES

@@ -23,8 +23,6 @@ def callback(request):
     if request.method == 'GET':
         data = request.GET.dict()
 
-        print data
-
         if data['authResult'] == 'AUTHORISED':
             return success(request)
         else:

@@ -35,6 +35,8 @@ from payment_gateways.gateway_interface.PaymentGateway import PaymentGateway
 
 from payment_gateways.models import Order, MasterInformation
 
+from processes.processes import sync_notify_data_acquisition_result
+
 class Adyen_Charger (PaymentGateway):
 
     def __init__(self, model):
@@ -89,6 +91,8 @@ class Adyen_Charger (PaymentGateway):
 
             master_info.status = status
             master_info.save()
+
+            sync_notify_data_acquisition_result('Billable', master_info.tef_account)
 
             return True
 

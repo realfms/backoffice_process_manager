@@ -31,7 +31,7 @@ from django.http        import HttpResponseRedirect
 from django.db          import transaction
 from django.utils       import  simplejson
 
-from services   import initial_payment_url, process_recurrent_payment, generate_form_url
+from services   import initial_payment_url, generate_form_url, get_user_data_by_token
 from api_format import UserData, OrderData
 
 from django.views.decorators.csrf import csrf_exempt
@@ -55,12 +55,18 @@ def acquire_service(request):
         country     = json.get('country', None)
         phone       = json.get('phone', None)
         email       = json.get('email', None)
+        gender      = json.get('gender', None)
+        first_name  = json.get('first_name', None)
+        last_name   = json.get('last_name', None)
 
         if (not tef_account or not city or not address or not postal_code or
-            not country or not phone or not email):
+            not country or not phone or not email or not gender or
+            not first_name or not last_name):
+
             return HttpResponse('<h1>Insufficient parameters!</h1>', status=405)
 
-        user_data = UserData(tef_account, city, address, postal_code, country, phone, email)
+        user_data = UserData(tef_account, city, address, postal_code, country, phone,
+                             email, gender, first_name, last_name)
 
         url = generate_form_url(user_data)
 
@@ -72,7 +78,19 @@ def acquire_service(request):
 def acquire_form(request, token):
 
     if request.method == 'GET':
-        return render(request, 'payment_gateways/acquire_form.html', {'code': token } )
+
+        user_data = get_user_data_by_token(token)
+
+        context = {
+                    'code': token,
+                    'email': user_data.email,
+                    'address': user_data.address,
+                    'postal_code': user_data.postal_code,
+                    'country': user_data.country,
+                    'city': user_data.city
+                  }
+
+        return render(request, 'payment_gateways/acquire_form.html', context)
     else:
         return HttpResponse('<h1>Invalid Method</h1>', status=405)
 

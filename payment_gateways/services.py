@@ -163,7 +163,8 @@ def generate_form_url(user_data):
     acquired_data = AcquiredData(tef_account=user_data.tef_account, email=user_data.email,
                                  city=user_data.city, address=user_data.address,
                                  postal_code=user_data.postal_code, country=user_data.country,
-                                 token=token)
+                                 token=token, gender=user_data.gender, first_name=user_data.first_name,
+                                 last_name=user_data.last_name)
 
     acquired_data.save()
 
@@ -172,6 +173,15 @@ def generate_form_url(user_data):
     print url
 
     return url
+
+def get_user_data_by_token(token):
+    acquired_data = AcquiredData.objects.get(token=token)
+
+    user_data = UserData(acquired_data.tef_account, acquired_data.city, acquired_data.address,
+                         acquired_data.postal_code, acquired_data.country, acquired_data.phone, acquired_data.email,
+                         acquired_data.gender, acquired_data.first_name, acquired_data.last_name)
+
+    return user_data
 
 
 def compute_unique_id():

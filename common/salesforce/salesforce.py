@@ -74,6 +74,8 @@ def get_catalogue():
 def update_contact(status, contact_id):
     c = connect()
 
+    print contact_id
+
     new_contact    = c.generateObject('Contact')
     new_contact.Id = contact_id
 

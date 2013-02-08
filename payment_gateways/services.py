@@ -96,7 +96,7 @@ def get_charger_by_master_information(country):
 
 def initial_payment_url(token):
 
-    user_data = get_user_data(token)
+    user_data = get_user_data_by_token(token)
 
     (charger, gw) = get_first_available_charger_by_country(user_data.country)
     if (charger == None):
@@ -144,18 +144,6 @@ def dynamically_loading_charger(gw):
     charger = getattr(charger_module, gw.class_name)(gw)
 
     return charger
-
-
-def get_user_data(token):
-    acquired_data = AcquiredData.objects.get(token=token)
-
-    user_data = UserData(tef_account=acquired_data.tef_account, address=acquired_data.address,
-                         city=acquired_data.city, country=acquired_data.country,
-                         postal_code=acquired_data.postal_code, email=acquired_data.email,
-                         phone=acquired_data.phone)
-
-    return user_data
-
 
 def generate_form_url(user_data):
     token = compute_unique_id()

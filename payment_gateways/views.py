@@ -87,7 +87,10 @@ def acquire_form(request, token):
                     'address': user_data.address,
                     'postal_code': user_data.postal_code,
                     'country': user_data.country,
-                    'city': user_data.city
+                    'city': user_data.city,
+                    'last_name': user_data.last_name,
+                    'first_name': user_data.first_name,
+                    'gender': user_data.gender
                   }
 
         return render(request, 'payment_gateways/acquire_form.html', context)

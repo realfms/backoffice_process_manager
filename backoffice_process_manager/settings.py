@@ -33,6 +33,11 @@ EMAIL_BACKEND = 'django_ses.SESBackend'
 
 ######################################################
 
+DATABASE_OPTIONS = {
+    'use_unicode': True,
+    'charset': 'utf8'
+}
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 

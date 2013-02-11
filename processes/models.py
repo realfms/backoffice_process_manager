@@ -28,14 +28,59 @@ Created on 16/10/2012
 
 from django.db import models
 
-class PaymentProcess(models.Model):
+from datetime import datetime
 
-    bo_process_id = models.IntegerField(null=True)
-    callback      = models.CharField(max_length = 200, null=True)
+from django.utils.timezone import utc
+
+STATUS = (
+    ('OK',       'OK'),
+    ('ERROR',    'ERROR'),
+    ('CANCELED', 'CANCELED'),
+    ('PENDING',  'PENDING'),
+)
+
+class BusinessProcess(models.Model):
 
     tef_account = models.CharField(max_length = 20)
-    amount      = models.IntegerField()
-    currency    = models.IntegerField()
-    country     = models.IntegerField()
 
-    result = models.TextField()
+    name = models.CharField(max_length = 100)
+
+    start = models.DateTimeField(auto_now=True)
+    end   = models.DateTimeField(blank=True, null=True)
+
+    initial_data = models.TextField()
+
+    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
+
+class SubProcess(models.Model):
+
+    process = models.ForeignKey(BusinessProcess)
+
+    name = models.CharField(max_length = 100)
+
+    start = models.DateTimeField(auto_now=True)
+    end   = models.DateTimeField(blank=True, null=True)
+
+    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
+
+class Task(models.Model):
+
+    subprocess = models.ForeignKey(SubProcess)
+
+    name = models.CharField(max_length = 100)
+
+    start = models.DateTimeField(auto_now=True)
+    end   = models.DateTimeField(blank=True, null=True)
+
+    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
+
+    result = models.TextField(blank=True, null=True)
+
+    def set_status(self, status):
+        self.status = status
+
+    def set_result(self, result):
+        self.result = result
+
+    def set_now_as_end(self):
+        self.end = datetime.utcnow().replace(tzinfo=utc)

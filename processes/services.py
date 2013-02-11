@@ -33,14 +33,14 @@ def start_order_to_cash():
     keys = get_sdr_request_keys()
     
     for key in keys:
-        start_order_to_cash_process(key)
+        start_order_to_cash_process(key, 'tef_account')
 
    
 def sync_first_order_to_cash():
     keys = get_sdr_request_keys()
     
     for key in keys:
-        sync_order_to_cash(key)
+        sync_order_to_cash(key, 'tef_account')
         break
 
 def start_collections(json):

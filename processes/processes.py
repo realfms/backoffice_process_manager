@@ -30,6 +30,8 @@ from tasks import notify_salesforce_task, notify_tef_accounts_task, payment_gate
                   generate_pdf_and_upload_task, send_email_task, charge_user_task, update_charging_result, \
                   create_financial_accounting_record
 
+from models import BusinessProcess, SubProcess
+
 ######################################################
 # DATA ACQUISITION PROCESS
 ######################################################
@@ -63,17 +65,27 @@ def sync_invoke_gateway(json, p_gw):
 # ORDER TO CASH PROCESS
 ######################################################
 
-def start_order_to_cash_process(bucket_key):
-    chain = download_and_parse_sdr_task.s(bucket_key) | get_customer_details_from_sf_task.s() | generate_pdf_and_upload_task.s() | send_email_task.s() | charge_user_task.s()
+def start_order_to_cash_process(bucket_key, tef_account):
+
+    sub_process =_generate_billing_subprocess(bucket_key, tef_account)
+
+    sp_id = sub_process.id
+
+    chain = download_and_parse_sdr_task.s(bucket_key, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id)
 
     chain()
 
-def sync_order_to_cash(bucket_key):
-    json = download_and_parse_sdr_task(bucket_key)
-    json = get_customer_details_from_sf_task(json)
-    json = generate_pdf_and_upload_task(json)
-    json = send_email_task(json)
-    json = charge_user_task(json)
+def sync_order_to_cash(bucket_key, tef_account):
+
+    sub_process =_generate_billing_subprocess(bucket_key, tef_account)
+
+    sp_id = sub_process.id
+
+    json = download_and_parse_sdr_task(bucket_key, sp_id)
+    json = get_customer_details_from_sf_task(json, sp_id)
+    json = generate_pdf_and_upload_task(json, sp_id)
+    json = send_email_task(json, sp_id)
+    json = charge_user_task(json, sp_id)
 
     return json
 
@@ -85,3 +97,16 @@ def start_collections_process(json):
     chain = update_charging_result.s(json) | create_financial_accounting_record.s()
 
     chain()
+
+######################################################
+# AUX FUNCTIONS
+######################################################
+
+def _generate_billing_subprocess(bucket_key, tef_account):
+    process = BusinessProcess(tef_account=tef_account, name='ORDER TO CASH', initial_data=bucket_key)
+    process.save()
+
+    sub_process = SubProcess(process=process, name='BILLING')
+    sub_process.save()
+
+    return sub_process

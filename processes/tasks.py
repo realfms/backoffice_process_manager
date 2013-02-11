@@ -35,6 +35,8 @@ from charging.charging   import charge_user
 
 from common.salesforce.salesforce import update_contact
 
+from models import Task, SubProcess
+
 ######################################################
 # DATA ACQUISITION
 ######################################################
@@ -61,24 +63,76 @@ def payment_gateway_invocation_task(charging_result):
 ######################################################
 
 @task(ignore_result=True)
-def download_and_parse_sdr_task(bucket_key):
-    return download_and_parse_sdr(bucket_key)
+def download_and_parse_sdr_task(bucket_key, sp_id):
+    task = _generate_task(sp_id, 'RATING')
+
+    result = download_and_parse_sdr(bucket_key)
+
+    task.set_now_as_end()
+    task.set_result(result)
+    task.set_status('OK')
+
+    task.save()
+
+    return result
 
 @task(ignore_result=True)
-def generate_pdf_and_upload_task(invoiceJson):
-    return generate_pdf_and_upload(invoiceJson)
+def generate_pdf_and_upload_task(invoiceJson, sp_id):
+    task = _generate_task(sp_id, 'INVOICING')
+
+    result =  generate_pdf_and_upload(invoiceJson)
+
+    task.set_now_as_end()
+    task.set_result(result)
+    task.set_status('OK')
+
+    task.save()
+
+    return result
 
 @task(ignore_result=True)
-def get_customer_details_from_sf_task(json):
-    return customer_details_from_sf(json)
+def get_customer_details_from_sf_task(json, sp_id):
+    task = _generate_task(sp_id, 'CUSTOMER DATA')
+
+    result = customer_details_from_sf(json)
+
+    task.set_now_as_end()
+    task.set_result(result)
+    task.set_status('OK')
+
+    task.save()
+
+    return result
+
+
 
 @task(ignore_result=True)
-def charge_user_task(json):
-    return charge_user(json)
+def charge_user_task(json, sp_id):
+    task = _generate_task(sp_id, 'CHARGING')
+
+    result = charge_user(json)
+
+    task.set_now_as_end()
+    task.set_result(result)
+    task.set_status('OK')
+
+    task.save()
+
+    return result
 
 @task(ignore_result=True)
-def send_email_task(json):
-    return send_email(json)
+def send_email_task(json, sp_id):
+    task = _generate_task(sp_id, 'SENDING EMAIL')
+
+    result = send_email(json)
+
+    task.set_now_as_end()
+    task.set_result(result)
+    task.set_status('OK')
+
+    task.save()
+
+    return result
 
 ######################################################
 # COLLECTIONS TASKS
@@ -91,3 +145,16 @@ def update_charging_result(charging_result):
 @task(ignore_result=True)
 def create_financial_accounting_record(json):
     return json
+
+######################################################
+# AUX FUNCTIONS
+######################################################
+
+def _generate_task(sp_id, name):
+
+    subprocess = SubProcess.objects.get(id=sp_id)
+
+    task = Task(subprocess=subprocess, name=name)
+    task.save()
+
+    return task

@@ -32,7 +32,7 @@ STATUS = (
     ('VALIDATED', 'VALIDATED'),
     ('ERROR',     'ERROR'),
     ('CANCELED',  'CANCELED'),
-    )
+)
 
 class PaymentGateway(models.Model):
 

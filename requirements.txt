@@ -9,6 +9,5 @@ django-ses==0.4.1
 salesforce-python-toolkit==0.1.5
 psycopg2==2.4.5
 xhtml2pdf==0.0.4
-MySQL-python==1.2.3
 py-adyen==0.1.6
 suds==0.3.9

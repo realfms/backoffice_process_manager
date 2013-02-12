@@ -28,8 +28,6 @@ Created on 30/10/2012
 from models     import PaymentGateway, MasterInformation, Order, AcquiredData
 from api_format import UserData
 
-from processes.processes import create_acquire_data_subprocess
-
 from django.conf import settings
 
 import importlib
@@ -129,6 +127,8 @@ def process_recurrent_payment(order_data):
 
 def store_master_information(user_data, recurrent_order_code, gateway):
     # Creating subprocess
+    from processes.processes import create_acquire_data_subprocess
+    
     subprocess = create_acquire_data_subprocess(user_data.tef_account)
     
     # Linking master info and subprocess

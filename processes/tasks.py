@@ -33,6 +33,8 @@ from customer.salesforce import customer_details_from_sf
 from email.email         import send_email
 from charging.charging   import charge_user
 
+from django.utils import simplejson
+
 from common.salesforce.salesforce import update_contact
 
 from models import Task, SubProcess
@@ -63,24 +65,24 @@ def payment_gateway_invocation_task(charging_result):
 ######################################################
 
 @task(ignore_result=True)
-def download_and_parse_sdr_task(bucket_key, sp_id):
-    return process_task(sp_id, 'RATING', lambda : download_and_parse_sdr(bucket_key))
+def download_and_parse_sdr_task(success, bucket_key, sp_id):
+    return process_task(sp_id, 'RATING', success, lambda : download_and_parse_sdr(bucket_key))
 
 @task(ignore_result=True)
-def generate_pdf_and_upload_task(invoiceJson, sp_id):
-    return process_task(sp_id, 'INVOICING', lambda : generate_pdf_and_upload(invoiceJson))
+def generate_pdf_and_upload_task(success, sp_id):
+    return process_task(sp_id, 'INVOICING', success, lambda : generate_pdf_and_upload(_get_subprocess_data(sp_id)))
 
 @task(ignore_result=True)
-def get_customer_details_from_sf_task(json, sp_id):
-    return process_task(sp_id, 'CUSTOMER DATA', lambda : customer_details_from_sf(json))
+def get_customer_details_from_sf_task(success, sp_id):
+    return process_task(sp_id, 'CUSTOMER DATA', success, lambda : customer_details_from_sf(_get_subprocess_data(sp_id)))
 
 @task(ignore_result=True)
-def charge_user_task(json, sp_id):
-    return process_task(sp_id, 'CHARGING', lambda : charge_user(json))
+def charge_user_task(success, sp_id):
+    return process_task(sp_id, 'CHARGING',success, lambda : charge_user(_get_subprocess_data(sp_id)))
 
 @task(ignore_result=True)
-def send_email_task(json, sp_id):
-    return process_task(sp_id, 'SENDING EMAIL', lambda : send_email(json))
+def send_email_task(success, sp_id):
+    return process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(_get_subprocess_data(sp_id)))
 
 ######################################################
 # COLLECTIONS TASKS
@@ -106,23 +108,32 @@ def _generate_task(sp_id, name):
 
     return task
 
-def process_task(sp_id, name, fn):
+def _get_subprocess_data(sp_id):
+    subproccess = SubProcess.objects.get(id=sp_id)
+    
+    return simplejson.loads(subproccess.result)
+
+def process_task(sp_id, name, success, fn):
+    
+    if not success:
+        return False
+    
     try:
         task = _generate_task(sp_id, name)
         
-        (result, external_system_response) = fn()
+        (result, remarkable_data) = fn()
         
         task.set_now_as_end()
-        task.set_external_system_response(external_system_response)
-        task.set_result(result)
+        task.set_remarkable_data(remarkable_data)
+        task.set_result(simplejson.dumps(result))
         task.set_status('OK')
 
         task.save()
 
-        return result
+        return True
     except Exception as e:  
         
-        result = {
+        trace = {
                   'type': type(e),
                   'args': e.args,
                   'text': unicode(e)
@@ -130,7 +141,7 @@ def process_task(sp_id, name, fn):
         
         if (task):
             try:
-                task.set_result(result)
+                task.set_remarkable_data(trace)
                 task.set_status('ERROR')
                 
                 task.save()

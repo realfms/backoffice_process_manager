@@ -80,7 +80,7 @@ class Task(models.Model):
 
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
 
-    external_system_response = models.TextField(blank=True, null=True)
+    remarkable_data = models.TextField(blank=True, null=True)
 
     def set_status(self, status):
         self.status = status
@@ -88,8 +88,8 @@ class Task(models.Model):
     def set_result(self, result):
         self.subprocess.set_result(result)
 
-    def set_external_system_response(self, external_system_response):
-        self.external_system_response = external_system_response
+    def set_remarkable_data(self, remarkable_data):
+        self.remarkable_data = remarkable_data
 
     def set_now_as_end(self):
         self.end = datetime.utcnow().replace(tzinfo=utc)

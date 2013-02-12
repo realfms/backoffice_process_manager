@@ -71,7 +71,7 @@ def start_order_to_cash_process(bucket_key, tef_account):
 
     sp_id = sub_process.id
 
-    chain = download_and_parse_sdr_task.s(bucket_key, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id)
+    chain = download_and_parse_sdr_task.s(True, bucket_key, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id)
 
     chain()
 
@@ -81,13 +81,13 @@ def sync_order_to_cash(bucket_key, tef_account):
 
     sp_id = sub_process.id
 
-    json = download_and_parse_sdr_task(bucket_key, sp_id)
-    json = get_customer_details_from_sf_task(json, sp_id)
-    json = generate_pdf_and_upload_task(json, sp_id)
-    json = send_email_task(json, sp_id)
-    json = charge_user_task(json, sp_id)
+    success = download_and_parse_sdr_task(True, bucket_key, sp_id)
+    success = get_customer_details_from_sf_task(success, sp_id)
+    success = generate_pdf_and_upload_task(success, sp_id)
+    success = send_email_task(success, sp_id)
+    success = charge_user_task(success, sp_id)
 
-    return json
+    return success
 
 ######################################################
 # COLLECTIONS PROCESS

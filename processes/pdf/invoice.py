@@ -39,7 +39,7 @@ from common.aws.s3 import upload_invoice_to_s3
 def compute_invoice_details ():
     return {
             'number': 23,
-            'date': date.today(),
+            'date': unicode(date.today()),
             'logo': unicode(LOGO_PATH)
            }
 

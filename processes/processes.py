@@ -39,15 +39,17 @@ from models import BusinessProcess, SubProcess
 def create_acquire_data_subprocess(tef_account):
     return _generate_acquire_data_subprocess(tef_account)
 
-def start_notify_acquired_data(status, contact_id):
-    sub_process =_generate_notify_acquired_data_subprocess(3)
-    sp_id = sub_process.id
+def start_notify_acquired_data(status, master_info):
+    contact_id = master_info.tef_account
+    subprocess = master_info.subprocess
+    
+    sp_id = subprocess.id 
     
     chain = notify_salesforce_task.s(True, status, contact_id, sp_id) | notify_tef_accounts_task.s(status, contact_id, sp_id)
 
     chain()
 
-def sync_notify_data_acquisition_result(status, master_info):
+def sync_notify_acquired_data(status, master_info):
     contact_id = master_info.tef_account
     
     subprocess = master_info.subprocess

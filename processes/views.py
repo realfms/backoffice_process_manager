@@ -64,3 +64,6 @@ def chargingCallback(request):
     else:
         return HttpResponse('ERROR',  mimetype="application/json", status=405)
     
+
+@transaction.commit_on_success
+def get_processes(request, user_id):

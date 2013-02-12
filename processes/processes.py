@@ -36,16 +36,26 @@ from models import BusinessProcess, SubProcess
 # DATA ACQUISITION PROCESS
 ######################################################
 
-def start_notify_data_acquisition_result(status, contact_id):
-    chain = notify_salesforce_task.s(status, contact_id) | notify_tef_accounts_task.s(status, contact_id)
+def create_acquire_data_subprocess(tef_account):
+    return _generate_acquire_data_subprocess(tef_account)
+
+def start_notify_acquired_data(status, contact_id):
+    sub_process =_generate_notify_acquired_data_subprocess(3)
+    sp_id = sub_process.id
+    
+    chain = notify_salesforce_task.s(True, status, contact_id, sp_id) | notify_tef_accounts_task.s(status, contact_id, sp_id)
 
     chain()
 
-def sync_notify_data_acquisition_result(status, contact_id):
-    result = notify_salesforce_task(status, contact_id)
-    result = notify_tef_accounts_task(status, contact_id)
+def sync_notify_data_acquisition_result(status, master_info):
+    contact_id = master_info.tef_account
+    
+    subprocess = master_info.subprocess
+    
+    sucess = notify_salesforce_task(True, status, contact_id, subprocess.id)
+    sucess = notify_tef_accounts_task(sucess, status, contact_id, subprocess.id)
 
-    return result
+    return sucess
 
 ######################################################
 # RECURRENT PAYMENT PROCESSES
@@ -66,7 +76,6 @@ def sync_invoke_gateway(json, p_gw):
 ######################################################
 
 def start_order_to_cash_process(bucket_key, tef_account):
-
     sub_process =_generate_billing_subprocess(bucket_key, tef_account)
 
     sp_id = sub_process.id
@@ -76,7 +85,6 @@ def start_order_to_cash_process(bucket_key, tef_account):
     chain()
 
 def sync_order_to_cash(bucket_key, tef_account):
-
     sub_process =_generate_billing_subprocess(bucket_key, tef_account)
 
     sp_id = sub_process.id
@@ -107,6 +115,23 @@ def _generate_billing_subprocess(bucket_key, tef_account):
     process.save()
 
     sub_process = SubProcess(process=process, name='BILLING')
+    sub_process.save()
+
+    return sub_process
+
+def _generate_acquire_data_subprocess(tef_account):
+    process = BusinessProcess(tef_account=tef_account, name='ACQUIRE PAYMENT DATA')
+    process.save()
+
+    sub_process = SubProcess(process=process, name='ACQUIRE DATA')
+    sub_process.save()
+
+    return sub_process
+
+def _generate_notify_acquired_data_subprocess(previous_subprocess):
+    process = BusinessProcess.objects.get(id=previous_subprocess)
+
+    sub_process = SubProcess(process=process, name='NOTIFY ACQUIRED DATA')
     sub_process.save()
 
     return sub_process

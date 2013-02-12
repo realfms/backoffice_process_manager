@@ -92,7 +92,7 @@ class Adyen_Charger (PaymentGateway):
             master_info.status = status
             master_info.save()
 
-            sync_notify_data_acquisition_result('Billable', master_info.tef_account)
+            sync_notify_data_acquisition_result('Billable', master_info)
 
             return True
 

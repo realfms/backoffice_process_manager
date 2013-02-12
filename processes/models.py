@@ -48,7 +48,7 @@ class BusinessProcess(models.Model):
     start = models.DateTimeField(auto_now=True)
     end   = models.DateTimeField(blank=True, null=True)
 
-    initial_data = models.TextField()
+    initial_data = models.TextField(blank=True, null=True)
 
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
 

@@ -27,6 +27,8 @@ Created on 16/10/2012
 
 from django.db import models
 
+from processes.models import SubProcess
+
 STATUS = (
     ('PENDING',   'PENDING'),
     ('VALIDATED', 'VALIDATED'),
@@ -59,9 +61,11 @@ class MasterInformation(models.Model):
     tef_account = models.CharField(max_length = 20)
     email       = models.EmailField(blank=True)
     
-    recurrent_order_code = models.CharField(blank=True, max_length=10)
+    recurrent_order_code = models.CharField(max_length=10)
     
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
+    
+    subprocess = models.ForeignKey(SubProcess, null=True)
 
 class Order(models.Model):
 

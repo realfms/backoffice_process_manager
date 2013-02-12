@@ -32,11 +32,9 @@ from django.db          import transaction
 from django.utils       import  simplejson
 
 from services   import initial_payment_url, generate_form_url, get_user_data_by_token
-from api_format import UserData, OrderData
+from api_format import UserData
 
 from django.views.decorators.csrf import csrf_exempt
-
-import sys
 
 @transaction.commit_on_success
 @csrf_exempt

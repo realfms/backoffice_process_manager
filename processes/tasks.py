@@ -44,12 +44,12 @@ from models import Task, SubProcess
 ######################################################
 
 @task(ignore_result=True)
-def notify_salesforce_task(status, contact_id):
-    return update_contact(status, contact_id)
+def notify_salesforce_task(success, status, contact_id, sp_id):
+    return process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
 
 @task(ignore_result=True)
-def notify_tef_accounts_task(status, contact_id):
-    return status
+def notify_tef_accounts_task(success, status, contact_id, sp_id):
+    return True
 
 
 ######################################################

@@ -3,9 +3,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.shortcuts import render
 
-import sys
-
-
 def success(request):
     return render(request, 'payment_gateways/success.html', {})
 

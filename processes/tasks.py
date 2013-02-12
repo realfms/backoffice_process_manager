@@ -49,7 +49,7 @@ def notify_salesforce_task(success, status, contact_id, sp_id):
 
 @task(ignore_result=True)
 def notify_tef_accounts_task(success, status, contact_id, sp_id):
-    return True
+    return (True, None)
 
 
 ######################################################

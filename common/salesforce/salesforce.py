@@ -83,4 +83,4 @@ def update_contact(status, contact_id):
 
     c.update(new_contact)
 
-    return True
+    return (True, None)

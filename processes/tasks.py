@@ -64,75 +64,23 @@ def payment_gateway_invocation_task(charging_result):
 
 @task(ignore_result=True)
 def download_and_parse_sdr_task(bucket_key, sp_id):
-    task = _generate_task(sp_id, 'RATING')
-
-    result = download_and_parse_sdr(bucket_key)
-
-    task.set_now_as_end()
-    task.set_result(result)
-    task.set_status('OK')
-
-    task.save()
-
-    return result
+    return process_task(sp_id, 'RATING', lambda : download_and_parse_sdr(bucket_key))
 
 @task(ignore_result=True)
 def generate_pdf_and_upload_task(invoiceJson, sp_id):
-    task = _generate_task(sp_id, 'INVOICING')
-
-    result =  generate_pdf_and_upload(invoiceJson)
-
-    task.set_now_as_end()
-    task.set_result(result)
-    task.set_status('OK')
-
-    task.save()
-
-    return result
+    return process_task(sp_id, 'INVOICING', lambda : generate_pdf_and_upload(invoiceJson))
 
 @task(ignore_result=True)
 def get_customer_details_from_sf_task(json, sp_id):
-    task = _generate_task(sp_id, 'CUSTOMER DATA')
-
-    result = customer_details_from_sf(json)
-
-    task.set_now_as_end()
-    task.set_result(result)
-    task.set_status('OK')
-
-    task.save()
-
-    return result
-
-
+    return process_task(sp_id, 'CUSTOMER DATA', lambda : customer_details_from_sf(json))
 
 @task(ignore_result=True)
 def charge_user_task(json, sp_id):
-    task = _generate_task(sp_id, 'CHARGING')
-
-    result = charge_user(json)
-
-    task.set_now_as_end()
-    task.set_result(result)
-    task.set_status('OK')
-
-    task.save()
-
-    return result
+    return process_task(sp_id, 'CHARGING', lambda : charge_user(json))
 
 @task(ignore_result=True)
 def send_email_task(json, sp_id):
-    task = _generate_task(sp_id, 'SENDING EMAIL')
-
-    result = send_email(json)
-
-    task.set_now_as_end()
-    task.set_result(result)
-    task.set_status('OK')
-
-    task.save()
-
-    return result
+    return process_task(sp_id, 'SENDING EMAIL', lambda : send_email(json))
 
 ######################################################
 # COLLECTIONS TASKS
@@ -151,10 +99,46 @@ def create_financial_accounting_record(json):
 ######################################################
 
 def _generate_task(sp_id, name):
-
     subprocess = SubProcess.objects.get(id=sp_id)
 
     task = Task(subprocess=subprocess, name=name)
     task.save()
 
     return task
+
+def process_task(sp_id, name, fn):
+    try:
+        task = _generate_task(sp_id, name)
+        
+        (result, external_system_response) = fn()
+        
+        task.set_now_as_end()
+        task.set_external_system_response(external_system_response)
+        task.set_result(result)
+        task.set_status('OK')
+
+        task.save()
+
+        return result
+    except Exception as e:  
+        
+        result = {
+                  'type': type(e),
+                  'args': e.args,
+                  'text': unicode(e)
+                  }
+        
+        if (task):
+            try:
+                task.set_result(result)
+                task.set_status('ERROR')
+                
+                task.save()
+            except:
+                pass
+        
+        # Writing log
+        print "### LOG ### {0} cloud't be processed! {1} {2} {3}".format(name, type(e), e.args, unicode(e))
+        
+        return False
+

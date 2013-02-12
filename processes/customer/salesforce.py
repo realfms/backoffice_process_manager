@@ -50,4 +50,4 @@ def customer_details_from_sf(invoice_json):
     # Adding customer details
     invoice_json['customer'] = get_customer_details_from_sf(account_id)
     
-    return invoice_json
+    return (invoice_json, None)

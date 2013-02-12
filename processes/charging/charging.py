@@ -47,7 +47,7 @@ def charge_user(json):
 
     process_recurrent_payment(data)
 
-    return json
+    return (json, None)
 
 # TODO: Guarantee uid is unique among different nodes if this code is distributed
 def compute_order_id():

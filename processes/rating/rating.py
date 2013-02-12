@@ -90,7 +90,7 @@ def parse_sdr(xml, file_name, catalogue, tax):
     # Adding file_name for naming PDF
     result['sdr_file_name'] = file_name
     
-    return result
+    return (result, None)
 
 def create_invoice_entry(concept, price, description, amount):
     return {

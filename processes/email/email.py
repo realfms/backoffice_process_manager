@@ -39,4 +39,4 @@ def send_email(json):
     
     email_message.send(fail_silently=True)
     
-    return json
+    return (json, None)

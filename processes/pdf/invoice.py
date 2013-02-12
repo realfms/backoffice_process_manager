@@ -65,4 +65,4 @@ def generate_pdf_and_upload(invoice_json):
         
     invoice_json['pdf_file_name'] = file_name
 
-    return invoice_json
+    return (invoice_json, None)

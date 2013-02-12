@@ -35,14 +35,13 @@ def get_customer_details_from_sf(account_id):
         return {}
 
     return {
-            'name'       : contact.Name[0],
-            'address'    : contact.MailingStreet[0],
-            'city'       : contact.MailingCity[0],
-            'postal_code': contact.MailingPostalCode[0],
-            'email'      : contact.Email[0],
-            'country'    : contact.MailingCountry[0],
-            'tef_account': contact.TefAccount__c[0],
-            'order'      : 'f4f5e91595'
+            'name'       : unicode(contact.Name[0]),
+            'address'    : unicode(contact.MailingStreet[0]),
+            'city'       : unicode(contact.MailingCity[0]),
+            'postal_code': unicode(contact.MailingPostalCode[0]),
+            'email'      : unicode(contact.Email[0]),
+            'country'    : unicode(contact.MailingCountry[0]),
+            'tef_account': unicode(contact.TefAccount__c[0])
     }
 
 def customer_details_from_sf(invoice_json):

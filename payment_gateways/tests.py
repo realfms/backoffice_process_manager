@@ -39,24 +39,20 @@ manage.read_env('../.env')
 class TestGenerator(TestCase):
     
     def test_adyen_data_acquisition(self):
-        
-        user_data = UserData(tef_account="inexistent", city="city", address="street", 
-                             postal_code="28282", country="BR", phone="28282", email="mac@tid.es")
-        
-        initial_payment_url(user_data)
+        initial_payment_url('ccf0ff7333')
         
         gw = PaymentGateway.objects.get(name="ADYEN")
         
-        master_infos = MasterInformation.objects.filter(tef_account=user_data.tef_account, 
-                                                        gateway__country=user_data.country)
+        master_infos = MasterInformation.objects.filter(tef_account='003d000000lpI8ZAAU', 
+                                                        gateway__country='BR')
         
         self.assertEqual(len(master_infos), 1)
 
         master_info = master_infos[0]
         
         self.assertEqual(master_info.gateway, gw)
-        self.assertEqual(master_info.tef_account, user_data.tef_account)
-        self.assertEqual(master_info.email, user_data.email)
+        self.assertEqual(master_info.tef_account, '003d000000lpI8ZAAU')
+        self.assertEqual(master_info.email, 'martin.augustin@gmail.com')
         self.assertEqual(master_info.status, 'PENDING')
     
     def test_adyen_recurrent_payment(self):

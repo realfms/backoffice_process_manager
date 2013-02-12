@@ -26,40 +26,20 @@ Created on 16/01/2013
 """
 
 import manage
-import urllib, httplib
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('../.env')
 
 from django.test import TestCase
 
-from tasks import notify_salesforce_task
 from customer.salesforce import get_customer_details_from_sf
+from common.salesforce.salesforce import update_contact
 
 class TestGenerator(TestCase):
-    
-    def test_recurrent_charging_invocation(self):
-        
-        data = {'order_code': 40, 'tef_account': '1928jj2js', 'currency': 'EUR', 
-                'total': 100, 'country': 'BR', 'statement': 'testing from backoffice'}
-        
-        params = urllib.urlencode(data)
-        
-        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-        conn = httplib.HTTPConnection("localhost:8000")
-        
-        conn.request("POST", "/payment/recurrent", params, headers)
-        
-        response = conn.getresponse()
-        
-        print response.status, response.reason
-        
-        data = response.read()
-        conn.close()
 
     def test_salesforce_update_contact(self):
 
-        result = notify_salesforce_task('Billable', '003d000000lKGP2AAO')
+        result =update_contact('Billable', '003d000000lKGP2AAO')
 
         print result
 

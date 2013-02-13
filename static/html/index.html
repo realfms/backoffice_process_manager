@@ -33,120 +33,162 @@
     <!-- JavaScript fallback to provide HTML5 features in legacy browsers -->
     <!-- [if IE]>
         <script type="text/javascript" src="..js/html5-fallback/html5shiv.min.js"></script>
-    <[endif] -->
+        <[endif] -->
 
-</head>
-
-
-<body>
-
-    <div id="wrapper" class="auto columns nine">
-
-        <header class="navbar navbar-inverse">
-            <div class="navbar-inner">
-                <div class="container">
-                    <hgroup>
-                        <h1>Business Process Management</h1>
-                        <h2>User: Alberto Blázquez (1024897)</h2>
-                    </hgroup>
-                </div>
-            </div>
-        </header>
+    </head>
 
 
-        <section id="content">
-            <nav class="left columns one-half">
-                <ul class="nav nav-list list">
-                    <li class="process">
-                        <a href="#"><i class="icon-chevron-right"></i>Customer Acquisition</a>
-                    </li>
-                    <li class="process">
-                        <a href="#"><i class="icon-chevron-right"></i>Acquire Payable Account</a>
-                    </li>
-                    <li class="process">
-                        <a href="#"><i class="icon-chevron-right"></i>Customer Acquisition</a>
-                    </li>
-                    <li class="process">
-                        <a href="#"><i class="icon-chevron-right"></i>Acquire Payable Account</a>
-                    </li>
-                    <li class="process">
-                        <a href="#"><i class="icon-chevron-right"></i>Customer Acquisition</a>
-                    </li>
-                    <li class="process">
-                        <a href="#"><i class="icon-chevron-right"></i>Acquire Payable Account</a>
-                    </li>
-                    <li class="process">
-                        <a href="#"><i class="icon-chevron-right"></i>Customer Acquisition</a>
-                    </li>
-                    <li class="process">
-                        <a href="#"><i class="icon-chevron-right"></i>Acquire Payable Account</a>
-                    </li>
-                </ul>
-            </nav>
+    <body>
 
-            <article class="right columns one-half process-view">
-                <h2 class="left">Name of my subprocess</h2>
+        <div id="wrapper" class="auto columns nine">
 
-                <select class="right" name="subprocesses" id="subprocesses">
-                    <option value="SP1">Subprocess 1</option>
-                    <option value="SP2">Subprocess 2</option>
-                </select>
-
-                <div class="clear"></div>
-
-                <div>
-                    <div  class="block">
-                        Start date: 
-                        <time id="sp-start">Feb 12, 2013</time>
-                    </div>
-                    <div class="block">
-                        End Date: 
-                        <time id="sp-end">Feb 14, 2013</time>
+            <header class="navbar navbar-inverse">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <hgroup>
+                            <h1>Business Process Management</h1>
+                            <h2>User: Alberto Blázquez (1024897)</h2>
+                        </hgroup>
                     </div>
                 </div>
+            </header>
 
-                <h3>Tasks</h3>
+
+            <section id="content">
                 <nav class="left columns one-half">
-
                     <ul class="nav nav-list list">
-                        <li class="task">
-                            <a href="#"><i class="icon-chevron-up"></i>Task 1</a>
-                            <div class="hidden">
-                                
-                            </div>
+                        <li class="process">
+                            <a href="#"><i class="icon-chevron-right"></i>Customer Acquisition</a>
                         </li>
-                        <li class="task">
-                            <a href="#"><i class="icon-chevron-down"></i>Task 2</a>
-                            <div class="hidden">
-                                
-                            </div>
+                        <li class="process">
+                            <a href="#"><i class="icon-chevron-right"></i>Acquire Payable Account</a>
                         </li>
-                        <li class="task">
-                            <a href="#"><i class="icon-chevron-down"></i>Task 3</a>
-                            <div class="hidden">
-                                
-                            </div>
+                        <li class="process">
+                            <a href="#"><i class="icon-chevron-right"></i>Customer Acquisition</a>
+                        </li>
+                        <li class="process">
+                            <a href="#"><i class="icon-chevron-right"></i>Acquire Payable Account</a>
+                        </li>
+                        <li class="process">
+                            <a href="#"><i class="icon-chevron-right"></i>Customer Acquisition</a>
+                        </li>
+                        <li class="process">
+                            <a href="#"><i class="icon-chevron-right"></i>Acquire Payable Account</a>
+                        </li>
+                        <li class="process">
+                            <a href="#"><i class="icon-chevron-right"></i>Customer Acquisition</a>
+                        </li>
+                        <li class="process">
+                            <a href="#"><i class="icon-chevron-right"></i>Acquire Payable Account</a>
                         </li>
                     </ul>
                 </nav>
-            </article>
 
-            <div class="clear"></div>
-        </section>
+                <article class="right columns one-half process-view">
+                    <h2 class="left">Name of my subprocess</h2>
 
-        <footer>
+                    <select class="right" name="subprocesses" id="subprocesses">
+                        <option value="SP1">Subprocess 1</option>
+                        <option value="SP2">Subprocess 2</option>
+                    </select>
 
-        </footer>
+                    <div class="clear"></div>
 
-    </div>
+                    <div>
+                        <div  class="block">
+                            Start date: 
+                            <time id="sp-start">Feb 12, 2013</time>
+                        </div>
+                        <div class="block">
+                            End Date: 
+                            <time id="sp-end">Feb 14, 2013</time>
+                        </div>
+                    </div>
+
+                    <h3>Tasks</h3>
+                    <nav class="auto columns ten">
+
+                        <ul class="nav nav-list list">
+                            <li class="task">
+                                <a href="#"><i class="icon-chevron-up"></i>Task 1</a>
+                                <div class="info">
+                                    <div class="center columns twelve">
+                                        <div class="left columns six">
+                                            Start date: 
+                                            <time id="sp-start">Feb 12, 2013</time>
+                                        </div>
+                                        <div class ="right columns six">
+                                            End Date: 
+                                            <time id="sp-end">Feb 14, 2013</time>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="auto columns ten">
+                                        External results :
+                                        <div class="auto columns nine json">
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="task">
+                                    <a href="#"><i class="icon-chevron-down"></i>Task 2</a>
+                                    <div class="info hidden">
+                                        <div class="center columns twelve">
+                                            <div class="left columns six">
+                                                Start date: 
+                                                <time id="sp-start">Feb 12, 2013</time>
+                                            </div>
+                                            <div class ="right columns six">
+                                                End Date: 
+                                                <time id="sp-end">Feb 14, 2013</time>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                        <div class="auto columns ten">
+                                            External results :
+                                            <div class="auto columns nine json">
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="task">
+                                        <a href="#"><i class="icon-chevron-down"></i>Task 3</a>
+                                        <div class="info hidden">
+                                            <div class="center columns twelve">
+                                                <div class="left columns six">
+                                                    Start date: 
+                                                    <time id="sp-start">Feb 12, 2013</time>
+                                                </div>
+                                                <div class ="right columns six">
+                                                    End Date: 
+                                                    <time id="sp-end">Feb 14, 2013</time>
+                                                </div>
+                                                <div class="clear"></div>
+                                            </div>
+                                            <div class="auto columns ten">
+                                                External results :
+                                                <div class="auto columns nine json">
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </article>
+
+                            <div class="clear"></div>
+                        </section>
+
+                        <footer>
+
+                        </footer>
+
+                    </div>
 
 
 
-    <!-- JavaScript -->
+                    <!-- JavaScript -->
 
-    <script type="text/javascript" src="../js/jquery-1.8.0.min.js"></script>
+                    <script type="text/javascript" src="../js/jquery-1.8.0.min.js"></script>
 
-</body>
+                </body>
 
 
-</html>
+                </html>

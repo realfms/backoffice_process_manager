@@ -33,3 +33,13 @@
 	margin-right: -6px;
 	opacity: .25;
 }
+
+.json {
+	min-height: 100px;
+	border: 1px solid #e5e5e5;
+	margin-bottom: 5px;
+}
+
+.info {
+	border: 1px solid #e5e5e5;
+}

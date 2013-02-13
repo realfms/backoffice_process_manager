@@ -33,151 +33,154 @@ from django.conf import settings
 import importlib
 import uuid
 
-def get_charger_by_name(name):
-    gw = get_gateway_by_name(name)
 
-    if gw == None:
-        return (None, None)
+class ServiceManager:
 
-    return (dynamically_loading_charger(gw), gw)
+    def __init__(self):
+        from processes.processes import DataAcquisitionProcess
 
-def get_first_available_charger_by_country(country):
-    gw = get_gateway_by_country(country)
+        self.data_acquisition_process = DataAcquisitionProcess()
 
-    if gw == None:
-        return (None, None)
+    def initial_payment_url(self, token):
+        user_data = self.get_user_data_by_token(token)
 
-    return (dynamically_loading_charger(gw), gw)
+        (charger, gw) = self.get_first_available_charger_by_country(user_data.country)
+        if (charger == None):
+            return "/error"
 
-def get_charger_by_tef_account_and_country(tef_account, country):
-    master_info = get_master_info_by_tef_account_and_country(tef_account, country)
+        url = charger.get_redirect_url(user_data)
 
-    if master_info == None:
-        return (None, None)
+        self.store_master_information(user_data, charger.get_order(), gw)
 
-    gw = master_info.gateway
+        return url
 
-    return (dynamically_loading_charger(gw), master_info)
+    def get_charger_by_name(self, name):
+        gw = self.get_gateway_by_name(name)
 
-def get_gateway_by_name(name):
-    gws = PaymentGateway.objects.filter(name=name)
+        if gw == None:
+            return (None, None)
 
-    if len(gws) == 0:
-        return None
+        return (self.dynamically_loading_charger(gw), gw)
 
-    return gws[0]
+    def get_first_available_charger_by_country(self, country):
+        gw = self.get_gateway_by_country(country)
 
-def get_gateway_by_country(country):
-    gws = PaymentGateway.objects.filter(country=country)
+        if gw == None:
+            return (None, None)
 
-    if len(gws) == 0:
-        return None
+        return (self.dynamically_loading_charger(gw), gw)
 
-    # If several, getting the first one
-    return gws[0]
+    def get_charger_by_tef_account_and_country(self, tef_account, country):
+        master_info = self.get_master_info_by_tef_account_and_country(tef_account, country)
 
-def get_master_info_by_tef_account_and_country(tef_account, country):
-    master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country)
+        if master_info == None:
+            return (None, None)
 
-    if len(master_infos) == 0:
-        return None
+        gw = master_info.gateway
 
-    # If several, getting the first one
-    return master_infos[0]
+        return (self.dynamically_loading_charger(gw), master_info)
 
-def get_charger_by_master_information(country):
-    gw = get_gateway_by_country(country)
+    def get_gateway_by_name(self, name):
+        gws = PaymentGateway.objects.filter(name=name)
 
-    if gw == None:
-        return None
+        if len(gws) == 0:
+            return None
 
-    return dynamically_loading_charger(gw)
+        return gws[0]
 
+    def get_gateway_by_country(self, country):
+        gws = PaymentGateway.objects.filter(country=country)
 
-def initial_payment_url(token):
+        if len(gws) == 0:
+            return None
 
-    user_data = get_user_data_by_token(token)
+        # If several, getting the first one
+        return gws[0]
 
-    (charger, gw) = get_first_available_charger_by_country(user_data.country)
-    if (charger == None):
-        return "/error"
+    def get_master_info_by_tef_account_and_country(self, tef_account, country):
+        master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country)
 
-    url = charger.get_redirect_url(user_data)
+        if len(master_infos) == 0:
+            return None
 
-    store_master_information(user_data, charger.get_order(), gw)
+        # If several, getting the first one
+        return master_infos[0]
 
-    return url
+    def get_charger_by_master_information(self, country):
+        gw = self.get_gateway_by_country(country)
 
+        if gw == None:
+            return None
 
-def process_recurrent_payment(order_data):
+        return self.dynamically_loading_charger(gw)
 
-    store_order(order_data)
+    def process_recurrent_payment(self, order_data):
 
-    tef_account = order_data.tef_account
-    country     = order_data.country
+        self.store_order(order_data)
 
-    (charger, master_info) = get_charger_by_tef_account_and_country(tef_account, country)
-    if charger == None:
-        return False
+        tef_account = order_data.tef_account
+        country     = order_data.country
 
-    charger.recurrent_payment(order_data, master_info)
+        (charger, master_info) = self.get_charger_by_tef_account_and_country(tef_account, country)
+        if charger == None:
+            return False
 
-    return True
+        charger.recurrent_payment(order_data, master_info)
 
-
-def store_master_information(user_data, recurrent_order_code, gateway):
-    # Creating subprocess
-    from processes.processes import create_acquire_data_subprocess
-    
-    subprocess = create_acquire_data_subprocess(user_data.tef_account)
-    
-    # Linking master info and subprocess
-    master_info = MasterInformation(tef_account=user_data.tef_account, recurrent_order_code=recurrent_order_code,
-                                     gateway=gateway, email=user_data.email, subprocess=subprocess)
-    master_info.save()
-
-def store_order(order_data):
-    order = Order(total=order_data.total, currency=order_data.currency, country=order_data.country,
-                  tef_account=order_data.tef_account, statement=order_data.statement,
-                  order_code=order_data.order_code)
-
-    order.save()
+        return True
 
 
-def dynamically_loading_charger(gw):
-    charger_module = importlib.import_module(gw.module_name)
-    charger = getattr(charger_module, gw.class_name)(gw)
+    def store_master_information(self, user_data, recurrent_order_code, gateway):
+        # Creating subprocese
+        subprocess = self.data_acquisition_process.create_acquire_data_subprocess(user_data.tef_account)
 
-    return charger
+        # Linking master info and subprocess
+        master_info = MasterInformation(tef_account=user_data.tef_account, recurrent_order_code=recurrent_order_code,
+                                         gateway=gateway, email=user_data.email, subprocess=subprocess)
+        master_info.save()
 
-def generate_form_url(user_data):
-    token = compute_unique_id()
+    def store_order(self, order_data):
+        order = Order(total=order_data.total, currency=order_data.currency, country=order_data.country,
+                      tef_account=order_data.tef_account, statement=order_data.statement,
+                      order_code=order_data.order_code)
 
-    acquired_data = AcquiredData(tef_account=user_data.tef_account, email=user_data.email,
-                                 city=user_data.city, address=user_data.address,
-                                 postal_code=user_data.postal_code, country=user_data.country,
-                                 token=token, gender=user_data.gender, first_name=user_data.first_name,
-                                 last_name=user_data.last_name)
-
-    acquired_data.save()
-
-    url = settings.DEPLOY_URL + "/payment/acquire/form/" + token
-
-    print url
-
-    return url
-
-def get_user_data_by_token(token):
-    acquired_data = AcquiredData.objects.get(token=token)
-
-    user_data = UserData(acquired_data.tef_account, acquired_data.city, acquired_data.address,
-                         acquired_data.postal_code, acquired_data.country, acquired_data.phone, acquired_data.email,
-                         acquired_data.gender, acquired_data.first_name, acquired_data.last_name)
-
-    return user_data
+        order.save()
 
 
-def compute_unique_id():
-    uid = uuid.uuid4()
-    return uid.hex[:10]
+    def dynamically_loading_charger(self, gw):
+        charger_module = importlib.import_module(gw.module_name)
+        charger = getattr(charger_module, gw.class_name)(gw)
+
+        return charger
+
+    def generate_form_url(self, user_data):
+        token = self.compute_unique_id()
+
+        acquired_data = AcquiredData(tef_account=user_data.tef_account, email=user_data.email,
+                                     city=user_data.city, address=user_data.address,
+                                     postal_code=user_data.postal_code, country=user_data.country,
+                                     token=token, gender=user_data.gender, first_name=user_data.first_name,
+                                     last_name=user_data.last_name)
+
+        acquired_data.save()
+
+        url = settings.DEPLOY_URL + "/payment/acquire/form/" + token
+
+        print url
+
+        return url
+
+    def get_user_data_by_token(self, token):
+        acquired_data = AcquiredData.objects.get(token=token)
+
+        user_data = UserData(acquired_data.tef_account, acquired_data.city, acquired_data.address,
+                             acquired_data.postal_code, acquired_data.country, acquired_data.phone, acquired_data.email,
+                             acquired_data.gender, acquired_data.first_name, acquired_data.last_name)
+
+        return user_data
+
+
+    def compute_unique_id(self):
+        uid = uuid.uuid4()
+        return uid.hex[:10]
 

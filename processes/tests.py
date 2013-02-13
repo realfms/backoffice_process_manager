@@ -39,7 +39,7 @@ class TestGenerator(TestCase):
 
     def test_salesforce_update_contact(self):
 
-        result =update_contact('Billable', '003d000000lKGP2AAO')
+        result = update_contact('Billable', '003d000000lKGP2AAO')
 
         print result
 

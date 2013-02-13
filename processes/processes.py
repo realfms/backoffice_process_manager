@@ -25,7 +25,7 @@ Created on 05/02/2013
 @author: mac@tid.es
 '''
 
-from tasks import notify_salesforce_task, notify_tef_accounts_task, payment_gateway_invocation_task,\
+from tasks import notify_salesforce_task, notify_tef_accounts_task,\
                   download_and_parse_sdr_task, get_customer_details_from_sf_task, \
                   generate_pdf_and_upload_task, send_email_task, charge_user_task, update_charging_result, \
                   create_financial_accounting_record
@@ -36,104 +36,103 @@ from models import BusinessProcess, SubProcess
 # DATA ACQUISITION PROCESS
 ######################################################
 
-def create_acquire_data_subprocess(tef_account):
-    return _generate_acquire_data_subprocess(tef_account)
+class DataAcquisitionProcess:
 
-def start_notify_acquired_data(status, master_info):
-    contact_id = master_info.tef_account
-    subprocess = master_info.subprocess
-    
-    sp_id = subprocess.id 
-    
-    chain = notify_salesforce_task.s(True, status, contact_id, sp_id) | notify_tef_accounts_task.s(status, contact_id, sp_id)
+    def __init__(self):
+        pass
 
-    chain()
+    def create_acquire_data_subprocess(self, tef_account):
+        return self._generate_acquire_data_subprocess(tef_account)
 
-def sync_notify_acquired_data(status, master_info):
-    contact_id = master_info.tef_account
-    
-    subprocess = master_info.subprocess
-    
-    sucess = notify_salesforce_task(True, status, contact_id, subprocess.id)
-    sucess = notify_tef_accounts_task(sucess, status, contact_id, subprocess.id)
+    def start_notify_acquired_data(self, status, master_info):
+        contact_id = master_info.tef_account
+        subprocess = master_info.subprocess
 
-    return sucess
+        sp_id = subprocess.id
 
-######################################################
-# RECURRENT PAYMENT PROCESSES
-######################################################
+        chain = notify_salesforce_task.s(True, status, contact_id, sp_id) | notify_tef_accounts_task.s(status, contact_id, sp_id)
 
-def start_invoke_gateway(json, p_gw):
-    chain = payment_gateway_invocation_task.s(json)
+        chain()
 
-    chain()
+    def sync_notify_acquired_data(self, status, master_info):
+        contact_id = master_info.tef_account
 
-def sync_invoke_gateway(json, p_gw):
-    result = payment_gateway_invocation_task(json)
+        subprocess = master_info.subprocess
 
-    return result
+        sucess = notify_salesforce_task(True, status, contact_id, subprocess.id)
+        sucess = notify_tef_accounts_task(sucess, status, contact_id, subprocess.id)
+
+        return sucess
+
+    def _generate_notify_acquired_data_subprocess(previous_subprocess):
+        process = BusinessProcess.objects.get(id=previous_subprocess)
+
+        sub_process = SubProcess(process=process, name='NOTIFY ACQUIRED DATA')
+        sub_process.save()
+
+        return sub_process
+
+    def _generate_acquire_data_subprocess(self, tef_account):
+        process = BusinessProcess(tef_account=tef_account, name='ACQUIRE PAYMENT DATA')
+        process.save()
+
+        sub_process = SubProcess(process=process, name='ACQUIRE DATA')
+        sub_process.save()
+
+        return sub_process
+
 
 ######################################################
 # ORDER TO CASH PROCESS
 ######################################################
 
-def start_order_to_cash_process(bucket_key, tef_account):
-    sub_process =_generate_billing_subprocess(bucket_key, tef_account)
+class OrderToCashProcess():
 
-    sp_id = sub_process.id
+    def __init__(self):
+        pass
 
-    chain = download_and_parse_sdr_task.s(True, bucket_key, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id)
+    def start_order_to_cash_process(self, bucket_key, tef_account):
+        sub_process = self._generate_billing_subprocess(bucket_key, tef_account)
 
-    chain()
+        sp_id = sub_process.id
 
-def sync_order_to_cash(bucket_key, tef_account):
-    sub_process =_generate_billing_subprocess(bucket_key, tef_account)
+        chain = download_and_parse_sdr_task.s(True, bucket_key, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id)
 
-    sp_id = sub_process.id
+        chain()
 
-    success = download_and_parse_sdr_task(True, bucket_key, sp_id)
-    success = get_customer_details_from_sf_task(success, sp_id)
-    success = generate_pdf_and_upload_task(success, sp_id)
-    success = send_email_task(success, sp_id)
-    success = charge_user_task(success, sp_id)
+    def sync_order_to_cash(self, bucket_key, tef_account):
+        sub_process = self._generate_billing_subprocess(bucket_key, tef_account)
 
-    return success
+        sp_id = sub_process.id
+
+        success = download_and_parse_sdr_task(True, bucket_key, sp_id)
+        success = get_customer_details_from_sf_task(success, sp_id)
+        success = generate_pdf_and_upload_task(success, sp_id)
+        success = send_email_task(success, sp_id)
+        success = charge_user_task(success, sp_id)
+
+        return success
+
+    def _generate_billing_subprocess(self, bucket_key, tef_account):
+        process = BusinessProcess(tef_account=tef_account, name='ORDER TO CASH', initial_data=bucket_key)
+        process.save()
+
+        sub_process = SubProcess(process=process, name='BILLING')
+        sub_process.save()
+
+        return sub_process
 
 ######################################################
 # COLLECTIONS PROCESS
 ######################################################
 
-def start_collections_process(json):
-    chain = update_charging_result.s(json) | create_financial_accounting_record.s()
+class CollectionsProcess():
 
-    chain()
+    def __init__(self):
+        pass
 
-######################################################
-# AUX FUNCTIONS
-######################################################
+    def start_collections_process(self, json):
+        chain = update_charging_result.s(json) | create_financial_accounting_record.s()
 
-def _generate_billing_subprocess(bucket_key, tef_account):
-    process = BusinessProcess(tef_account=tef_account, name='ORDER TO CASH', initial_data=bucket_key)
-    process.save()
+        chain()
 
-    sub_process = SubProcess(process=process, name='BILLING')
-    sub_process.save()
-
-    return sub_process
-
-def _generate_acquire_data_subprocess(tef_account):
-    process = BusinessProcess(tef_account=tef_account, name='ACQUIRE PAYMENT DATA')
-    process.save()
-
-    sub_process = SubProcess(process=process, name='ACQUIRE DATA')
-    sub_process.save()
-
-    return sub_process
-
-def _generate_notify_acquired_data_subprocess(previous_subprocess):
-    process = BusinessProcess.objects.get(id=previous_subprocess)
-
-    sub_process = SubProcess(process=process, name='NOTIFY ACQUIRED DATA')
-    sub_process.save()
-
-    return sub_process

@@ -27,21 +27,32 @@ Created on 16/10/2012
 
 from common.aws.s3   import get_sdr_request_keys
 
-from processes import start_order_to_cash_process, sync_order_to_cash, start_collections_process
+from processes import OrderToCashProcess, DataAcquisitionProcess, CollectionsProcess
 
-def start_order_to_cash():
-    keys = get_sdr_request_keys()
-    
-    for key in keys:
-        start_order_to_cash_process(key, 'tef_account')
+class ProcessManager():
 
-   
-def sync_first_order_to_cash():
-    keys = get_sdr_request_keys()
-    
-    for key in keys:
-        sync_order_to_cash(key, 'tef_account')
-        break
+    def __init__(self):
+        self.order_to_cash_process    = OrderToCashProcess()
+        self.data_acquisition_process = DataAcquisitionProcess()
+        self.collections_process      = CollectionsProcess()
 
-def start_collections(json):
-    start_collections_process(json)
+    def start_order_to_cash(self):
+        keys = get_sdr_request_keys()
+
+        for key in keys:
+            self.order_to_cash_process.start_order_to_cash_process(key, self._get_tef_account(key))
+
+
+    def sync_first_order_to_cash(self):
+        keys = get_sdr_request_keys()
+
+        for key in keys:
+            self.order_to_cash_process.sync_order_to_cash(key, self._get_tef_account(key))
+            break
+
+    def start_collections(self, json):
+        self.collections_process.start_collections_process(json)
+
+    def _get_tef_account(self, key):
+        # By convention, by removing the last 4 characters from key, the tef_account is returned!
+        return key[0:-4]

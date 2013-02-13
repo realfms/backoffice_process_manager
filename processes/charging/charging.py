@@ -26,7 +26,6 @@ Created on 22/01/2013
 '''
 
 from payment_gateways.api_format import OrderData
-from payment_gateways.services import process_recurrent_payment
 
 import uuid
 
@@ -45,7 +44,8 @@ def charge_user(json):
 
     data = OrderData(tef_account, total, currency, country, statement, order_code)
 
-    process_recurrent_payment(data)
+    from payment_gateways.services import ServiceManager
+    ServiceManager().process_recurrent_payment(data)
 
     return (json, None)
 

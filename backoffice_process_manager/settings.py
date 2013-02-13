@@ -33,11 +33,6 @@ EMAIL_BACKEND = 'django_ses.SESBackend'
 
 ######################################################
 
-DATABASE_OPTIONS = {
-    'use_unicode': True,
-    'charset': 'utf8'
-}
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -55,6 +50,10 @@ DATABASES = {
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+        'OPTIONS': {
+            'use_unicode': True,
+            'charset': 'utf8'
+        }
     }
 }
 

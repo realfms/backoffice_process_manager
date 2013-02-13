@@ -31,7 +31,7 @@ from django.http        import HttpResponseRedirect
 from django.db          import transaction
 from django.utils       import  simplejson
 
-from services   import initial_payment_url, generate_form_url, get_user_data_by_token
+from services   import ServiceManager
 from api_format import UserData
 
 from django.views.decorators.csrf import csrf_exempt
@@ -66,7 +66,7 @@ def acquire_service(request):
         user_data = UserData(tef_account, city, address, postal_code, country, phone,
                              email, gender, first_name, last_name)
 
-        url = generate_form_url(user_data)
+        url = ServiceManager().generate_form_url(user_data)
 
         return HttpResponse(url, content_type='text/plain')
     else:
@@ -77,7 +77,7 @@ def acquire_form(request, token):
 
     if request.method == 'GET':
 
-        user_data = get_user_data_by_token(token)
+        user_data = ServiceManager().get_user_data_by_token(token)
 
         context = {
                     'code': token,
@@ -104,7 +104,7 @@ def acquire_redirect(request):
 
         token = params('token', None)
         
-        url = initial_payment_url(token)
+        url = ServiceManager().initial_payment_url(token)
     
         return HttpResponseRedirect(url)
     else:

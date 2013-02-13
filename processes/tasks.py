@@ -53,14 +53,6 @@ def notify_tef_accounts_task(success, status, contact_id, sp_id):
 
 
 ######################################################
-# RECURRENT CHARGING
-######################################################
-
-@task(ignore_result=True)
-def payment_gateway_invocation_task(charging_result):
-    return charging_result
-
-######################################################
 # ORDER TO CASH
 ######################################################
 

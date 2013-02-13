@@ -29,17 +29,19 @@ import manage
 
 from django.test import TestCase
 
-from api_format import OrderData, UserData
+from api_format import OrderData
 from models     import PaymentGateway, MasterInformation, Order
-from services   import initial_payment_url, process_recurrent_payment
+from services   import ServiceManager
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('../.env')
 
 class TestGenerator(TestCase):
+
+    service_manager = ServiceManager()
     
     def test_adyen_data_acquisition(self):
-        initial_payment_url('ccf0ff7333')
+        self.service_manager.initial_payment_url('ccf0ff7333')
         
         gw = PaymentGateway.objects.get(name="ADYEN")
         
@@ -60,7 +62,7 @@ class TestGenerator(TestCase):
         order_data = OrderData(tef_account="1928jj2js", total=100, currency='EUR', country='BR', 
                                statement="statement", order_code="20")
         
-        process_recurrent_payment(order_data)
+        self.service_manager.process_recurrent_payment(order_data)
         
         order = Order.objects.get(order_code=order_data.order_code)
         

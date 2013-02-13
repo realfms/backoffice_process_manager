@@ -32,15 +32,15 @@ from py_adyen.adyen import Adyen
 from py_adyen.api import Api
 
 from payment_gateways.gateway_interface.PaymentGateway import PaymentGateway
-
 from payment_gateways.models import Order, MasterInformation
 
-from processes.processes import start_notify_acquired_data
+from processes.processes import DataAcquisitionProcess
 
 class Adyen_Charger (PaymentGateway):
 
     def __init__(self, model):
         super(Adyen_Charger, self).__init__(model)
+        self.data_acquisition_manager = DataAcquisitionProcess()
 
     def get_redirect_url(self, user_data):
 
@@ -82,35 +82,42 @@ class Adyen_Charger (PaymentGateway):
 
         master_infos = MasterInformation.objects.filter(recurrent_order_code=order_code, status='PENDING')
 
+        # Distinguising flows
         if len(master_infos) == 1:
-            # Callback of payment data acquisition flow
-
-            print "DATA ACQUISITION FLOW"
-
-            master_info = master_infos[0]
-
-            master_info.status = status
-            master_info.save()
-
-            # Start notify process
-            start_notify_acquired_data('Billable', master_info)
-
-            return True
+            return self._data_acquistion_flow(master_infos, status)
 
         # Callback of recurrent payment flow
         orders = Order.objects.filter(order_code=order_code, status='PENDING')
 
         if len(orders) == 1:
-            print "RECURRENT ORDER FLOW"
+            return self._recurrent_payment_flow(orders, status)
 
-            order = orders[0]
+        # Neither data acquistion flow nor recurrent payment flow, this is an error!
+        print "ERROR"
+        print len(orders)
+        return False
 
-            order.status = status
-            order.save()
+    def data_acquisition_flow(self, master_infos, status):
+        # Callback of payment data acquisition flow
+        print "DATA ACQUISITION FLOW"
 
-            return True
-        else:
-            # Neither data acquistion flow nor recurrent payment flow, this is an error!
-            print "ERROR"
-            print len(orders)
-            return False
+        master_info = master_infos[0]
+
+        master_info.status = status
+        master_info.save()
+
+        # Start Async notify process
+        self.data_acquisition_manager.start_notify_acquired_data('Billable', master_info)
+
+        return True
+
+    def _recurrent_payment_flow(self, orders, status):
+        # Callback of recuerrent payment flow
+        print "RECURRENT ORDER FLOW"
+
+        order = orders[0]
+
+        order.status = status
+        order.save()
+
+        return True

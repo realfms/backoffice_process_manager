@@ -54,11 +54,11 @@ def get_processes_by_user(user_id):
     return processes
 
 
-def get_subprocesses_by_process(process_id):
-    subprocesses = models.SubProcess.objets.filter(process=process_id)
+def get_subprocesses_by_process(process):
+    subprocesses = process.SubProcess_set.all()
     return subprocesses
 
 
-def get_tasks_by_subprocess(subprocess_id):
-    tasks = models.Task.objets.filter(subprocess=subprocess_id)
+def get_tasks_by_subprocess(subprocess):
+    tasks = subprocess.Task_set.all()
     return tasks

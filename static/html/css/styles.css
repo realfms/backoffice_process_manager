@@ -1,3 +1,9 @@
+.navbar-inner {
+	-webkit-border-radius : 0;
+	-moz-border-radius : 0;
+	border-radius : 0
+}
+
 .list {
 	padding: 0;
 	background-color: #fff;

@@ -40,25 +40,30 @@
 
 <body>
 
-    <div id="wrapper" class="auto columns nine">
 
-        <header class="navbar navbar-inverse navbar-fixed-top">
+        <header class="navbar navbar-inverse">
             <div class="navbar-inner">
-                <div class="container">
-                    <hgroup>
-                        <h1>Business Process Management</h1>
-                        <h2>User: Alberto Blázquez (1024897)</h2>
-                    </hgroup>
-                </div>
+                <hgroup class="auto columns nine">
+                    <h1 class="brand">Business Process Management</h1>
+                    <h2 class="brand">User: Alberto Blázquez (1024897)</h2>
+                </hgroup>
             </div>
         </header>
 
 
-        <section id="content">
-            <nav class="left columns one-half">
+        <section id="content" class="auto columns nine">
+            <nav class="left columns one-half-pseudo">
+                <h2>Business Processes</h2>
+
                 <ul class="nav nav-list list">
                     <li class="process">
-                        <a href="#"><i class="icon-chevron-right"></i>Customer Acquisition</a>
+                        <a href="#">
+                            Customer Acquisition
+                            <time>Feb 12, 2013</time>
+                            <time>Feb 12, 2013</time>
+                            <span>Ok</span>
+                            <i class="icon-chevron-right"></i>
+                        </a>
                     </li>
                     <li class="process">
                         <a href="#"><i class="icon-chevron-right"></i>Acquire Payable Account</a>
@@ -84,8 +89,8 @@
                 </ul>
             </nav>
 
-            <article class="right columns one-half process-view">
-                <h2 class="left">Name of my subprocess</h2>
+            <article class="right columns one-half-pseudo process-view">
+                <h3 class="left">Name of my subprocess</h3>
 
                 <select class="right" name="subprocesses" id="subprocesses">
                     <option value="SP1">Subprocess 1</option>
@@ -128,7 +133,6 @@
 
         </footer>
 
-    </div>
 
 
 

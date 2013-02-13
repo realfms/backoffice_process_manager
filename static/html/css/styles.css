@@ -23,6 +23,7 @@
 }
 */
 
+
 .list > li > a {
 	display: block;
 	width: 190px 9;
@@ -31,9 +32,31 @@
 	border: 1px solid #e5e5e5;
 }
 
-.list .icon-chevron-right {
+.icon-chevron-right {
 	float: right;
 	margin-top: 2px;
 	margin-right: -6px;
 	opacity: .25;
 }
+
+.border {
+	-webkit-border-radius : 6px;
+	-moz-border-radius : 6px;
+	border-radius : 6px;
+	border : 1px solid #e5e5e5;
+	padding : 10px;
+}
+
+.table { margin-bottom : 0; }
+
+.subtitle { 
+	color : #333333;
+	display : inline;
+}
+
+	.subtitle label { 
+		display : inline;
+		margin : 10px 0;
+	}
+
+	.subtitle time { display : inline; }

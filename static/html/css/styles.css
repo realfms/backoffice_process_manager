@@ -82,14 +82,22 @@
 /*********************************/
 
 .container {
+    background-color: #f8f8f8;
+
     border-top: 3px solid #56458c;
-    background-color: #f8f8f8;
-    background-color: #f8f8f8;
-    border-left: 1px solid #e0e3e5;
     border-right: 1px solid #e0e3e5;
     border-bottom: 0;
-    padding: 2px 5px 10px;
+    border-left: 1px solid #e0e3e5;
+
+	-webkit-border-top-left-radius: 4px;
+	-webkit-border-top-right-radius: 4px;
+    -moz-border-radius-topleft: 4px;
+	-moz-border-radius-topright: 4px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+
     margin-top: 5px;
+    padding: 2px 5px 10px;
 }
 
 .th {
@@ -99,19 +107,28 @@
     color: #000;
     font-size: .9em;
     font-weight: bold;
-    padding: 0;
 }
 
-tbody .tr {
+table {
+	width : 100%;
+}
+
+th {
+	text-align : left;
+}
+
+tbody tr {
 	border-color: #ededed;
 	border-top-color: #fff;
 }
 
 td {
 	font-family: 'Arial','Helvetica',sans-serif;
-	font-size: 100%;
+	font-size: 0.85em;
 	line-height: normal;
 }
+
+td, th { padding: 0 5px; }
 
 a {
 	color : #333435;
@@ -129,4 +146,16 @@ select {
 	margin-right: 4px;
 	font-size: 1.1em;
 	font-weight: bold;
+}
+
+h2 {
+	color: #000;
+	font-size: 1.3em;
+}
+
+body {
+	color: #222;
+	font-family: 'Arial','Helvetica',sans-serif;
+	font-size: 100%;
+	line-height: normal;
 }

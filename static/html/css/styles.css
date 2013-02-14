@@ -145,9 +145,9 @@ a:hover {
 }
 
 select {
-	margin-right: 4px;
 	font-size: 0.9em;
 	padding: 1px 10px 1px 1px;
+	margin: 4px 10px;
 }
 
 h1, h2, h3, h4 {

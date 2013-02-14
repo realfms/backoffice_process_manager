@@ -34,7 +34,7 @@ from py_adyen.api import Api
 from payment_gateways.gateway_interface.PaymentGateway import PaymentGateway
 from payment_gateways.models import Order, MasterInformation
 
-from processes.processes import DataAcquisitionProcess
+from processes.data_acquisition_process import DataAcquisitionProcess
 
 class Adyen_Charger (PaymentGateway):
 
@@ -84,7 +84,7 @@ class Adyen_Charger (PaymentGateway):
 
         # Distinguising flows
         if len(master_infos) == 1:
-            return self._data_acquistion_flow(master_infos, status)
+            return self.data_acquisition_flow(master_infos, status)
 
         # Callback of recurrent payment flow
         orders = Order.objects.filter(order_code=order_code, status='PENDING')

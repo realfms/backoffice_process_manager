@@ -190,5 +190,7 @@ if os.environ.get('DATABASE_URL'):
 
 BROKER_BACKEND = 'django'
 
+CELERY_IMPORTS = ( 'processes.charging.tasks', 'processes.tasks', 'processes.charging.tasks')
+
 import djcelery
 djcelery.setup_loader()

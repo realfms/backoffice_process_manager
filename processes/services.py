@@ -27,14 +27,12 @@ Created on 16/10/2012
 
 from common.aws.s3   import get_sdr_request_keys
 
-from processes import OrderToCashProcess, DataAcquisitionProcess, CollectionsProcess
+from processes.order_to_cash_process import OrderToCashProcess
 
-class ProcessManager():
+class ProcessManager:
 
     def __init__(self):
-        self.order_to_cash_process    = OrderToCashProcess()
-        self.data_acquisition_process = DataAcquisitionProcess()
-        self.collections_process      = CollectionsProcess()
+        self.order_to_cash_process = OrderToCashProcess()
 
     def start_order_to_cash(self):
         keys = get_sdr_request_keys()
@@ -49,9 +47,6 @@ class ProcessManager():
         for key in keys:
             self.order_to_cash_process.sync_order_to_cash(key, self._get_tef_account(key))
             break
-
-    def start_collections(self, json):
-        self.collections_process.start_collections_process(json)
 
     def _get_tef_account(self, key):
         # By convention, by removing the last 4 characters from key, the tef_account is returned!

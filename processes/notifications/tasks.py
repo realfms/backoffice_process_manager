@@ -20,32 +20,22 @@ For those usages not covered by the GNU Affero General Public License please con
 """ 
 
 '''
-Created on 30/10/2012
+Created on 15/10/2012
 
 @author: mac@tid.es
 '''
 
-from django.shortcuts import render
-from django.db        import transaction
+from celery import task
 
-def index(request):
-    return render(request, 'index.html', {})
+from common.salesforce.salesforce import update_contact
 
-@transaction.commit_on_success
-def launchInvoicing(request):
+from processes.task_manager import TaskManager
 
-    from services import ProcessManager
+@task(ignore_result=True)
+def notify_salesforce_task(success, status, contact_id, sp_id):
+    return TaskManager().process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
 
-    ProcessManager().start_order_to_cash()
-    
-    return render(request, 'processes/invoicing.html', {})
+@task(ignore_result=True)
+def notify_tef_accounts_task(success, status, contact_id, sp_id):
+    return (True, None)
 
-@transaction.commit_on_success
-def launchSyncInvoice(request):
-
-    from services import ProcessManager
-
-    ProcessManager().sync_first_order_to_cash()
-
-    return render(request, 'processes/invoicing.html', {})
-    

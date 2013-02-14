@@ -25,16 +25,7 @@ Created on 05/02/2013
 @author: mac@tid.es
 '''
 
-from tasks import notify_salesforce_task, notify_tef_accounts_task,\
-                  download_and_parse_sdr_task, get_customer_details_from_sf_task, \
-                  generate_pdf_and_upload_task, send_email_task, charge_user_task, update_charging_result, \
-                  create_financial_accounting_record
-
 from models import BusinessProcess, SubProcess
-
-######################################################
-# DATA ACQUISITION PROCESS
-######################################################
 
 class DataAcquisitionProcess:
 
@@ -80,59 +71,3 @@ class DataAcquisitionProcess:
         sub_process.save()
 
         return sub_process
-
-
-######################################################
-# ORDER TO CASH PROCESS
-######################################################
-
-class OrderToCashProcess():
-
-    def __init__(self):
-        pass
-
-    def start_order_to_cash_process(self, bucket_key, tef_account):
-        sub_process = self._generate_billing_subprocess(bucket_key, tef_account)
-
-        sp_id = sub_process.id
-
-        chain = download_and_parse_sdr_task.s(True, bucket_key, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id)
-
-        chain()
-
-    def sync_order_to_cash(self, bucket_key, tef_account):
-        sub_process = self._generate_billing_subprocess(bucket_key, tef_account)
-
-        sp_id = sub_process.id
-
-        success = download_and_parse_sdr_task(True, bucket_key, sp_id)
-        success = get_customer_details_from_sf_task(success, sp_id)
-        success = generate_pdf_and_upload_task(success, sp_id)
-        success = send_email_task(success, sp_id)
-        success = charge_user_task(success, sp_id)
-
-        return success
-
-    def _generate_billing_subprocess(self, bucket_key, tef_account):
-        process = BusinessProcess(tef_account=tef_account, name='ORDER TO CASH', initial_data=bucket_key)
-        process.save()
-
-        sub_process = SubProcess(process=process, name='BILLING')
-        sub_process.save()
-
-        return sub_process
-
-######################################################
-# COLLECTIONS PROCESS
-######################################################
-
-class CollectionsProcess():
-
-    def __init__(self):
-        pass
-
-    def start_collections_process(self, json):
-        chain = update_charging_result.s(json) | create_financial_accounting_record.s()
-
-        chain()
-

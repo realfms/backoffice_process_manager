@@ -28,6 +28,8 @@ Created on 30/10/2012
 from models     import PaymentGateway, MasterInformation, Order, AcquiredData
 from api_format import UserData
 
+from processes.data_acquisition_process import DataAcquisitionProcess
+
 from django.conf import settings
 
 import importlib
@@ -37,8 +39,6 @@ import uuid
 class ServiceManager:
 
     def __init__(self):
-        from processes.processes import DataAcquisitionProcess
-
         self.data_acquisition_process = DataAcquisitionProcess()
 
     def initial_payment_url(self, token):

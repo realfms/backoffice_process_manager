@@ -86,36 +86,38 @@
 
     border-top: 3px solid #56458c;
     border-right: 1px solid #e0e3e5;
-    border-bottom: 0;
+    border-bottom: 1px solid #e0e3e5;
     border-left: 1px solid #e0e3e5;
 
-	-webkit-border-top-left-radius: 4px;
-	-webkit-border-top-right-radius: 4px;
-    -moz-border-radius-topleft: 4px;
-	-moz-border-radius-topright: 4px;
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
 
     margin-top: 5px;
     padding: 2px 5px 10px;
+    overflow : auto;
 }
 
 .th {
-    background: #f2f3f3;
-    border: 1px solid #e0e3e5;
-    border-width: 1px 0;
-    color: #000;
-    font-size: .9em;
-    font-weight: bold;
+	background: #f2f3f3;
+	color: #000;
+	font-size: .9em;
+	font-weight: bold;
+	border-left : 1px solid #e0e3e5;
+	border-bottom : 1px solid #e0e3e5;
+	text-align : left;
 }
 
 table {
 	width : 100%;
+	background : white;
+	border-spacing: 0px;
+	border: 1px solid #e0e3e5;
 }
 
-th {
-	text-align : left;
-}
+th:first-child { border-left : 0; }
+th:last-child { border-right : 0; }
+
 
 tbody tr {
 	border-color: #ededed;
@@ -128,7 +130,7 @@ td {
 	line-height: normal;
 }
 
-td, th { padding: 0 5px; }
+td, th { padding-left: 5px; }
 
 a {
 	color : #333435;
@@ -151,6 +153,8 @@ select {
 h2 {
 	color: #000;
 	font-size: 1.3em;
+	margin-top: 5px;
+	margin-bottom: 10px;
 }
 
 body {
@@ -158,4 +162,24 @@ body {
 	font-family: 'Arial','Helvetica',sans-serif;
 	font-size: 100%;
 	line-height: normal;
+}
+
+.detail {
+	text-align: center;
+}
+
+.icon-chevron-right {
+	background-image: url("../img/glyphicons-halflings.png");
+	background-repeat: no-repeat;
+  	background-position: -456px -72px;
+
+	display: inline-block;
+	margin-top: 1px;
+	line-height: 14px;
+
+	vertical-align: text-top;
+  	opacity: .35;
+
+	height: 14px;
+	width: 14px;
 }

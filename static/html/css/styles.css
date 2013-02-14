@@ -150,7 +150,7 @@ select {
 	padding: 1px 10px 1px 1px;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
 	color: #000;
 	font-size: 1.1em;
 	font-weight: bold;
@@ -159,6 +159,12 @@ h1, h2, h3 {
 }
 
 h3 { font-size: 1em; }
+h4 { font-size: 0.9em; }
+
+.results-title {
+	padding-top: 1em;
+	padding-left: 2em;
+}
 
 body {
 	color: #222;
@@ -171,10 +177,9 @@ body {
 	text-align: center;
 }
 
-.icon-chevron-right {
+[class*="icon-"] {
 	background-image: url("../img/glyphicons-halflings.png");
 	background-repeat: no-repeat;
-  	background-position: -456px -72px;
 
 	display: inline-block;
 	margin-top: 1px;
@@ -185,7 +190,14 @@ body {
 
 	height: 14px;
 	width: 14px;
+
 }
+
+.icon-chevron-right { background-position: -456px -72px;  }
+.icon-chevron-up    { background-position: -288px -120px; }
+.icon-chevron-down  { background-position: -313px -119px; }
+
+
 
 .dates {
 	font-size: 0.9em;

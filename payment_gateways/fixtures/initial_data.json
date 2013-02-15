@@ -34,5 +34,14 @@
   			  "tef_account": "1928jj2js", 
   			  "email": "mac@tid.es"
   			  }
+  },
+  {"pk": 4,
+  "model": "payment_gateways.acquireddata", 
+  "fields": { "city": "Sao Paulo", "last_name": "Augustin Row", 
+  			  "first_name": "Martin", "email": "martin.augustin@gmail.com", 
+  			  "postal_code": "0", "phone": "", "tef_account": "003d000000lpI8ZAAU", 
+  			  "address": "0", "token": "ccf0ff7333", 
+  			  "country": "BR", "gender": "Male"
+  			}
   }
 ]

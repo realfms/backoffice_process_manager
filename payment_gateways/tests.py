@@ -29,34 +29,32 @@ import manage
 
 from django.test import TestCase
 
-from api_format import OrderData, UserData
+from api_format import OrderData
 from models     import PaymentGateway, MasterInformation, Order
-from services   import initial_payment_url, process_recurrent_payment
+from services   import ServiceManager
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('../.env')
 
 class TestGenerator(TestCase):
+
+    service_manager = ServiceManager()
     
     def test_adyen_data_acquisition(self):
-        
-        user_data = UserData(tef_account="inexistent", city="city", address="street", 
-                             postal_code="28282", country="BR", phone="28282", email="mac@tid.es")
-        
-        initial_payment_url(user_data)
+        self.service_manager.initial_payment_url('ccf0ff7333')
         
         gw = PaymentGateway.objects.get(name="ADYEN")
         
-        master_infos = MasterInformation.objects.filter(tef_account=user_data.tef_account, 
-                                                        gateway__country=user_data.country)
+        master_infos = MasterInformation.objects.filter(tef_account='003d000000lpI8ZAAU', 
+                                                        gateway__country='BR')
         
         self.assertEqual(len(master_infos), 1)
 
         master_info = master_infos[0]
         
         self.assertEqual(master_info.gateway, gw)
-        self.assertEqual(master_info.tef_account, user_data.tef_account)
-        self.assertEqual(master_info.email, user_data.email)
+        self.assertEqual(master_info.tef_account, '003d000000lpI8ZAAU')
+        self.assertEqual(master_info.email, 'martin.augustin@gmail.com')
         self.assertEqual(master_info.status, 'PENDING')
     
     def test_adyen_recurrent_payment(self):
@@ -64,7 +62,7 @@ class TestGenerator(TestCase):
         order_data = OrderData(tef_account="1928jj2js", total=100, currency='EUR', country='BR', 
                                statement="statement", order_code="20")
         
-        process_recurrent_payment(order_data)
+        self.service_manager.process_recurrent_payment(order_data)
         
         order = Order.objects.get(order_code=order_data.order_code)
         

@@ -27,9 +27,6 @@ Created on 30/10/2012
 
 from django.shortcuts import render
 from django.db        import transaction
-from django.http      import HttpResponse
-
-from services import start_order_to_cash, sync_first_order_to_cash, start_collections, get_processes_by_user, get_subprocesses_by_process, get_tasks_by_subprocess
 
 
 def index(request):
@@ -38,47 +35,34 @@ def index(request):
 
 @transaction.commit_on_success
 def launchInvoicing(request):
-    start_order_to_cash()
+    from services import ProcessManager
+
+    ProcessManager().start_order_to_cash()
 
     return render(request, 'processes/invoicing.html', {})
 
 
 @transaction.commit_on_success
 def launchSyncInvoice(request):
-    sync_first_order_to_cash()
 
+    from services import ProcessManager
+
+    ProcessManager().sync_first_order_to_cash()
     return render(request, 'processes/invoicing.html', {})
 
 
 @transaction.commit_on_success
-def chargingCallback(request):
-
-    if request.method == 'GET':
-
-        params = request.GET.get
-
-        data = params('data', None)
-
-        if (not data):
-            return HttpResponse('ERROR',  mimetype="application/json", status=405)
-
-        start_collections(data)
-
-        return HttpResponse('OK',  mimetype="application/json")
-    else:
-        return HttpResponse('ERROR',  mimetype="application/json", status=405)
-
-
-@transaction.commit_on_success
 def get_processes(request, user_id):
-    processes = get_processes_by_user(user_id)
+    from services import ProcessManager
+    p = ProcessManager()
+    processes = p.get_processes_by_user(user_id)
     subprocesses = {}
     tasks = {}
     for process in processes:
-        subprocess = get_subprocesses_by_process(process)
+        subprocess = p.get_subprocesses_by_process(process)
         subprocesses[process] = subprocess
         for sub in subprocess:
-            tasks[sub] = get_tasks_by_subprocess(sub)
+            tasks[sub] = p.get_tasks_by_subprocess(sub)
     args = {"processes"   : processes,
             "subprocesses": subprocesses,
             "tasks"       : tasks}

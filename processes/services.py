@@ -24,41 +24,41 @@ Created on 16/10/2012
 
 @author: mac@tid.es
 '''
+from common.aws.s3   import get_sdr_request_keys
+from processes       import models
+from processes.order_to_cash_process import OrderToCashProcess
 
 
-from common.aws.s3 import get_sdr_request_keys
-from processes import start_order_to_cash_process, sync_order_to_cash, start_collections_process, models
+class ProcessManager:
 
+    def __init__(self):
+        self.order_to_cash_process = OrderToCashProcess()
 
-def start_order_to_cash():
-    keys = get_sdr_request_keys()
+    def start_order_to_cash(self):
+        keys = get_sdr_request_keys()
 
-    for key in keys:
-        start_order_to_cash_process(key)
+        for key in keys:
+            self.order_to_cash_process.start_order_to_cash_process(key, self._get_tef_account(key))
 
+    def sync_first_order_to_cash(self):
+        keys = get_sdr_request_keys()
 
-def sync_first_order_to_cash():
-    keys = get_sdr_request_keys()
+        for key in keys:
+            self.order_to_cash_process.sync_order_to_cash(key, self._get_tef_account(key))
+            break
 
-    for key in keys:
-        sync_order_to_cash(key)
-        break
+    def _get_tef_account(self, key):
+        # By convention, by removing the last 4 characters from key, the tef_account is returned!
+        return key[0:-4]
 
+    def get_processes_by_user(user_id):
+        processes = models.BusinessProcess.objets.filter(tef_account=user_id)
+        return processes
 
-def start_collections(json):
-    start_collections_process(json)
+    def get_subprocesses_by_process(process):
+        subprocesses = process.SubProcess_set.all()
+        return subprocesses
 
-
-def get_processes_by_user(user_id):
-    processes = models.BusinessProcess.objets.filter(tef_account=user_id)
-    return processes
-
-
-def get_subprocesses_by_process(process):
-    subprocesses = process.SubProcess_set.all()
-    return subprocesses
-
-
-def get_tasks_by_subprocess(subprocess):
-    tasks = subprocess.Task_set.all()
-    return tasks
+    def get_tasks_by_subprocess(subprocess):
+        tasks = subprocess.Task_set.all()
+        return tasks

@@ -1,8 +1,8 @@
 #!/usr/bin/python
-#coding=utf-8 
+# coding=utf-8 
 
 """
-Copyright 2012 Telefonica Investigacion y Desarrollo, S.A.U
+Copyright 2012 Telefonica Investigación y Desarrollo, S.A.U
 
 This file is part of Billing_PoC.
 
@@ -17,34 +17,21 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see http://www.gnu.org/licenses/.
 
 For those usages not covered by the GNU Affero General Public License please contact with::mac@tid.es
-"""  
+""" 
 
-"""
-Created on 16/01/2013
+'''
+Created on 15/10/2012
 
 @author: mac@tid.es
-"""
+'''
 
-import manage
+from celery import task
 
-# Loading environment variables prior to initialice django framework
-manage.read_env('../.env')
+from email import send_email
+from processes.task_manager import TaskManager
 
-from django.test import TestCase
+@task(ignore_result=True)
+def send_email_task(success, sp_id):
+    tm = TaskManager()
+    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(tm.get_subprocess_data(sp_id)))
 
-from customer.salesforce import get_customer_details_from_sf
-from common.salesforce.salesforce import update_contact
-
-class TestGenerator(TestCase):
-
-    def test_salesforce_update_contact(self):
-
-        result = update_contact('Billable', '003d000000lKGP2AAO')
-
-        print result
-
-    def test_salesforce_get_gustomer(self):
-
-        result = get_customer_details_from_sf('003d000000kC2JHAA0')
-
-        print result

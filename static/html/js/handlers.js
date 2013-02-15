@@ -3,7 +3,7 @@ $(function() {
 
     /* Global Vars */
 
-    var details  = $('.detail');
+    var details  = $('.process');
     var articles = $('.subprocess');
     var moreInfo = $('.more-info');
 
@@ -11,8 +11,16 @@ $(function() {
     /* Handlers */
 
     var detailHandler = function() {
-    	var index = $(this).parent().index();
-    	articles.addClass("hidden").eq(index).removeClass("hidden");
+    	var index = $(this).index();
+    	articles.animate({
+            "margin-left" : "-300px",
+            "opacity"     : "0"
+        }, 500);
+
+        articles.eq(index).animate({
+            "margin-left" : "0px",
+            "opacity"     : "1"
+        }, 500);
     }
 
     var externalResultsHandler = function() {

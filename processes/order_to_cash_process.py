@@ -27,10 +27,11 @@ Created on 05/02/2013
 
 from models import BusinessProcess, SubProcess
 
-from tasks  import download_and_parse_sdr_task, get_customer_details_from_sf_task,\
-                   generate_pdf_and_upload_task, send_email_task
-
+from customer.tasks import get_customer_details_from_sf_task
 from charging.tasks import charge_user_task
+from rating.tasks   import download_and_parse_sdr_task
+from pdf.tasks      import generate_pdf_and_upload_task
+from email.tasks    import send_email_task
 
 class OrderToCashProcess:
 

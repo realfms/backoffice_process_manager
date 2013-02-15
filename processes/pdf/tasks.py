@@ -27,16 +27,11 @@ Created on 15/10/2012
 
 from celery import task
 
-from common.salesforce.salesforce import update_contact
-
+from invoice                import generate_pdf_and_upload
 from processes.task_manager import TaskManager
 
+
 @task(ignore_result=True)
-def notify_salesforce_task(success, status, contact_id, sp_id):
+def generate_pdf_and_upload_task(success, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
-
-@task(ignore_result=True)
-def notify_tef_accounts_task(success, status, contact_id, sp_id):
-    return (True, None)
-
+    return tm.process_task(sp_id, 'INVOICING', success, lambda : generate_pdf_and_upload(tm.get_subprocess_data(sp_id)))

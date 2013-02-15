@@ -27,6 +27,8 @@ Created on 05/02/2013
 
 from models import BusinessProcess, SubProcess
 
+from notifications.tasks  import notify_salesforce_task, notify_tef_accounts_task
+
 class DataAcquisitionProcess:
 
     def __init__(self):

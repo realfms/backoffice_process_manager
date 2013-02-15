@@ -27,16 +27,13 @@ Created on 15/10/2012
 
 from celery import task
 
-from common.salesforce.salesforce import update_contact
+from salesforce import customer_details_from_sf
 
 from processes.task_manager import TaskManager
 
 @task(ignore_result=True)
-def notify_salesforce_task(success, status, contact_id, sp_id):
+def get_customer_details_from_sf_task(success, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
+    return tm.process_task(sp_id, 'CUSTOMER DATA', success, lambda : customer_details_from_sf(tm.get_subprocess_data(sp_id)))
 
-@task(ignore_result=True)
-def notify_tef_accounts_task(success, status, contact_id, sp_id):
-    return (True, None)
 

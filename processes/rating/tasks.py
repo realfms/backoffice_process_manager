@@ -27,16 +27,11 @@ Created on 15/10/2012
 
 from celery import task
 
-from common.salesforce.salesforce import update_contact
-
+from rating                 import download_and_parse_sdr
 from processes.task_manager import TaskManager
 
+
 @task(ignore_result=True)
-def notify_salesforce_task(success, status, contact_id, sp_id):
+def download_and_parse_sdr_task(success, bucket_key, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
-
-@task(ignore_result=True)
-def notify_tef_accounts_task(success, status, contact_id, sp_id):
-    return (True, None)
-
+    return tm.process_task(sp_id, 'RATING', success, lambda : download_and_parse_sdr(bucket_key))

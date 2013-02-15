@@ -27,16 +27,11 @@ Created on 15/10/2012
 
 from celery import task
 
-from common.salesforce.salesforce import update_contact
-
+from email import send_email
 from processes.task_manager import TaskManager
 
 @task(ignore_result=True)
-def notify_salesforce_task(success, status, contact_id, sp_id):
+def send_email_task(success, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
-
-@task(ignore_result=True)
-def notify_tef_accounts_task(success, status, contact_id, sp_id):
-    return (True, None)
+    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(tm.get_subprocess_data(sp_id)))
 

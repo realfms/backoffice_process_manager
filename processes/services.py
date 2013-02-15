@@ -51,14 +51,14 @@ class ProcessManager:
         # By convention, by removing the last 4 characters from key, the tef_account is returned!
         return key[0:-4]
 
-    def get_processes_by_user(user_id):
+    def get_processes_by_user(self, user_id):
         processes = models.BusinessProcess.objets.filter(tef_account=user_id)
         return processes
 
-    def get_subprocesses_by_process(process):
+    def get_subprocesses_by_process(self, process):
         subprocesses = process.SubProcess_set.all()
         return subprocesses
 
-    def get_tasks_by_subprocess(subprocess):
+    def get_tasks_by_subprocess(self, subprocess):
         tasks = subprocess.Task_set.all()
         return tasks

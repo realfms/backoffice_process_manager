@@ -28,13 +28,13 @@ Created on 30/10/2012
 from django.shortcuts import render
 from django.db        import transaction
 
+from services import ProcessManager
+
 def index(request):
     return render(request, 'index.html', {})
 
 @transaction.commit_on_success
 def launchInvoicing(request):
-
-    from services import ProcessManager
 
     ProcessManager().start_order_to_cash()
     
@@ -42,8 +42,6 @@ def launchInvoicing(request):
 
 @transaction.commit_on_success
 def launchSyncInvoice(request):
-
-    from services import ProcessManager
 
     ProcessManager().sync_first_order_to_cash()
 

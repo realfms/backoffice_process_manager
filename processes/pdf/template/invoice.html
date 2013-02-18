@@ -1,10 +1,8 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en">
-
 <head>
 	<meta charset='UTF-8'>
-	
-	<title>Instant Servers Invoice</title>
+	<title>Telefonica Digital e-Invoice</title>
 
   <style>
 
@@ -12,11 +10,12 @@
     @page {
         margin: 1cm;
         margin-bottom: 3.8cm;
-        margin-top: 4cm
+        margin-top: 4cm;
+
         @frame header {
             -pdf-frame-content: header;
             top: 1cm;
-            margin-left: 1cm;
+            margin-left: 0.9cm;
             height: 3.5cm;
         }
         @frame footer {
@@ -82,6 +81,9 @@
     #terms h5 { text-transform: uppercase; font: 13px Helvetica, Sans-Serif; letter-spacing: 10px; border-bottom: 1px solid black; padding: 0 0 8px 0; margin: 0 0 8px 0; }
     #terms textarea { width: 100%; text-align: center;}
 
+  #content table tr td strong {
+	font-weight: bold;
+}
   </style>
 
 </head>
@@ -89,45 +91,65 @@
 <body>
      
     <div id="header"> 
-        <img src="{{ invoice.logo }}" width="800px" height="150px"/>
-    </div>
+    <img src="{{ invoice.head }}" width="722" height="71"/></div>
 
     <div id="content">
 
-    <table border="0">
+    <table width="722" border="0px" >
       <tr>
-        <td style="border: 0px" valign="top">
-          <strong>Customer</strong></br>
-          {{ customer.name }}</br>
-          {{ customer.address }}</br>
-          {{ customer.city }}, {{ customer.postal_code }}</br>
-          {{ customer.country }}</br></br>
-          <strong>Email</strong></br>
-          {{ customer.email }}</br>
+        <td width="400" valign="top" style="border: 0px; font-family: 'Helvetica Neue';">
         </td>
-        <td style="border: 0px">
-            <table id="meta">
+
+        <td width="360" style="border: 0px; font-family: 'Helvetica Neue'; background: #B7DEE8">
+            <table width="360" border="0" bgcolor="#B7DEE8" id="meta">
                   <tr>
-                      <td class="meta-head">Invoice No</td>
-                      <td><textarea>#{{ invoice.number }}</textarea></td>
+                      <td width="153" style="border: 0px" class="meta-head"><strong>Invoice Number:</strong></td>
+                      <td width="218" style="border: 0px"><textarea bgcolor="#FFFFFF">#{{ invoice.number }}</textarea></td>
                   </tr>
                   <tr>
 
-                      <td class="meta-head">Issue date</td>
-                      <td><textarea id="date">{{ invoice.date }}</textarea></td>
-                  </tr>        
+                      <td class="meta-head" style="border: 0px"><strong>Invoice Date:</strong></td>
+                      <td style="border: 0px"><textarea bgcolor="#FFFFFF" id="date">{{ invoice.date }}</textarea></td>
+                  </tr>
 
-              </table>
+          </table>
         </td>
       </tr>
     </table>
 
-		<table id="items">		
-		  <tr>
+    <br />
+
+	<table border="0" style="background: #F2F2F2">
+      <tr>
+        <td width="399" bgcolor="#F2F2F2" valign="top" style="border: 0px; font-family: 'Helvetica Neue'">
+          <strong>Customer Information</strong><br />
+          {{ customer.name }}<br />
+          {{ customer.address }}<br />
+          {{ customer.city }}, {{ customer.postal_code }}<br />
+          {{ customer.country }}
+        </td>
+        <td width="391" style="border: 0px">
+
+        </td>
+      </tr>
+    </table>
+
+    <br />
+
+    <table border="0">
+      <tr>
+        <td width="782" bgcolor="#F2F2F2" valign="top" style="border: 0px; font-family: 'Helvetica Neue'; "> <strong>Purchase information of products supplied in {{ invoice.month }}</strong>
+
+        </td>
+      </tr>
+    </table>
+    <br />
+	<table id="items">		
+		  <tr bgcolor="#F2F2F2" valign="top" style="border: 0px; font-family: 'Helvetica Neue'; ">
               <th width="15%">Item Code</th>
-		      <th width="45%">Description</th>
-              <th width="10%">Qty</th>
-		      <th width="10%">Unit</th>
+		      <th width="40%">Description</th>
+              <th width="12%">Units</th>
+              <th width="13%">Unit Price</th>
 		      <th width="20%">Net</th>
 		  </tr>
 
@@ -136,9 +158,9 @@
 		  <tr class="item-row">
               <td>{{ item.concept }}</td>
 		      <td>{{ item.description }}</td>
-              <td>{{ item.price }} €</td>
               <td>{{ item.amount }}</td>
-              <td>{{ item.total }} € </td>
+              <td>€{{ item.price }}</td>
+              <td>€{{ item.total }}</td>
 		  </tr>
 
         {% endfor %}
@@ -148,22 +170,22 @@
       </br>
       </br>
 		  
-      <table border="0" class="result">
+      <table width="801" border="0" class="result" style="border: 0px; font-family: 'Helvetica Neue'; ">
 		  <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td><strong>Subtotal</strong></td>
-		      <td>{{ subtotal }} €</td>
+          <td width="21"></td>
+          <td width="21"></td>
+          <td width="384"></td>
+          <td width="195"><strong>Total NET</strong></td>
+		      <td width="158">{{ subtotal }} €</td>
 		  </tr>
 		  <tr>
           <td></td>
           <td></td>
           <td></td>
-          <td><strong>VAT</strong> ({{ tax_rate }} %)</td>
+          <td><strong>VAT</strong> ({{ tax_rate }} %)*</td>
 		      <td> {{ taxes }} €</td>
 		  </tr>
-		  <tr>
+		  <tr bgcolor="#F2F2F2" style="border: 0px; font-family: 'Helvetica Neue'; ">
           <td></td>
           <td></td>
           <td></td>
@@ -171,13 +193,24 @@
 		      <td> {{ total }} €</td>
 		  </tr>
 		
-		</table> 
+	  </table> 
 
-    </div>
+</div>
 
-        <div id="pagination">
-            Página <pdf:pagenumber>
-        </div>
+        <div id="pagination" style="border: 0px; font-family: 'Helvetica Neue';">
+            <div title="Page 1">
+              <div>
+                <div>
+                  <div>
+                    <p>(*) Pound Sterling conversion rate: 0.832. VAT amount: &pound;19.31 </p>
+                  </div>
+                </div>
+              </div>
+</div>
+<p>&nbsp;</p>
+            <p>Page </p>
+            <pdf:pagenumber />
+</div>
 
         <div id="footer">
 

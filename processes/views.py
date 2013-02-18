@@ -30,20 +30,27 @@ from django.db        import transaction
 
 from services import ProcessManager
 
-def index(request):
-    return render(request, 'index.html', {})
+class ProcessesController:
 
-@transaction.commit_on_success
-def launchInvoicing(request):
+    processManager = ProcessManager()
 
-    ProcessManager().start_order_to_cash()
-    
-    return render(request, 'processes/invoicing.html', {})
+    @classmethod
+    def index(cls, request):
+        return render(request, 'index.html', {})
 
-@transaction.commit_on_success
-def launchSyncInvoice(request):
+    @classmethod
+    @transaction.commit_on_success
+    def launchInvoicing(cls, request):
 
-    ProcessManager().sync_first_order_to_cash()
+        cls.processManager.start_order_to_cash()
 
-    return render(request, 'processes/invoicing.html', {})
+        return render(request, 'processes/invoicing.html', {})
+
+    @classmethod
+    @transaction.commit_on_success
+    def launchSyncInvoice(cls, request):
+
+        cls.processManager.sync_first_order_to_cash()
+
+        return render(request, 'processes/invoicing.html', {})
     

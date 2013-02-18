@@ -1,27 +1,40 @@
 from django.shortcuts import render
-from payment_gateways.services import change_order_status
+
+from payment_gateways.services import ServiceManager
 
 
-def success(request):
-    params = request.GET.get
+class WorldpayCallbackController:
 
-    order = params('orderKey')
-    order_id = order.split("^")
-    change_order_status(order_id[2], "VALIDATED")
+    serviceManager = ServiceManager()
 
-    return render(request, 'payment_gateways/success.html', {})
+    def getCharger(cls):
+        return cls.serviceManager.get_charger_by_name("ADYEN")
+
+    def success(cls, request):
+        params = request.GET.get
+
+        order = params('orderKey')
+        order_id = order.split("^")
+
+        charger = cls.getCharger()
+
+        charger.update_order_status(order_id[2], "VALIDATED")
+
+        return render(request, 'payment_gateways/success.html', {})
 
 
-def pending(request):
-    return render(request, 'payment_gateways/pending.html', {})
+    def pending(cls, request):
+        return render(request, 'payment_gateways/pending.html', {})
 
 
-def error(request):
-    params = request.GET.get
+    def error(cls, request):
+        params = request.GET.get
 
-    order = params('orderKey')
-    order_id = order.split("^")
+        order = params('orderKey')
+        order_id = order.split("^")
 
-    change_order_status(order_id[2], "ERROR")
+        charger = cls.getCharger()
 
-    return render(request, 'payment_gateways/error.html', {})
+        charger.update_order_status(order_id[2], "ERROR")
+
+        return render(request, 'payment_gateways/error.html', {})

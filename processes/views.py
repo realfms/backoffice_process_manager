@@ -66,4 +66,4 @@ def get_processes(request, user_id):
     args = {"processes"   : processes,
             "subprocesses": subprocesses,
             "tasks"       : tasks}
-    render(request, 'processes/index.html', args)
+    return render(request, 'processes/processes.html', args)

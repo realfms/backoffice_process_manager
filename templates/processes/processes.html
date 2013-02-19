@@ -17,21 +17,21 @@
     <meta property="og:description" content="My description" />
     <meta property="og:url"         content="URL" />
     <meta property="og:image"       content="URL Image" />
-
+    {% load dict %}
 
     <!-- Website Title -->
     <title>User's Processes Window</title>
 
 
     <!-- CSS -->
-    <link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
-    <link type="text/css" rel="stylesheet" media="all" href="css/grid.css" />
-    <link type="text/css" rel="stylesheet" media="all" href="css/layout.css" />
-    <link type="text/css" rel="stylesheet" media="all" href="css/styles.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="{{ STATIC_URL }}css/base.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="{{ STATIC_URL }}css/grid.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="{{ STATIC_URL }}css/layout.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="{{ STATIC_URL }}css/styles.css" />
 
     <!-- JavaScript fallback to provide HTML5 features in legacy browsers -->
     <!-- [if IE]>
-        <script type="text/javascript" src="..js/html5-fallback/html5shiv.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/html5-fallback/html5shiv.min.js"></script>
     <[endif] -->
 
 </head>
@@ -66,71 +66,67 @@
                         <td>{{ process.status }}</td>
                         <td class="detail"><i class="icon-chevron-right"></i></td>
                     </tr>
-                    {% end for %}
+                    {% endfor %}
                 </tbody>
             </table>
         </nav>
 
         {% for process in processes %}
-        <article class="right columns one-half container subprocess">
+        <article class="right columns one-half container subprocess" style="margin-left: -5000px; opacity: 0;">
             <h2 class="left">Select the required subprocess</h2>
 
             <select class="left" name="select-subprocesses" id="select-subprocesses">
-                {% for subprocess in subprocesses[process] %}
-                <option value={{ subprocess.name }}> {{ subprocess.name }} </option>
-                {% end for %}
+                {% for sub in subprocesses|keyvalue:process %}
+                    <option value={{ sub.name }}> {{ sub.name }} </option>
+                {% endfor %}
             </select>
 
             <div class="clear"></div>
 
-            {% for subprocess in subprocesses[process] %}
-                {% if subprocesses.index(subprocess) == 0 %} 
-                <div class="tab"> 
-                {% else %}
-                <div class="tab hidden"> 
-                {% endif %}
-                <div class="dates">
-                    <p><strong>Start: </strong><time id="sp-start"> {{ subprocess.start }} </time></p>
-                    <p><strong>End: </strong><time id="sp-end">{{ subprocess.end }}</time></p>
+            {% for subprocess in subprocesses|keyvalue:process %}
+                <div class="tab hidden">
+                    <div class="dates">
+                        <p><strong>Start: </strong><time id="sp-start"> {{ subprocess.start }} </time></p>
+                        <p><strong>End: </strong><time id="sp-end">{{ subprocess.end }}</time></p>
+                    </div>
+
+
+                    <h3>Tasks</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="th">Task name</th>
+                                <th class="th">Start date</th>
+                                <th class="th">End date</th>
+                                <th class="th">Status</th>
+                                <th class="th">External results</th>
+                            </tr>
+                        </thead>
+                        <tbody class="tasks">
+                            {% for task in tasks|keyvalue:subprocess %}
+                                <tr>
+                                    <td> {{ task.name }} </td>
+                                    <td> {{ task.start }} </td>
+                                    <td> {{ task.end }} </td>
+                                    <td> {{ task.status }} </td>
+                                    <td class="more-info"><i class="icon-chevron-down"></i></td>
+                                </tr>
+                                <tr style="display : none;">
+                                    <td colspan="5">
+                                        <h4 class="results-title">External results</h4>
+                                        <pre>
+                                            {{ task.remarkable_data }}
+                                        </pre>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-
-
-                <h3>Tasks</h3>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="th">Task name</th>
-                            <th class="th">Start date</th>
-                            <th class="th">End date</th>
-                            <th class="th">Status</th>
-                            <th class="th">External results</th>
-                        </tr>
-                    </thead>
-                    <tbody class="tasks">
-                        {% for task in tasks[subprocess] %}
-                        <tr>
-                            <td> {{ task.name }} </td>
-                            <td> {{ task.start }} </td>
-                            <td> {{ task.end }} </td>
-                            <td> {{ task.status }} </td>
-                            <td class="more-info"><i class="icon-chevron-down"></i></td>
-                        </tr>
-                        <tr style="display : none;">
-                            <td colspan="5">
-                                <h4 class="results-title">External results</h4>
-                                <pre>
-                                    {{ task.remarkable_data }}
-                                </pre>
-                            </td>
-                        </tr>
-                        {% end for %}
-                    </tbody>
-                </table>
-            </div>
-            {% end for %}
+            {% endfor %}
         </article>
-        {% end for %}
+        {% endfor %}
 
         <div class="clear"></div>
     </section>
@@ -138,7 +134,7 @@
 
     <!-- JavaScript -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript" src="js/handlers.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/handlers.js"></script>
 
 </body>
 

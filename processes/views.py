@@ -29,41 +29,52 @@ from django.shortcuts import render
 from django.db        import transaction
 
 
-def index(request):
-    return render(request, 'index.html', {})
+from services import ProcessManager
 
+class ProcessesController:
 
-@transaction.commit_on_success
-def launchInvoicing(request):
-    from services import ProcessManager
+    processManager = ProcessManager()
 
-    ProcessManager().start_order_to_cash()
+    @classmethod
+    def index(cls, request):
+        return render(request, 'index.html', {})
 
-    return render(request, 'processes/invoicing.html', {})
+    @classmethod
+    @transaction.commit_on_success
+    def launch_invoicing(cls, request):
+        cls.processManager.start_order_to_cash()
 
+        return render(request, 'processes/invoicing.html', {})
 
-@transaction.commit_on_success
-def launchSyncInvoice(request):
+    @classmethod
+    @transaction.commit_on_success
+    def launch_sync_invoice(cls, request):
+        cls.processManager.sync_first_order_to_cash()
 
-    from services import ProcessManager
+        return render(request, 'processes/invoicing.html', {})
 
-    ProcessManager().sync_first_order_to_cash()
-    return render(request, 'processes/invoicing.html', {})
+    @classmethod
+    @transaction.commit_on_success
+    def get_processes(cls, request, user_id):
 
+        processes = cls.processManager.get_processes_by_user(user_id)
 
-@transaction.commit_on_success
-def get_processes(request, user_id):
-    from services import ProcessManager
-    p = ProcessManager()
-    processes = p.get_processes_by_user(user_id)
-    subprocesses = {}
-    tasks = {}
-    for process in processes:
-        subprocess = p.get_subprocesses_by_process(process)
-        subprocesses[process] = subprocess
-        for sub in subprocess:
-            tasks[sub] = p.get_tasks_by_subprocess(sub)
-    args = {"processes"   : processes,
+        subprocesses = {}
+        tasks = {}
+
+        for process in processes:
+            subprocess = cls.processManager.get_subprocesses_by_process(process)
+            subprocesses[process] = subprocess
+
+            for sub in subprocess:
+                tasks[sub] = cls.processManager.get_tasks_by_subprocess(sub)
+
+        args = {
+            "processes"   : processes,
             "subprocesses": subprocesses,
-            "tasks"       : tasks}
-    render(request, 'processes/index.html', args)
+            "tasks"       : tasks
+        }
+
+        render(request, 'processes/index.html', args)
+
+    

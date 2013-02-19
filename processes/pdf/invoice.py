@@ -30,7 +30,7 @@ from jinja2 import Template
 from datetime import date
 
 TEMPLATE_PATH = 'processes/pdf/template/invoice.html'
-LOGO_PATH     = 'processes/pdf/template/logo.png'
+HEAD_PATH     = 'processes/pdf/template/head.jpg'
 
 import codecs
 
@@ -38,9 +38,10 @@ from common.aws.s3 import upload_invoice_to_s3
 
 def compute_invoice_details ():
     return {
-            'number': 23,
-            'date': unicode(date.today()),
-            'logo': unicode(LOGO_PATH)
+            'number': "TF0000000088",
+            'date':   unicode(date.today()),
+            'head':   unicode(HEAD_PATH),
+            'month':  unicode('January')
            }
 
 def generate_pdf_and_upload(invoice_json):

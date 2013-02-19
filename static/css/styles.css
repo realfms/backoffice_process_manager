@@ -207,3 +207,7 @@ body {
 article {
 	margin-left: -300px;
 }
+
+.blue {
+	color : blue;
+}

@@ -3,38 +3,37 @@ $(function() {
 
     /* Global Vars */
 
-    var details  = $('.process');
+    var processes  = $('.process');
     var articles = $('.subprocess');
     var moreInfo = $('.more-info');
+
     var currentArticle;
+    var HIDDEN = 'hidden';
+
 
     /* Handlers */
 
-    var detailHandler = function() {
+    var processHandler = function() {
         var TIME = 500;
-    	currentArticle = $(this).index();
-        articles.addClass('hidden')
-        articles.eq( currentArticle ).removeClass('hidden')
-/*
-    	articles.animate({
-            "margin-left" : "-5000px",
-            "opacity"     : "0"
-        }, TIME);
+        var BLUE = 'blue';
 
-        articles.eq( currentArticle ).animate({
-            "margin-left" : "0px",
-            "opacity"     : "1"
-        }, TIME);
-*/
+        var row  = $(this);
+    	currentArticle = row.index();
+
+        articles.addClass( HIDDEN );
+        articles.eq( currentArticle ).removeClass( HIDDEN );
+
+        processes.removeClass( BLUE );
+        row.addClass( BLUE );
     };
 
 
-    var subprocessSelectionHandler = function() {
+    var subprocessHandler = function() {
         var select = $(this);
         var selectedOption = select[0].selectedIndex;
         var tabs = select.siblings('.tab');
-        tabs.addClass('hidden');
-        tabs.eq(selectedOption).removeClass('hidden');
+        tabs.addClass( HIDDEN );
+        tabs.eq(selectedOption).removeClass( HIDDEN );
     };
 
 
@@ -45,7 +44,7 @@ $(function() {
         var index = $(this).parent().index();
 
         var visibleArticle = articles.filter(function(i) {
-            return !articles.eq(i).hasClass('hidden');
+            return !articles.eq(i).hasClass( HIDDEN );
         })
 
         var rows = visibleArticle.find('.tasks').children();
@@ -55,14 +54,16 @@ $(function() {
 
     /* Event Assignments */
 
-    details.on('click', detailHandler);
+    processes.on('click', processHandler);
     moreInfo.on('click', externalResultsHandler);
+    $('.select').on('change', subprocessHandler);
 
-    $('.select').on('change', subprocessSelectionHandler);
+
+    /* Initialization */
 
     for (var i = 0; i < articles.length; i++) {
         var a = articles.eq(i);
-        a.find('.tab').first().removeClass('hidden');
+        a.find('.tab').first().removeClass( HIDDEN );
     };
 
 });

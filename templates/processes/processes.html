@@ -75,7 +75,7 @@
         <article class="right columns one-half container subprocess" style="margin-left: -5000px; opacity: 0;">
             <h2 class="left">Select the required subprocess</h2>
 
-            <select class="left" name="select-subprocesses" id="select-subprocesses">
+            <select class="left select" name="select-subprocesses">
                 {% for sub in subprocesses|keyvalue:process %}
                     <option value={{ sub.name }}> {{ sub.name }} </option>
                 {% endfor %}

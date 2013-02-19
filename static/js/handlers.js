@@ -6,22 +6,40 @@ $(function() {
     var details  = $('.process');
     var articles = $('.subprocess');
     var moreInfo = $('.more-info');
-
+    var currentArticle;
 
     /* Handlers */
 
     var detailHandler = function() {
-    	var index = $(this).index();
+        var TIME = 500;
+    	currentArticle = $(this).index();
+
     	articles.animate({
             "margin-left" : "-5000px",
             "opacity"     : "0"
-        }, 500);
+        }, TIME);
 
-        articles.eq(index).animate({
+        articles.eq( currentArticle ).animate({
             "margin-left" : "0px",
             "opacity"     : "1"
-        }, 500);
-    }
+        }, TIME);
+    };
+
+
+    var subprocessSelectionHandler = function() {
+        var select = $(this);
+        var selectedOption = select[0].selectedIndex;
+        /*
+        var sub = select.parents('.subprocess');
+        sub.find('.tab').addClass('hidden');
+        sub.eq(selectedOption).removeClass('hidden');
+        */
+        var tabs = select.siblings('.tab');
+        console.log(tabs);
+        tabs.addClass('hidden');
+        tabs.eq(selectedOption).removeClass('hidden');
+    };
+
 
     var externalResultsHandler = function() {
         var chevron = $(this).children();
@@ -35,12 +53,19 @@ $(function() {
 
         var rows = visibleArticle.find('.tasks').children();
         rows.eq(index + 1).fadeToggle();
-    }
+    };
 
 
     /* Event Assignments */
 
     details.on('click', detailHandler);
     moreInfo.on('click', externalResultsHandler);
+
+    $('.select').on('change', subprocessSelectionHandler);
+
+    for (var i = 0; i < articles.length; i++) {
+        var a = articles.eq(i);
+        a.find('.tab').first().removeClass('hidden');
+    };
 
 });

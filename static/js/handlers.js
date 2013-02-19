@@ -13,7 +13,9 @@ $(function() {
     var detailHandler = function() {
         var TIME = 500;
     	currentArticle = $(this).index();
-
+        articles.addClass('hidden')
+        articles.eq( currentArticle ).removeClass('hidden')
+/*
     	articles.animate({
             "margin-left" : "-5000px",
             "opacity"     : "0"
@@ -23,19 +25,14 @@ $(function() {
             "margin-left" : "0px",
             "opacity"     : "1"
         }, TIME);
+*/
     };
 
 
     var subprocessSelectionHandler = function() {
         var select = $(this);
         var selectedOption = select[0].selectedIndex;
-        /*
-        var sub = select.parents('.subprocess');
-        sub.find('.tab').addClass('hidden');
-        sub.eq(selectedOption).removeClass('hidden');
-        */
         var tabs = select.siblings('.tab');
-        console.log(tabs);
         tabs.addClass('hidden');
         tabs.eq(selectedOption).removeClass('hidden');
     };

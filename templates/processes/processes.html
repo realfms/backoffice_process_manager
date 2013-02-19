@@ -72,8 +72,9 @@
         </nav>
 
         {% for process in processes %}
-        <article class="right columns one-half container subprocess" style="margin-left: -5000px; opacity: 0;">
-            <h2 class="left">Select the required subprocess</h2>
+        <article class="right columns one-half container subprocess hidden">
+            <h2>{{ process.name }}</h2>
+            <h3 class="left">Select the required subprocess</h3>
 
             <select class="left select" name="select-subprocesses">
                 {% for sub in subprocesses|keyvalue:process %}

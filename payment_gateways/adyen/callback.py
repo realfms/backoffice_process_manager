@@ -41,7 +41,7 @@ class AdyenCallbackController:
         if request.method == 'POST':
             data = request.POST.dict()
 
-            charger = cls.getCharger()
+            (charger, pgw) = cls.getCharger()
 
             result = charger.update_order_status(data, "VALIDATED")
 

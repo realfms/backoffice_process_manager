@@ -3,27 +3,30 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.http      import HttpResponse
 from django.shortcuts import render
-
-from adyen_charger import Adyen_Charger
+from django.db        import transaction
 
 class AdyenCallbackController:
 
     serviceManager = ServiceManager()
 
+    @classmethod
     def getCharger(cls):
         return cls.serviceManager.get_charger_by_name("ADYEN")
 
+    @classmethod
     def success(cls, request):
         return render(request, 'payment_gateways/success.html', {})
 
-
+    @classmethod
     def pending(cls, request):
         return render(request, 'payment_gateways/pending.html', {})
 
-
+    @classmethod
     def error(cls, request):
         return render(request, 'payment_gateways/error.html', {})
 
+    @classmethod
+    @transaction.commit_on_success
     @csrf_exempt
     def callback(cls, request):
 

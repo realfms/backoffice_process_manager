@@ -21,6 +21,7 @@ For those usages not covered by the GNU Affero General Public License please con
 
 from django.utils import simplejson
 from models import Task, SubProcess
+import json
 
 class TaskManager:
 

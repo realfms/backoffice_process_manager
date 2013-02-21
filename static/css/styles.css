@@ -208,6 +208,7 @@ article {
 	margin-left: -300px;
 }
 
-.blue {
+.blue,
+.blue a {
 	color : blue;
 }

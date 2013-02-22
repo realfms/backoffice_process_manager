@@ -6,8 +6,9 @@ from django.conf.urls import patterns, include, url
 
 import settings
 
-from payment_gateways.views import PaymentController
-from processes.views        import ProcessesController
+from payment_gateways.views  import PaymentController
+from processes.views         import ProcessesController
+from customer.api            import CustomerDataController
 
 from payment_gateways.adyen.callback    import AdyenCallbackController
 from payment_gateways.worldpay.callback import WorldpayCallbackController
@@ -33,6 +34,13 @@ urlpatterns = patterns('',
     url(r'^payment/gw/worldpay/success$', WorldpayCallbackController.success),
     url(r'^payment/gw/worldpay/pending$', WorldpayCallbackController.pending),
     url(r'^payment/gw/worldpay/error$',   WorldpayCallbackController.error),
+
+    ######################################################
+    # CUSTOMER DATA API
+    ######################################################
+
+    url(r'^customer/(?P<id>\w+)$',         CustomerDataController.profile),
+    url(r'^customer/(?P<id>\w+)/invoice$', CustomerDataController.invoices),
 
     ######################################################
     # PROCESSES

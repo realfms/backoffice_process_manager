@@ -20,31 +20,20 @@ For those usages not covered by the GNU Affero General Public License please con
 """ 
 
 '''
-Created on 15/10/2012
+Created on 20/02/2013
 
 @author: mac@tid.es
 '''
 
-from celery import task
+from django.shortcuts import render
 
-from invoice                  import generate_pdf_and_upload
-from processes.task_manager   import TaskManager
-from customer.invoice_manager import InvoiceManager
+class CustomerDataController:
 
+    @classmethod
+    def profile(cls, request, id):
+        return render(request, 'customer/profile.html', {})
 
-@task(ignore_result=True)
-def generate_pdf_and_upload_task(success, sp_id):
-    tm = TaskManager()
-
-    data = tm.get_subprocess_data(sp_id)
-    (result, task) = tm.process_task(sp_id, 'INVOICING', success, lambda : generate_pdf_and_upload(data))
-
-    if (result and task):
-       # Creating Invoice
-        im = InvoiceManager()
-
-        path = task.get_remarkable_data()
-
-        im.create_invoice(task, path)
-
-    return result
+    @classmethod
+    def invoices(cls, request, id):
+        return render(request, 'customer/invoices', {})
+    

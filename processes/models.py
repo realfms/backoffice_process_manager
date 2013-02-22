@@ -96,11 +96,3 @@ class Task(models.Model):
 
     def set_now_as_end(self):
         self.end = datetime.utcnow().replace(tzinfo=utc)
-
-class Invoice(models.Model):
-
-    year  =  models.IntegerField()
-    month =  models.IntegerField()
-
-    task = models.ForeignKey(Task)
-    link = models.CharField(max_length = 300)

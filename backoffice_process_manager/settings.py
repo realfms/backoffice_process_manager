@@ -150,6 +150,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'payment_gateways',
     'processes',
+    'customer',
     'djcelery',
     'kombu.transport.django',
     'gunicorn',

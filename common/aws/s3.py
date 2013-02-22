@@ -68,4 +68,6 @@ def upload_invoice_to_s3(file_name):
     
     key.name = file_name
     key.set_contents_from_filename(file_name)
+
+    return PDF_INVOICES_BUCKET + file_name
     

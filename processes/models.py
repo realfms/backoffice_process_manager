@@ -88,8 +88,19 @@ class Task(models.Model):
     def set_result(self, result):
         self.subprocess.set_result(result)
 
+    def get_remarkable_data(self):
+        return self.remarkable_data
+
     def set_remarkable_data(self, remarkable_data):
         self.remarkable_data = remarkable_data
 
     def set_now_as_end(self):
         self.end = datetime.utcnow().replace(tzinfo=utc)
+
+class Invoice(models.Model):
+
+    year  =  models.IntegerField()
+    month =  models.IntegerField()
+
+    task = models.ForeignKey(Task)
+    link = models.CharField(max_length = 300)

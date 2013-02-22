@@ -60,10 +60,12 @@ def generate_pdf_and_upload(invoice_json):
     
     with open (file_name, "wb") as f:
         pdf = pisa.CreatePDF(template.render(invoice_json), f)
-    
+
+    path = None
+
     if not pdf.err:                             
-        upload_invoice_to_s3(file_name)
+        path = upload_invoice_to_s3(file_name)
         
     invoice_json['pdf_file_name'] = file_name
 
-    return (invoice_json, None)
+    return (invoice_json, path)

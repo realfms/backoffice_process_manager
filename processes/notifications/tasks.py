@@ -34,10 +34,16 @@ from processes.task_manager import TaskManager
 @task(ignore_result=True)
 def notify_salesforce_task(success, status, contact_id, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
+
+    (result, task) = tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
+
+    return result
 
 @task(ignore_result=True)
 def notify_tef_accounts_task(success, status, contact_id, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'NOTIFY TEF ACCOUNT', success, lambda : (True, None))
+
+    (result, task) = tm.process_task(sp_id, 'NOTIFY TEF ACCOUNT', success, lambda : (True, None))
+
+    return result
 

@@ -39,8 +39,9 @@ def charge_user_task(success, sp_id):
     tm = TaskManager()
 
     data = tm.get_subprocess_data(sp_id)
+    (result, task) = tm.process_task(sp_id, 'CHARGING',success, lambda : charge_user(data))
 
-    return tm.process_task(sp_id, 'CHARGING',success, lambda : charge_user(data))
+    return result
 
 def charge_user(json):
     customer_data = json['customer']

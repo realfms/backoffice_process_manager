@@ -40,7 +40,7 @@ class TaskManager:
     def process_task(self, sp_id, name, success, fn):
 
         if not success:
-            return False
+            return (False, False)
 
         try:
             task = self.generate_task(sp_id, name)
@@ -54,7 +54,7 @@ class TaskManager:
 
             task.save()
 
-            return True
+            return (True, task)
         except Exception as e:
 
             trace = {
@@ -75,4 +75,4 @@ class TaskManager:
             # Writing log
             print "### LOG ### {0} cloud't be processed! {1} {2} {3}".format(name, type(e), e.args, unicode(e))
 
-            return False
+            return (False, None)

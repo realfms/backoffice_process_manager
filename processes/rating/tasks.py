@@ -34,4 +34,7 @@ from processes.task_manager import TaskManager
 @task(ignore_result=True)
 def download_and_parse_sdr_task(success, bucket_key, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'RATING', success, lambda : download_and_parse_sdr(bucket_key))
+
+    (result, task) = tm.process_task(sp_id, 'RATING', success, lambda : download_and_parse_sdr(bucket_key))
+
+    return result

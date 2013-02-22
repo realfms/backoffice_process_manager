@@ -33,5 +33,9 @@ from processes.task_manager import TaskManager
 @task(ignore_result=True)
 def send_email_task(success, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(tm.get_subprocess_data(sp_id)))
+
+    data = tm.get_subprocess_data(sp_id)
+    (result, task) = tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(data))
+
+    return result
 

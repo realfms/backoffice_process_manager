@@ -27,11 +27,24 @@ Created on 15/10/2012
 
 from celery import task
 
-from invoice                import generate_pdf_and_upload
-from processes.task_manager import TaskManager
+from invoice                   import generate_pdf_and_upload
+from processes.task_manager    import TaskManager
+from processes.invoice_manager import InvoiceManager
 
 
 @task(ignore_result=True)
 def generate_pdf_and_upload_task(success, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'INVOICING', success, lambda : generate_pdf_and_upload(tm.get_subprocess_data(sp_id)))
+
+    data = tm.get_subprocess_data(sp_id)
+    (result, task) = tm.process_task(sp_id, 'INVOICING', success, lambda : generate_pdf_and_upload(data))
+
+    if (result and task):
+       # Creating Invoice
+        im = InvoiceManager()
+
+        path = task.get_remarkable_data()
+
+        im.create_invoice(task, path)
+
+    return result

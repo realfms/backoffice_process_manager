@@ -54,7 +54,7 @@ $(function() {
 
 
     var searchSelectedProcessHandler = function() {
-        pid = parseInt( getURLParameter('pid') );
+        pid = parseInt( getParam('pid') );
 
         var selectedRow = processes.filter(function(i) {
             var column = processes.eq(i).find('.pid')
@@ -81,6 +81,28 @@ $(function() {
     };
 
 
+    var getParam = function(param) {
+        var params = window.location.search.slice(1);
+        var i = params.indexOf('=');
+        var p = params.substring(0, i);
+
+        var res = "";
+
+        // Loop to search every param
+
+        if (p == param) {
+            var last = params.indexOf('&');
+            if (last === -1) {
+                last = params.length;
+            }
+
+            res = params.substring(i+1, last);
+        }
+
+        return res;
+    };
+
+    /*
     var getURLParameter = function (sParam) {
         var sPageURL = window.location.search.slice(1);
         var sURLVariables = sPageURL.split('&');
@@ -95,6 +117,7 @@ $(function() {
 
         return "";
     }​;
+    /
 
 
     /* Event Assignments */

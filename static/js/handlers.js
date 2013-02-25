@@ -7,7 +7,7 @@ $(function() {
     var articles = $('.subprocess');
     var moreInfo = $('.more-info');
 
-    var currentArticle;
+    var currentArticle = 0;
     var pid = 0;
     var HIDDEN = 'hidden';
 

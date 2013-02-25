@@ -49,7 +49,20 @@ $(function() {
 
 
     var refreshHandler = function() {
-        window.location.href += ("?pid=" + pid);
+
+        var url = window.location.href;
+        var i = url.lastIndexOf('pid');
+
+        if ( i == -1 ) {
+            window.location.href += ("?pid=" + pid);
+
+        } else {
+            var first = url.substring(0, i);
+            var last  = url.substring(i, i+4) + pid + url.substring(i+5, url.length);
+
+            window.location.href = first + last;
+        }
+
     };
 
 

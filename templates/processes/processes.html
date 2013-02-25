@@ -5,7 +5,6 @@
 
     <!-- Meta -->
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="5" >
     <meta name='viewport' content='initial-scale=1.0,width=device-width' />
 
     <meta name="keywords"    content="process, window" />
@@ -52,8 +51,9 @@
             <table>
                 <thead>
                     <tr>
+                        <th class="hidden">Process Id</th>
                         <th class="th">Process Name</th>
-                        <th class="th">Start date</th>
+                        <th class="th">Start Date</th>
                         <th class="th">End Date</th>
                         <th class="th">Status</th>
                         <th class="th">Details</th>
@@ -62,6 +62,7 @@
                 <tbody>
                     {% for process in processes %}
                     <tr class="process">
+                        <td class ="pid hidden">{{ process.id }}</td>
                         <td><a href="#">{{ process.name }}</a></td>
                         <td>{{ process.start }}</td>
                         <td>{{ process.end }}</td>

@@ -50,7 +50,7 @@ $(function() {
 
 
     var refreshHandler = function() {
-
+        /*
         var url = window.location.href;
         var i = url.lastIndexOf('pid');
 
@@ -58,16 +58,11 @@ $(function() {
             window.location.href += ("?pid=" + pid);
 
         } else {
-            /*
-            var first = url.substring(0, i);
-            var last  = url.substring(i, i+4) + pid + url.substring(i+5, url.length);
-
-            window.location.href = first + last;
-            */
             var base = url.substring(0, i);
             base += ("pid=" + pid);
             window.location.href = base;
         }
+        */
         window.location.reload();
     };
 
@@ -123,23 +118,6 @@ $(function() {
         return res;
     };
 
-    /*
-    var getURLParameter = function (sParam) {
-        var sPageURL = window.location.search.slice(1);
-        var sURLVariables = sPageURL.split('&');
-
-        for (var i = 0; i < sURLVariables.length; i++) {
-            var sParameterName = sURLVariables[i].split('=');
-
-            if (sParameterName[0] == sParam) {
-                return sParameterName[1];
-            }
-        }
-
-        return "";
-    }​;
-    /
-
 
     /* Event Assignments */
 
@@ -149,7 +127,7 @@ $(function() {
     $('#refresh').on('click', refreshHandler);
     $('.select').on('change', subprocessHandler);
     $(document).on('ready', function(){
-        searchSelectedProcessHandler();
+        //searchSelectedProcessHandler();
 
         /* Initialization */
 
@@ -157,6 +135,8 @@ $(function() {
             var a = articles.eq(i);
             a.find('.tab').first().removeClass( HIDDEN );
         }
+
+        toggleSelectedProcess( processes.first() );
     });
 
 

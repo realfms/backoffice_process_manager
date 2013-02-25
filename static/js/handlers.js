@@ -57,10 +57,15 @@ $(function() {
             window.location.href += ("?pid=" + pid);
 
         } else {
+            /*
             var first = url.substring(0, i);
             var last  = url.substring(i, i+4) + pid + url.substring(i+5, url.length);
 
             window.location.href = first + last;
+            */
+            var base = url.substring(0, i);
+            base += ("?pid=" + pid);
+            window.location.href = base;
         }
         window.location.reload();
     };
@@ -104,21 +109,14 @@ $(function() {
 
 
     var getParam = function(param) {
-        var params = window.location.search.slice(1);
-        var i = params.indexOf('=');
-        var p = params.substring(0, i);
+        var url   = window.location.href;
+        var index = url.lastIndexOf('?') + 1;
+        var end   = index + param.length;
+        var p     = url.substring(index, end);
 
         var res = "";
-
-        // Loop to search every param
-
         if (p == param) {
-            var last = params.indexOf('&');
-            if (last === -1) {
-                last = params.length;
-            }
-
-            res = params.substring(i+1, last);
+            res = url.substring(end + 1, url.length);
         }
 
         return res;

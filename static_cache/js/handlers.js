@@ -75,7 +75,7 @@ $(function() {
             return rowPID === pid;
         });
 
-        currentArticle = proc.index();
+        currentArticle = selectedRow.index();
 
         toggleSelectedProcess( selectedRow );
     };
@@ -140,14 +140,17 @@ $(function() {
 
     $('#refresh').on('click', refreshHandler);
     $('.select').on('change', subprocessHandler);
-    $('window').on('load', searchSelectedProcessHandler);
+    $(document).on('ready', function(){
+        searchSelectedProcessHandler();
+
+        /* Initialization */
+
+        for (var i = 0; i < articles.length; i++) {
+            var a = articles.eq(i);
+            a.find('.tab').first().removeClass( HIDDEN );
+        }
+    });
 
 
-    /* Initialization */
-
-    for (var i = 0; i < articles.length; i++) {
-        var a = articles.eq(i);
-        a.find('.tab').first().removeClass( HIDDEN );
-    };
 
 });

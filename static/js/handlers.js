@@ -8,23 +8,19 @@ $(function() {
     var moreInfo = $('.more-info');
 
     var currentArticle;
+    var pid = 0;
     var HIDDEN = 'hidden';
 
 
     /* Handlers */
 
     var processHandler = function() {
-        var TIME = 500;
-        var BLUE = 'blue';
+        var row = $(this);
+        currentArticle = row.index();
 
-        var row  = $(this);
-    	currentArticle = row.index();
+        pid = parseInt( row.find('.pid').text() );
 
-        articles.addClass( HIDDEN );
-        articles.eq( currentArticle ).removeClass( HIDDEN );
-
-        processes.removeClass( BLUE );
-        row.addClass( BLUE );
+        toggleSelectedProcess( row );
     };
 
 
@@ -52,11 +48,63 @@ $(function() {
     };
 
 
+    var refreshHandler = function() {
+        window.location.href += ("?pid=" + pid);
+    };
+
+
+    var searchSelectedProcessHandler = function() {
+        pid = parseInt( getURLParameter('pid') );
+
+        var selectedRow = processes.filter(function(i) {
+            var column = processes.eq(i).find('.pid')
+            var rowPID = parseInt( column.text() );
+            return rowPID === pid;
+        });
+
+        currentArticle = proc.index();
+
+        toggleSelectedProcess( selectedRow );
+    };
+
+
+    /* Auxiliary Functions */
+
+    var toggleSelectedProcess = function(row) {
+        var BLUE = 'blue';
+
+        articles.addClass( HIDDEN );
+        articles.eq( currentArticle ).removeClass( HIDDEN );
+
+        processes.removeClass( BLUE );
+        row.addClass( BLUE );
+    };
+
+
+    var getURLParameter = function (sParam) {
+        var sPageURL = window.location.search.slice(1);
+        var sURLVariables = sPageURL.split('&');
+
+        for (var i = 0; i < sURLVariables.length; i++) {
+            var sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] == sParam) {
+                return sParameterName[1];
+            }
+        }
+
+        return "";
+    }​;
+
+
     /* Event Assignments */
 
     processes.on('click', processHandler);
     moreInfo.on('click', externalResultsHandler);
+
+    $('#refresh').on('click', refreshHandler);
     $('.select').on('change', subprocessHandler);
+    $('window').on('load', searchSelectedProcessHandler);
 
 
     /* Initialization */

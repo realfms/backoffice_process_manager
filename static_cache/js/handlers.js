@@ -14,7 +14,8 @@ $(function() {
 
     /* Handlers */
 
-    var processHandler = function() {
+    var processHandler = function(event) {
+        event.preventDefault();
         var row = $(this);
         currentArticle = row.index();
 
@@ -64,7 +65,7 @@ $(function() {
             window.location.href = first + last;
             */
             var base = url.substring(0, i);
-            base += ("?pid=" + pid);
+            base += ("pid=" + pid);
             window.location.href = base;
         }
         window.location.reload();

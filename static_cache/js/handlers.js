@@ -62,7 +62,7 @@ $(function() {
 
             window.location.href = first + last;
         }
-
+        window.location.reload();
     };
 
 

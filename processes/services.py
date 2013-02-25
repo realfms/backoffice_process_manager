@@ -52,8 +52,9 @@ class ProcessManager:
         return key[0:-4]
 
     def get_processes_by_user(self, user_id):
-        processes = models.BusinessProcess.objects.filter(tef_account=user_id)
-        return processes
+        processes = models.BusinessProcess.objects.filter(tef_account=user_id).order_by("start")
+
+        return processes.reverse()
 
     def get_subprocesses_by_process(self, process):
         subprocesses = process.subprocess_set.all()

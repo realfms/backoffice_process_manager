@@ -69,15 +69,24 @@ $(function() {
     var searchSelectedProcessHandler = function() {
         pid = parseInt( getParam('pid') );
 
+        /*
         var selectedRow = processes.filter(function(i) {
             var column = processes.eq(i).find('.pid')
             var rowPID = parseInt( column.text() );
             return rowPID === pid;
         });
+        */
 
-        currentArticle = selectedRow.index();
+        for (var i = 0; i < processes.length; i++) {
+            var row = processes.eq(i);
+            var rowPID = parseInt( row.find('.pid').text() );
 
-        toggleSelectedProcess( selectedRow );
+            if ( rowPID === pid ) {
+                currentArticle = row.index();
+                toggleSelectedProcess( row );
+            }
+        }
+
     };
 
 

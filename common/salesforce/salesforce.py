@@ -84,3 +84,27 @@ def update_contact(status, contact_id):
     c.update(new_contact)
 
     return (True, None)
+
+def create_contract():
+    c = connect()
+
+    new_contract    = c.generateObject('Contract')
+    
+    new_contract.AccountId = "001d000000Wi4CBAAZ"
+    new_contract.OwnerId   = "005d0000001LDCMAA4"
+    new_contract.Status    = "Draft"
+    
+    new_contract.StartDate    = "2013-02-26"
+    new_contract.ContractTerm = 12
+    
+    new_contract.CompanySignedId = "005d0000001LDCMAA4"
+    new_contract.CustomerSignedId = "003d000000kC2JHAA0"
+    
+    result = c.create(new_contract)
+    
+    new_contract.Status = "Activated"
+    new_contract.Id = result['id']
+    
+    print c.update(new_contract)
+
+    return (True, None)

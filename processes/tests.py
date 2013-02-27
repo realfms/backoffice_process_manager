@@ -33,18 +33,24 @@ manage.read_env('../.env')
 from django.test import TestCase
 
 from customer.salesforce import get_customer_details_from_sf
-from common.salesforce.salesforce import update_contact
+from common.salesforce.salesforce import update_contact, create_contract
 
 class TestGenerator(TestCase):
 
-    def test_salesforce_update_contact(self):
+#    def test_salesforce_update_contact(self):
+#
+#        result = update_contact('Billable', '003d000000lKGP2AAO')
+#
+#        print result
+#
+#    def test_salesforce_get_gustomer(self):
+#
+#        result = get_customer_details_from_sf('003d000000kC2JHAA0')
+#
+#        print result
+        
+    def test_salesforce_create_contract(self):
 
-        result =update_contact('Billable', '003d000000lKGP2AAO')
-
-        print result
-
-    def test_salesforce_get_gustomer(self):
-
-        result = get_customer_details_from_sf('003d000000kC2JHAA0')
+        result = create_contract()
 
         print result

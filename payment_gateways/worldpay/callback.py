@@ -1,27 +1,46 @@
 from django.shortcuts import render
-from payment_gateways.services import change_order_status
+from django.db        import transaction
+
+from payment_gateways.services import ServiceManager
 
 
-def success(request):
-    params = request.GET.get
+class WorldpayCallbackController:
 
-    order = params('orderKey')
-    order_id = order.split("^")
-    change_order_status(order_id[2], "VALIDATED")
+    serviceManager = ServiceManager()
 
-    return render(request, 'payment_gateways/success.html', {})
+    @classmethod
+    def getCharger(cls):
+        return cls.serviceManager.get_charger_by_name("ADYEN")
 
+    @classmethod
+    @transaction.commit_on_success
+    def success(cls, request):
+        params = request.GET.get
 
-def pending(request):
-    return render(request, 'payment_gateways/pending.html', {})
+        order = params('orderKey')
+        order_id = order.split("^")
 
+        charger = cls.getCharger()
 
-def error(request):
-    params = request.GET.get
+        charger.update_order_status(order_id[2], "VALIDATED")
 
-    order = params('orderKey')
-    order_id = order.split("^")
+        return render(request, 'payment_gateways/success.html', {})
 
-    change_order_status(order_id[2], "ERROR")
+    @classmethod
+    @transaction.commit_on_success
+    def pending(cls, request):
+        return render(request, 'payment_gateways/pending.html', {})
 
-    return render(request, 'payment_gateways/error.html', {})
+    @classmethod
+    @transaction.commit_on_success
+    def error(cls, request):
+        params = request.GET.get
+
+        order = params('orderKey')
+        order_id = order.split("^")
+
+        charger = cls.getCharger()
+
+        charger.update_order_status(order_id[2], "ERROR")
+
+        return render(request, 'payment_gateways/error.html', {})

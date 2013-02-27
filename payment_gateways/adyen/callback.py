@@ -1,40 +1,53 @@
-from payment_gateways.services import get_charger_by_name
+from payment_gateways.services import ServiceManager
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+
+from django.http      import HttpResponse
 from django.shortcuts import render
+from django.db        import transaction
 
-def success(request):
-    return render(request, 'payment_gateways/success.html', {})
+class AdyenCallbackController:
 
+    serviceManager = ServiceManager()
 
-def pending(request):
-    return render(request, 'payment_gateways/pending.html', {})
+    @classmethod
+    def getCharger(cls):
+        return cls.serviceManager.get_charger_by_name("ADYEN")
 
+    @classmethod
+    def success(cls, request):
+        return render(request, 'payment_gateways/success.html', {})
 
-def error(request):
-    return render(request, 'payment_gateways/error.html', {})
+    @classmethod
+    def pending(cls, request):
+        return render(request, 'payment_gateways/pending.html', {})
 
-@csrf_exempt
-def callback(request):
+    @classmethod
+    def error(cls, request):
+        return render(request, 'payment_gateways/error.html', {})
 
-    if request.method == 'GET':
-        data = request.GET.dict()
+    @classmethod
+    @transaction.commit_on_success
+    @csrf_exempt
+    def callback(cls, request):
 
-        if data['authResult'] == 'AUTHORISED':
-            return success(request)
-        else:
-            return error(request)
+        if request.method == 'GET':
+            data = request.GET.dict()
 
-    if request.method == 'POST':
-        data = request.POST.dict()
+            if data['authResult'] == 'AUTHORISED':
+                return cls.success(request)
+            else:
+                return cls.error(request)
 
-        (charger, gw) = get_charger_by_name('ADYEN')
+        if request.method == 'POST':
+            data = request.POST.dict()
 
-        result = charger.update_order_status(data, "VALIDATED")
+            (charger, pgw) = cls.getCharger()
 
-        print "CALLBACK RESULT:  {0}".format(result)
+            result = charger.update_order_status(data, "VALIDATED")
 
-        if result:
-            return HttpResponse("[accepted]", mimetype="text/plain")
-        else:
-            return HttpResponse("[error]", mimetype="text/plain")
+            print "CALLBACK RESULT:  {0}".format(result)
+
+            if result:
+                return HttpResponse("[accepted]", mimetype="text/plain")
+            else:
+                return HttpResponse("[error]", mimetype="text/plain")

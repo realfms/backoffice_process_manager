@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#coding=utf-8 
+# coding=utf-8 
 
 """
 Copyright 2012 Telefonica Investigación y Desarrollo, S.A.U
@@ -18,14 +18,26 @@ If not, see http://www.gnu.org/licenses/.
 
 For those usages not covered by the GNU Affero General Public License please contact with::mac@tid.es
 """ 
+
 '''
-Created on 16/10/2012
+Created on 15/10/2012
 
 @author: mac@tid.es
 '''
 
-from django import forms
+from celery import task
 
-class InvoiceForm(forms.Form):
-    username   = forms.CharField(max_length=30, min_length=3, widget=forms.HiddenInput())
-    sdr        = forms.FileField()
+from common.salesforce.salesforce import update_contact
+
+from processes.task_manager import TaskManager
+
+@task(ignore_result=True)
+def notify_salesforce_task(success, status, contact_id, sp_id):
+    tm = TaskManager()
+    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
+
+@task(ignore_result=True)
+def notify_tef_accounts_task(success, status, contact_id, sp_id):
+    tm = TaskManager()
+    return tm.process_task(sp_id, 'NOTIFY TEF ACCOUNT', success, lambda : (True, None))
+

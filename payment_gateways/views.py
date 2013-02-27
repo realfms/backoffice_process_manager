@@ -31,81 +31,87 @@ from django.http        import HttpResponseRedirect
 from django.db          import transaction
 from django.utils       import  simplejson
 
-from services   import initial_payment_url, generate_form_url, get_user_data_by_token
+from services   import ServiceManager
 from api_format import UserData
 
 from django.views.decorators.csrf import csrf_exempt
 
-@transaction.commit_on_success
-@csrf_exempt
-def acquire_service(request):
+class PaymentController:
 
-    if request.method == 'POST':
+    serviceManager = ServiceManager()
 
-        body = request.body
+    @classmethod
+    @transaction.commit_on_success
+    @csrf_exempt
+    def acquire_service(cls, request):
 
-        json = simplejson.loads(body)
+        if request.method == 'POST':
 
-        tef_account = json.get('tef_account', None)
-        city        = json.get('city', None)
-        address     = json.get('address', None)
-        postal_code = json.get('postal_code', None)
-        country     = json.get('country', None)
-        phone       = json.get('phone', None)
-        email       = json.get('email', None)
-        gender      = json.get('gender', None)
-        first_name  = json.get('first_name', None)
-        last_name   = json.get('last_name', None)
+            body = request.body
 
-        if (not tef_account or not city or not address or not postal_code or
-            not country or not phone or not email or not gender or
-            not first_name or not last_name):
+            json = simplejson.loads(body)
 
-            return HttpResponse('<h1>Insufficient parameters!</h1>', status=405)
+            tef_account = json.get('tef_account', None)
+            city        = json.get('city', None)
+            address     = json.get('address', None)
+            postal_code = json.get('postal_code', None)
+            country     = json.get('country', None)
+            phone       = json.get('phone', None)
+            email       = json.get('email', None)
+            gender      = json.get('gender', None)
+            first_name  = json.get('first_name', None)
+            last_name   = json.get('last_name', None)
 
-        user_data = UserData(tef_account, city, address, postal_code, country, phone,
-                             email, gender, first_name, last_name)
+            if (not tef_account or not city or not address or not postal_code or
+                not country or not phone or not email or not gender or
+                not first_name or not last_name):
 
-        url = generate_form_url(user_data)
+                return HttpResponse('<h1>Insufficient parameters!</h1>', status=405)
 
-        return HttpResponse(url, content_type='text/plain')
-    else:
-        return HttpResponse('<h1>Invalid Method</h1>', status=405)
+            user_data = UserData(tef_account, city, address, postal_code, country, phone,
+                                 email, gender, first_name, last_name)
 
+            url = cls.serviceManager.generate_form_url(user_data)
 
-def acquire_form(request, token):
+            return HttpResponse(url, content_type='text/plain')
+        else:
+            return HttpResponse('<h1>Invalid Method</h1>', status=405)
 
-    if request.method == 'GET':
+    @classmethod
+    def acquire_form(cls, request, token):
 
-        user_data = get_user_data_by_token(token)
+        if request.method == 'GET':
 
-        context = {
-                    'code': token,
-                    'email': user_data.email,
-                    'address': user_data.address,
-                    'postal_code': user_data.postal_code,
-                    'country': user_data.country,
-                    'city': user_data.city,
-                    'last_name': user_data.last_name,
-                    'first_name': user_data.first_name,
-                    'gender': user_data.gender
-                  }
+            user_data = cls.serviceManager.get_user_data_by_token(token)
 
-        return render(request, 'payment_gateways/acquire_form.html', context)
-    else:
-        return HttpResponse('<h1>Invalid Method</h1>', status=405)
+            context = {
+                        'code': token,
+                        'email': user_data.email,
+                        'address': user_data.address,
+                        'postal_code': user_data.postal_code,
+                        'country': user_data.country,
+                        'city': user_data.city,
+                        'last_name': user_data.last_name,
+                        'first_name': user_data.first_name,
+                        'gender': user_data.gender
+                      }
 
-@transaction.commit_on_success
-def acquire_redirect(request):
+            return render(request, 'payment_gateways/acquire_form.html', context)
+        else:
+            return HttpResponse('<h1>Invalid Method</h1>', status=405)
 
-    if request.method == 'POST':
+    @classmethod
+    @transaction.commit_on_success
+    def acquire_redirect(cls, request):
 
-        params = request.POST.get
+        if request.method == 'POST':
 
-        token = params('token', None)
-        
-        url = initial_payment_url(token)
-    
-        return HttpResponseRedirect(url)
-    else:
-        return HttpResponse('<h1>Invalid Method</h1>', status=405)
+            params = request.POST.get
+
+            token = params('token', None)
+
+            url = cls.serviceManager.initial_payment_url(token)
+
+            return HttpResponseRedirect(url)
+        else:
+            return HttpResponse('<h1>Invalid Method</h1>', status=405)

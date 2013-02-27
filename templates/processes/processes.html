@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Meta -->
+    <meta charset="UTF-8" />
+    <meta name='viewport' content='initial-scale=1.0,width=device-width' />
+
+    <meta name="keywords"    content="process, window" />
+    <meta name="description" content="Processes Window" />
+    <!-- <meta name="robots"      content="index, follow" /> -->          <!-- Uncomment when the website is ready -->
+    <meta name="robots"      content="noindex, nofollow" />
+
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content="My title" />
+    <meta property="og:description" content="My description" />
+    <meta property="og:url"         content="URL" />
+    <meta property="og:image"       content="URL Image" />
+    {% load dict %}
+
+    <!-- Website Title -->
+    <title>User's Processes Window</title>
+
+
+    <!-- CSS -->
+    <link type="text/css" rel="stylesheet" media="all" href="{{ STATIC_URL }}css/base.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="{{ STATIC_URL }}css/grid.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="{{ STATIC_URL }}css/layout.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="{{ STATIC_URL }}css/styles.css" />
+
+    <!-- JavaScript fallback to provide HTML5 features in legacy browsers -->
+    <!-- [if IE]>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/html5-fallback/html5shiv.min.js"></script>
+    <[endif] -->
+
+</head>
+
+
+<body>
+
+    <section id="content" class="total">
+        <header class="container">
+            <h1>Contact: {{ customer }}</h1>
+            <input type="button" class="button" id="refresh" value="Refresh">
+        </header>
+
+
+        <nav class="left columns one-half-pseudo container">
+            <h2>Business Processes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="hidden">Process Id</th>
+                        <th class="th">Process Name</th>
+                        <th class="th">Start Date</th>
+                        <th class="th">End Date</th>
+                        <th class="th">Status</th>
+                        <th class="th">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in processes %}
+                    <tr class="process">
+                        <td class ="pid hidden">{{ process.id }}</td>
+                        <td><a href="#">{{ process.name }}</a></td>
+                        <td>{{ process.start }}</td>
+                        <td>{{ process.end }}</td>
+                        <td>{{ process.status }}</td>
+                        <td class="detail"><i class="icon-chevron-right"></i></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </nav>
+
+        {% for process in processes %}
+        <article class="right columns one-half container subprocess hidden">
+            <h2>{{ process.name }}</h2>
+            <h3 class="left">Select the required subprocess</h3>
+
+            <select class="left select" name="select-subprocesses">
+                {% for sub in subprocesses|keyvalue:process %}
+                    <option value={{ sub.name }}> {{ sub.name }} </option>
+                {% endfor %}
+            </select>
+
+            <div class="clear"></div>
+
+            {% for subprocess in subprocesses|keyvalue:process %}
+                <div class="tab hidden">
+                    <div class="dates">
+                        <p><strong>Start: </strong><time id="sp-start"> {{ subprocess.start }} </time></p>
+                        <p><strong>End: </strong><time id="sp-end">{{ subprocess.end }}</time></p>
+                    </div>
+
+
+                    <h3>Tasks</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="th">Task name</th>
+                                <th class="th">Start date</th>
+                                <th class="th">End date</th>
+                                <th class="th">Status</th>
+                                <th class="th">External results</th>
+                            </tr>
+                        </thead>
+                        <tbody class="tasks">
+                            {% for task in tasks|keyvalue:subprocess %}
+                                <tr>
+                                    <td> {{ task.name }} </td>
+                                    <td> {{ task.start }} </td>
+                                    <td> {{ task.end }} </td>
+                                    <td> {{ task.status }} </td>
+                                    <td class="more-info"><i class="icon-chevron-down"></i></td>
+                                </tr>
+                                <tr style="display : none;">
+                                    <td colspan="5">
+                                        <h4 class="results-title">External results</h4>
+                                        <p>
+                                            {{ task.remarkable_data }}
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </article>
+        {% endfor %}
+
+        <div class="clear"></div>
+    </section>
+
+
+    <!-- JavaScript -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/handlers.js"></script>
+
+</body>
+
+</html>
+

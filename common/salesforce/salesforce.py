@@ -29,6 +29,8 @@ from sforce.enterprise import SforceEnterpriseClient
 
 from os import environ
 
+from datetime import date
+
 SF_PRICELIST_ID = 'a13J0000000CtwvIAC'
 
 def connect():
@@ -85,8 +87,11 @@ def update_contact(status, contact_id):
 
     return (True, None)
 
-def create_contract():
+def create_active_contract(user_data):
     c = connect()
+
+    today = date.today()
+    today_date = today.strftime("%Y-%m-%d")
 
     new_contract    = c.generateObject('Contract')
     
@@ -94,17 +99,37 @@ def create_contract():
     new_contract.OwnerId   = "005d0000001LDCMAA4"
     new_contract.Status    = "Draft"
     
-    new_contract.StartDate    = "2013-02-26"
+    new_contract.StartDate    = today_date
     new_contract.ContractTerm = 12
     
     new_contract.CompanySignedId = "005d0000001LDCMAA4"
-    new_contract.CustomerSignedId = "003d000000kC2JHAA0"
-    
-    result = c.create(new_contract)
-    
-    new_contract.Status = "Activated"
-    new_contract.Id = result['id']
-    
-    print c.update(new_contract)
 
-    return (True, None)
+    # Dynamic => Contact_Id of the Customer
+    new_contract.CustomerSignedId = user_data.tef_account
+
+    new_contract.CustomerSignedDate = today_date
+    new_contract.CompanySignedDate = today_date
+
+    new_contract.OwnerExpirationNotice = 15
+
+    new_contract.ToS_URI__c = "http://backoffice-process-manager.herokuapp.com/tos"
+
+    result = c.create(new_contract)
+
+    contract_id = result['id']
+
+    activate_contract(c, contract_id)
+
+    print contract_id
+
+def activate_contract(c, contract_id):
+
+    if (not c):
+        c = connect()
+
+    contract = c.generateObject('Contract')
+
+    contract.Status = "Activated"
+    contract.Id = contract_id
+
+    c.update(contract)

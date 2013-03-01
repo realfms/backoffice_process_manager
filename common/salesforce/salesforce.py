@@ -134,3 +134,5 @@ def activate_contract(c, contract_id):
     contract.Id = contract_id
 
     c.update(contract)
+
+    return (True, None)

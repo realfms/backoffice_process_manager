@@ -149,7 +149,7 @@ class ServiceManager:
 
         # Linking master info and subprocess
         master_info = MasterInformation(tef_account=user_data.tef_account, recurrent_order_code=recurrent_order_code,
-                                         gateway=gateway, email=user_data.email, subprocess=subprocess, contract_id=contract_id)
+                                         gateway=gateway, email=user_data.email, subprocess=subprocess, contract=contract_id)
         master_info.save()
 
     def store_order(self, order_data):

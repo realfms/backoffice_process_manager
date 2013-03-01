@@ -78,7 +78,7 @@ class Adyen_Charger (PaymentGateway):
     def update_order_status(self, data, status):
         order_code = data['merchantReference']
 
-        if data['authResult'] != 'AUTHORISED':
+        if data['success'] == "true":
             print "ERROR: PAYMENT GATEWAY PROBLEM"
             return False
 

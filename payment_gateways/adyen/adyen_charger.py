@@ -83,8 +83,6 @@ class Adyen_Charger (PaymentGateway):
             print data
             return False
 
-        print data
-
         master_infos = MasterInformation.objects.filter(recurrent_order_code=order_code, status='PENDING')
 
         # Distinguising flows

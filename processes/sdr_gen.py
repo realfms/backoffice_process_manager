@@ -28,7 +28,7 @@ Created on 30/10/2012
 
 import random, datetime
 
-from common.aws.s3 import upload_invoice_to_s3
+from common.aws.s3 import upload_sdr_to_s3
 
 
 def gen_sdr():
@@ -57,13 +57,10 @@ def gen_sdr():
     xml = xml.replace("#{tefaccount_id}", str(random.randint(1, 3000000)))
     xml = xml.replace("#{contract_id}", str(random.randint(1, 3000000)))
 
-    print xml
-
     file_name = 'sdr-' + now
     f = open(file_name, 'w')
     f.write(xml)
     f.close()
 
-    upload_invoice_to_s3(file_name)
-
-gen_sdr()
+    upload_sdr_to_s3(file_name)
+    return file_name

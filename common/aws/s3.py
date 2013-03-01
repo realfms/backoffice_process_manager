@@ -41,13 +41,7 @@ def get_sdr_request_keys():
     bucket = conn.get_bucket(SDR_REQUESTS_BUCKET)
 
     rs = bucket.list()
-
-    keys = []
-
-    for key in rs:
-        keys.append(key.name)
-
-    return keys
+    return list(rs)
 
 def get_bucket_key_content(key_name):
 
@@ -66,8 +60,11 @@ def upload_file_to_s3(file_name, bucket):
 
     key = Key(bucket)
 
-    key.name = file_name
+    key.key = file_name
+    print file_name
     key.set_contents_from_filename(file_name)
+    print key
+    print key.get_contents_to_string()
 
 def upload_invoice_to_s3(file_name):
     upload_file_to_s3(file_name, PDF_INVOICES_BUCKET)

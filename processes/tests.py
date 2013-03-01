@@ -34,8 +34,9 @@ from django.test import TestCase
 
 from customer.salesforce import get_customer_details_from_sf
 from common.salesforce.salesforce import update_contact
-
+from common.aws.s3 import get_bucket_key_content, get_sdr_request_keys
 from processes.sdr_gen import gen_sdr
+
 
 class TestGenerator(TestCase):
 
@@ -56,3 +57,5 @@ class TestSDR(TestCase):
 
     def test_sdr(self):
         gen_sdr()
+        keys = get_sdr_request_keys()
+        print get_bucket_key_content(keys[-1])

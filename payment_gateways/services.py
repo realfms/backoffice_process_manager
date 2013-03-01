@@ -47,7 +47,7 @@ class ServiceManager:
         tef_account = user_data.tef_account
         country     = user_data.country
 
-        master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country)
+        master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country, status = "VALIDATED")
 
         return len(master_infos) > 0
 

@@ -32,7 +32,7 @@ from processes.data_acquisition_process import DataAcquisitionProcess
 
 from django.conf import settings
 
-from common.salesforce.salesforce import create_active_contract
+from common.salesforce.salesforce import create_contract
 
 import importlib
 import uuid
@@ -52,7 +52,7 @@ class ServiceManager:
         return len(master_infos) > 0
 
     def createContract(self, user_data, activate):
-        return create_active_contract(user_data)
+        return create_contract(user_data, activate)
 
     def initial_payment_url(self, token, contract_id):
         user_data = self.get_user_data_by_token(token)

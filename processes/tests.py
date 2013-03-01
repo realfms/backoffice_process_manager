@@ -27,29 +27,40 @@ Created on 16/01/2013
 
 import manage
 import random
+import unittest
 
 # Loading environment variables prior to initialice django framework
-manage.read_env('../.env')
-
+manage.read_env('.env')
 from django.test import TestCase
-
 from customer.salesforce import get_customer_details_from_sf
-from common.salesforce.salesforce import update_contact
 from common.aws.s3 import get_bucket_key_content, get_sdr_request_keys
 from processes.sdr_gen import gen_sdr
+from common.salesforce.salesforce import update_contact, create_active_contract
+from payment_gateways.api_format import UserData
 
 
 class TestGenerator(TestCase):
 
+    @unittest.skip("Making tests faster")
     def test_salesforce_update_contact(self):
 
         result = update_contact('Billable', '003d000000lKGP2AAO')
 
         print result
 
+    @unittest.skip("Making tests faster")
     def test_salesforce_get_gustomer(self):
 
         result = get_customer_details_from_sf('003d000000kC2JHAA0')
+
+        print result
+
+    #@unittest.skip("Making tests faster")
+    def test_salesforce_create_contract(self):
+
+        user_data = UserData("003d000000wX82sAAC", "", "", "", "", "", "", "", "", "")
+
+        result = create_active_contract(user_data)
 
         print result
 

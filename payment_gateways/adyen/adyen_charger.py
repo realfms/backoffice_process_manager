@@ -78,9 +78,12 @@ class Adyen_Charger (PaymentGateway):
     def update_order_status(self, data, status):
         order_code = data['merchantReference']
 
-        if data['success'] == "true":
+        if data['success'] == "false":
             print "ERROR: PAYMENT GATEWAY PROBLEM"
+            print data
             return False
+
+        print data
 
         master_infos = MasterInformation.objects.filter(recurrent_order_code=order_code, status='PENDING')
 

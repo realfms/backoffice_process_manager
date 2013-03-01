@@ -33,7 +33,7 @@ from processes.data_acquisition_process import DataAcquisitionProcess
 from django.conf import settings
 from processes.sdr_gen import gen_sdr
 
-from common.salesforce.salesforce import create_active_contract
+from common.salesforce.salesforce import create_contract
 
 import importlib
 import uuid
@@ -48,12 +48,12 @@ class ServiceManager:
         tef_account = user_data.tef_account
         country     = user_data.country
 
-        master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country)
+        master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country, status = "VALIDATED")
 
         return len(master_infos) > 0
 
     def createContract(self, user_data, activate):
-        create_active_contract(user_data)
+        return create_contract(user_data, activate)
 
     def initial_payment_url(self, token, contract_id):
         user_data = self.get_user_data_by_token(token)

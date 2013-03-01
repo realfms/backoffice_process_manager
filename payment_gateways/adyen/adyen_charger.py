@@ -78,7 +78,10 @@ class Adyen_Charger (PaymentGateway):
     def update_order_status(self, data, status):
         order_code = data['merchantReference']
 
-        print order_code
+        if data['success'] == "false":
+            print "ERROR: PAYMENT GATEWAY PROBLEM"
+            print data
+            return False
 
         master_infos = MasterInformation.objects.filter(recurrent_order_code=order_code, status='PENDING')
 
@@ -93,8 +96,7 @@ class Adyen_Charger (PaymentGateway):
             return self._recurrent_payment_flow(orders, status)
 
         # Neither data acquistion flow nor recurrent payment flow, this is an error!
-        print "ERROR"
-        print len(orders)
+        print "ERROR: NEITHER ACQUISITION NOR RECURRENT FLOW IN ADYEN CALLBACK"
         return False
 
     def data_acquisition_flow(self, master_infos, status):

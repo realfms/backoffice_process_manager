@@ -42,7 +42,7 @@ def notify_tef_accounts_task(success, status, contact_id, sp_id):
     return tm.process_task(sp_id, 'NOTIFY TEF ACCOUNT', success, lambda : (True, None))
 
 @task(ignore_result=True)
-def activate_contract_task(success, status, contract_id, sp_id):
+def activate_contract_task(success, contract_id, sp_id):
     tm = TaskManager()
     return tm.process_task(sp_id, 'ACTIVATE CONTRACT', success, lambda : activate_contract(None, contract_id))
 

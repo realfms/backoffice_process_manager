@@ -87,7 +87,7 @@ def update_contact(status, contact_id):
 
     return (True, None)
 
-def create_active_contract(user_data):
+def create_contract(user_data, activate):
     c = connect()
 
     today = date.today()
@@ -118,9 +118,10 @@ def create_active_contract(user_data):
 
     contract_id = result['id']
 
-    activate_contract(c, contract_id)
+    if (activate):
+        activate_contract(c, contract_id)
 
-    print contract_id
+    return contract_id
 
 def activate_contract(c, contract_id):
 
@@ -133,3 +134,5 @@ def activate_contract(c, contract_id):
     contract.Id = contract_id
 
     c.update(contract)
+
+    return (True, None)

@@ -1,57 +1,74 @@
-{% extends "processes/base.html" %}
+<!--{% extends "processes/base.html" %}-->
 
-{% block title %}Choose payment method{% endblock %}
+{% block title %}Payment method{% endblock %}
 
 {% block content %}
+<head>
+    <meta charset="utf-8" />
+    <title>Payment Method</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/paymentform.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/commons_fonts.css" />
+</head>
 
-    <div id="subscribe-form">
+<body>
+    <div class="general">
+        <header class="header">
+                <h1 class="titlePage">Telefonica Acquisition<img src="{{ STATIC_URL }}img/lgo_telefonica_main.gif" class="logo"></h1>
+        </header>
 
-	    <h3>Please select your preferred payment method:</h3>
+        <section>
+            <article>
+                <h2 id="welcome">Please select you preferred payment method:</h2>
 
-        <form method="post" action="/payment/acquire/redirect" class="top bottom">
+                <div id="subscribe-form">
 
-            {% csrf_token %}
+                    <form method="post" action="/payment/acquire/redirect" class="top bottom">
+                        <p><label class="profile">Payment method:</label>
+                        <select name="payment_method">
+                          <option value="cc">Credit card</option>
+                          <option value="phone">Telephone bill</option>
+                        </select></p>
 
-            <label>Payment method:</label>
-            <select name="payment_method">
-              <option value="cc">Credit card</option>
-              <option value="phone">Telephone bill</option>
-            </select>
-            <br />
+                        <p><label class="profile">Value:</label>
+                        <input class="form text" name="payment_value" type="text"></p>
 
-            <label>Value:</label>
-            <input name="payment_value" type="text">
+                        <p><label class="profile">First name:</label>
+                        <input class="form text" name="first_name" type="text" value={{ first_name }}></p>
 
-            <label>First name:</label>
-            <input name="first_name" type="text" value={{ first_name }}>
+                        <p><label class="profile">Last name:</label>
+                        <input class="form text" name="last_name" type="text" value={{ last_name }}></p>
 
-            <label>Last name:</label>
-            <input name="last_name" type="text" value={{ last_name }}>
+                        <p><label class="profile">Gender:</label>
+                        <input class="form text" name="gender" type="text" value={{ gender }}></p>
 
-            <label>Email:</label>
-            <input name="last_name" type="text" value={{ email }}>
+                        <p><label class="profile">Email:</label>
+                        <input class="form text" name="last_name" type="text" value={{ email }}></p>
 
-            <label>Gender:</label>
-            <input name="gender" type="text" value={{ gender }}>
+                        <p><label class="profile">Address:</label>
+                        <input class="form text" name="address" type="text" value={{ address }}></p>
 
-            <label>City:</label>
-            <input name="city" type="text" value={{ city }} >
+                        <p><label class="profile">Postal Code:</label>
+                        <input class="form text" name="address" type="text" value={{ postal_code }}></p>
 
-            <label>Address:</label>
-            <input name="address" type="text" value={{ address }}>
+                        <p><label class="profile">City:</label>
+                        <input class="form text" name="city" type="text" value={{ city }}></p>
 
-            <label>Postal Code:</label>
-            <input name="address" type="text" value={{ postal_code }}>
+                        <p><label class="profile">Country:</label>
+                        <input class="form text" name="address" type="text" value={{ country }}></p>
 
-            <label>Country:</label>
-            <input name="address" type="text" value={{ country }}>
+                        <p class="profile" id="tandc"><input class="form" id="check" type="checkbox" name="tandc" value={{ accept }}><label>I have read and agree to the <a href="/tos">Terms & Conditions</a></label></p>
 
-            <input name="token" type="hidden" value={{ code }}>
+                        <input name="token" type="hidden" value={{ code }}>
 
-            <div class="center">
-                <button>Continue</button>
-            </div>
+                            <button class="button hire">Continue</button>
 
-        </form>
+                    </form>
+                </div>
+            </article>
+        </section>
+
+        <footer class="footer">
+            <p class="foot">&copy; Telefonica Digital and Open Innovation Lab (UPM), 2013</p>
+        </footer>
     </div>
 {% endblock %}

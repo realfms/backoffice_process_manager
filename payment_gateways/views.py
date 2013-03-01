@@ -120,6 +120,8 @@ class PaymentController:
 
             contract_id = cls.serviceManager.createContract(user_data, registered)
 
+            print contract_id
+
             url = "/payment/gw/worldpay/success"
 
             if (not registered):

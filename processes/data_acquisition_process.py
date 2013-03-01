@@ -42,6 +42,8 @@ class DataAcquisitionProcess:
         subprocess  = master_info.subprocess
         contract_id = master_info.contract
 
+        print contract_id
+
         sp_id = subprocess.id
 
         chain = activate_contract_task.s(True, contract_id, sp_id) | notify_salesforce_task.s(status, contact_id, sp_id) | notify_tef_accounts_task.s(status, contact_id, sp_id)

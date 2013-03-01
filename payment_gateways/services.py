@@ -52,7 +52,7 @@ class ServiceManager:
         return len(master_infos) > 0
 
     def createContract(self, user_data, activate):
-        create_active_contract(user_data)
+        return create_active_contract(user_data)
 
     def initial_payment_url(self, token, contract_id):
         user_data = self.get_user_data_by_token(token)

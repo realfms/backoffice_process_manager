@@ -120,7 +120,7 @@ def create_active_contract(user_data):
 
     activate_contract(c, contract_id)
 
-    print contract_id
+    return contract_id
 
 def activate_contract(c, contract_id):
 

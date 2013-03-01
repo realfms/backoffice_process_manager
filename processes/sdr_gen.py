@@ -26,12 +26,12 @@ Created on 30/10/2012
 @author: sperez@conwet.com
 '''
 
-import random, datetime
+import datetime
 
 from common.aws.s3 import upload_sdr_to_s3
 
 
-def gen_sdr():
+def gen_sdr(tef_account):
     # def gen_sdr(tefaccount_id):
     now = str(datetime.datetime.now())
     xml = """
@@ -54,7 +54,7 @@ def gen_sdr():
           """
 
     xml = xml.replace("#{now}", now)
-    xml = xml.replace("#{tefaccount_id}", str(random.randint(1, 3000000)))
+    xml = xml.replace("#{tefaccount_id}", tef_account)
     xml = xml.replace("#{contract_id}", str(random.randint(1, 3000000)))
 
     file_name = 'sdr-' + now

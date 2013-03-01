@@ -26,6 +26,7 @@ Created on 16/01/2013
 """
 
 import manage
+import random
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('../.env')
@@ -56,6 +57,6 @@ class TestGenerator(TestCase):
 class TestSDR(TestCase):
 
     def test_sdr(self):
-        gen_sdr()
+        gen_sdr(str(random.randint(1, 3000000)))
         keys = get_sdr_request_keys()
         print get_bucket_key_content(keys[-1])

@@ -1,19 +1,19 @@
 #!/usr/bin/python
-# coding=utf-8 
+# coding=utf-8
 
 """
 Copyright 2012 Telefonica Investigación y Desarrollo, S.A.U
 
 This file is part of Billing_PoC.
 
-Billing_PoC is free software: you can redistribute it and/or modify it under the terms 
-of the GNU Affero General Public License as published by the Free Software Foundation, either 
+Billing_PoC is free software: you can redistribute it and/or modify it under the terms
+of the GNU Affero General Public License as published by the Free Software Foundation, either
 version 3 of the License, or (at your option) any later version.
-Billing_PoC is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero 
+Billing_PoC is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
 General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License along with Billing_PoC. 
+You should have received a copy of the GNU Affero General Public License along with Billing_PoC.
 If not, see http://www.gnu.org/licenses/.
 
 For those usages not covered by the GNU Affero General Public License please contact with::mac@tid.es
@@ -31,6 +31,7 @@ from api_format import UserData
 from processes.data_acquisition_process import DataAcquisitionProcess
 
 from django.conf import settings
+from processes.sdr_gen import gen_sdr
 
 import importlib
 import uuid
@@ -47,7 +48,7 @@ class ServiceManager:
         (charger, gw) = self.get_first_available_charger_by_country(user_data.country)
         if (charger == None):
             return "/error"
-
+        gen_sdr(user_data.tef_account)
         url = charger.get_redirect_url(user_data)
 
         self.store_master_information(user_data, charger.get_order(), gw)

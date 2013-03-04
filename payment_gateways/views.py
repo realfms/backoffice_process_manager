@@ -115,7 +115,7 @@ class PaymentController:
 
             # Storing user data in DB
             acquired_data  = cls.serviceManager.get_acquired_data_by_token(token)
-            cls.serviceManager.update_acquired_data(request)
+            cls.serviceManager.update_acquired_data(params)
 
             # Checking if this user has already set up payment data
             registered = cls.serviceManager.isPaymentDataRegistered(acquired_data)

@@ -196,14 +196,14 @@ class ServiceManager:
 
         return acquired_data
 
-    def update_acquired_data(self, request):
-        token = request.token
+    def update_acquired_data(self, params):
+        token = params('token', None)
 
         acquired_data = AcquiredData.objects.get(token=token)
 
-        acquired_data.address     = request.address
-        acquired_data.city        = request.city
-        acquired_data.postal_code = request.address
+        acquired_data.address     = params('address', None)
+        acquired_data.city        = params('city', None)
+        acquired_data.postal_code = params('postal_code', 454)
 
         acquired_data.save()
 

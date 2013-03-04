@@ -86,8 +86,6 @@ class PaymentController:
 
             registered = cls.serviceManager.isPaymentDataRegistered(user_data)
 
-            print registered
-
             context = {
                         'code': token,
                         'email': user_data.email,
@@ -119,8 +117,6 @@ class PaymentController:
             registered = cls.serviceManager.isPaymentDataRegistered(user_data)
 
             contract_id = cls.serviceManager.createContract(user_data, registered)
-
-            print contract_id
 
             url = "/payment/gw/worldpay/success"
 

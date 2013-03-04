@@ -31,7 +31,6 @@ from api_format import UserData
 from processes.data_acquisition_process import DataAcquisitionProcess
 
 from django.conf import settings
-from processes.sdr_gen import gen_sdr
 
 from common.salesforce.salesforce import create_contract
 
@@ -53,7 +52,11 @@ class ServiceManager:
         return len(master_infos) > 0
 
     def createContract(self, user_data, activate):
-        return create_contract(user_data, activate)
+        contract_id = create_contract(user_data, activate)
+
+        self.data_acquisition_process.create_notify_acquired_data_process('Billable', user_data.tef_account, contract_id)
+
+        return contract_id
 
     def initial_payment_url(self, token, contract_id):
         user_data = self.get_user_data_by_token(token)
@@ -61,7 +64,7 @@ class ServiceManager:
         (charger, gw) = self.get_first_available_charger_by_country(user_data.country)
         if (charger == None):
             return "/error"
-        gen_sdr(user_data.tef_account)
+
         url = charger.get_redirect_url(user_data)
 
         self.store_master_information(user_data, charger.get_order(), gw, contract_id)

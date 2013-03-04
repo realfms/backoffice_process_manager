@@ -23,6 +23,9 @@
                 <div id="subscribe-form">
 
                     <form method="post" action="/payment/acquire/redirect" class="top bottom">
+
+                        {% csrf_token %}
+
                         <p><label class="profile">Payment method:</label>
                         <select name="payment_method">
                           <option value="cc">Credit card</option>
@@ -60,7 +63,7 @@
 
                         <input name="token" type="hidden" value={{ code }}>
 
-                            <button class="button hire">Continue</button>
+                        <button class="button hire">Continue</button>
 
                     </form>
                 </div>

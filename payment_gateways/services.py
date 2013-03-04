@@ -51,23 +51,19 @@ class ServiceManager:
 
         return len(master_infos) > 0
 
-    def createContract(self, user_data, activate):
-        contract_id = create_contract(user_data, activate)
-
-        self.data_acquisition_process.create_notify_acquired_data_process('Billable', user_data.tef_account, contract_id)
-
-        return contract_id
+    def createContract(self, user_data):
+        return create_contract(user_data)
 
     def initial_payment_url(self, token, contract_id):
-        user_data = self.get_user_data_by_token(token)
+        acquired_data = self.get_acquired_data_by_token(token)
 
-        (charger, gw) = self.get_first_available_charger_by_country(user_data.country)
+        (charger, gw) = self.get_first_available_charger_by_country(acquired_data.country)
         if (charger == None):
             return "/error"
 
-        url = charger.get_redirect_url(user_data)
+        url = charger.get_redirect_url(acquired_data)
 
-        self.store_master_information(user_data, charger.get_order(), gw, contract_id)
+        self.store_master_information(acquired_data, charger.get_order(), gw, contract_id)
 
         return url
 
@@ -147,13 +143,14 @@ class ServiceManager:
         return True
 
 
-    def store_master_information(self, user_data, recurrent_order_code, gateway, contract_id):
+    def store_master_information(self, acquired_data, recurrent_order_code, gateway, contract_id):
         # Creating subprocese
-        subprocess = self.data_acquisition_process.create_acquire_data_subprocess(user_data.tef_account)
+        subprocess = self.data_acquisition_process.create_acquire_data_subprocess(acquired_data.tef_account)
 
         # Linking master info and subprocess
-        master_info = MasterInformation(tef_account=user_data.tef_account, recurrent_order_code=recurrent_order_code,
-                                         gateway=gateway, email=user_data.email, subprocess=subprocess, contract=contract_id)
+        master_info = MasterInformation( tef_account=acquired_data.tef_account, recurrent_order_code=recurrent_order_code,
+                                         gateway=gateway, email=acquired_data.email, subprocess=subprocess, contract=contract_id,
+                                         acquired_data=acquired_data)
         master_info.save()
 
     def store_order(self, order_data):
@@ -183,8 +180,6 @@ class ServiceManager:
 
         url = settings.DEPLOY_URL + "/payment/acquire/form/" + token
 
-        print url
-
         return url
 
     def get_user_data_by_token(self, token):
@@ -196,6 +191,21 @@ class ServiceManager:
 
         return user_data
 
+    def get_acquired_data_by_token(self, token):
+        acquired_data = AcquiredData.objects.get(token=token)
+
+        return acquired_data
+
+    def update_acquired_data(self, request):
+        token = request.token
+
+        acquired_data = AcquiredData.objects.get(token=token)
+
+        acquired_data.address     = request.address
+        acquired_data.city        = request.city
+        acquired_data.postal_code = request.address
+
+        acquired_data.save()
 
     def compute_unique_id(self):
         uid = uuid.uuid4()

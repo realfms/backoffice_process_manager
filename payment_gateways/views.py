@@ -113,15 +113,24 @@ class PaymentController:
 
             token = params('token', None)
 
-            user_data  = cls.serviceManager.get_user_data_by_token(token)
-            registered = cls.serviceManager.isPaymentDataRegistered(user_data)
+            # Storing user data in DB
+            acquired_data  = cls.serviceManager.get_acquired_data_by_token(token)
+            cls.serviceManager.update_acquired_data(request)
 
-            contract_id = cls.serviceManager.createContract(user_data, registered)
+            # Checking if this user has already set up payment data
+            registered = cls.serviceManager.isPaymentDataRegistered(acquired_data)
 
-            url = "/payment/gw/worldpay/success"
+            # Creating inactive contract a
+            contract_id = cls.serviceManager.createContract(acquired_data)
 
             if (not registered):
+                # Start payment data acquisition flow
                 url = cls.serviceManager.initial_payment_url(token, contract_id)
+            else:
+                # We already have payment data, so activating contract
+                cls.serviceManager.data_acquisition_process.create_notify_acquired_data_process('Billable', acquired_data.tef_account,
+                                                                                                contract_id, acquired_data)
+                url = "/payment/gw/worldpay/success"
 
             return HttpResponseRedirect(url)
         else:

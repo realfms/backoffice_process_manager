@@ -33,9 +33,9 @@ from sdr_gen                      import generate_and_upload_sdr
 from processes.task_manager import TaskManager
 
 @task(ignore_result=True)
-def notify_salesforce_task(success, status, contact_id, sp_id):
+def notify_salesforce_task(success, status, contact_id, invoicing_address, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id))
+    return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id, invoicing_address))
 
 @task(ignore_result=True)
 def notify_tef_accounts_task(success, status, contact_id, sp_id):

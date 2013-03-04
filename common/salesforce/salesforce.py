@@ -73,21 +73,21 @@ def get_catalogue():
     
     return catalogue
 
-def update_contact(status, contact_id):
+def update_contact(status, contact_id, invoicing_address):
     c = connect()
-
-    print contact_id
 
     new_contact    = c.generateObject('Contact')
     new_contact.Id = contact_id
 
     new_contact.PaymentState__c = status
+    new_contact.MailingPostalCode = invoicing_address.postal_code
+    new_contact.MailingStreet = invoicing_address.address
 
     c.update(new_contact)
 
     return (True, None)
 
-def create_contract(user_data, activate):
+def create_contract(user_data):
     c = connect()
 
     today = date.today()
@@ -118,15 +118,11 @@ def create_contract(user_data, activate):
 
     contract_id = result['id']
 
-    if (activate):
-        activate_contract(c, contract_id)
-
     return contract_id
 
-def activate_contract(c, contract_id):
+def activate_contract(contract_id):
 
-    if (not c):
-        c = connect()
+    c = connect()
 
     contract = c.generateObject('Contract')
 

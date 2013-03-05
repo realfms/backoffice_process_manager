@@ -27,7 +27,7 @@ Created on 15/10/2012
 
 from celery import task
 
-from common.salesforce.salesforce import update_contact, activate_contract
+from common.salesforce.salesforce import update_contact, activate_contract, create_order_summary
 from sdr_gen                      import generate_and_upload_sdr
 
 from processes.task_manager import TaskManager
@@ -52,3 +52,10 @@ def generate_sdr_and_upload_task(success, tef_account, contract_id, sp_id):
     tm = TaskManager()
     return tm.process_task(sp_id, 'GENERATE SDR & UPLOAD', success, lambda : generate_and_upload_sdr(tef_account, contract_id))
 
+@task(ignore_result=True)
+def create_order_summary_task(success, sp_id):
+    tm = TaskManager()
+    
+    invoice_json = tm.get_subprocess_data(sp_id)
+    
+    return tm.process_task(sp_id, 'CREATE ORDER SUMMARY', success, lambda : create_order_summary(invoice_json))

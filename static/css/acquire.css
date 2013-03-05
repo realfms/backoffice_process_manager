@@ -15,3 +15,7 @@
 #subscribe-form .no-border {
 	border: 0px;
 }
+
+#subscribe-form .hidden {
+	display: None;
+}

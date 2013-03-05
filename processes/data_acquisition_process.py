@@ -44,9 +44,9 @@ class DataAcquisitionProcess:
 
     def start_notify_acquired_data(self, status, tef_account, sp_id, contract_id, acquired_data):
 
-        invoicing_address = dict()
-        invoicing_address.address = acquired_data.address
-        invoicing_address.postal_code = acquired_data.postal_code
+        invoicing_address = {}
+        invoicing_address['address'] = acquired_data.address
+        invoicing_address['postal_code'] = acquired_data.postal_code
 
         chain = activate_contract_task.s(True, contract_id, sp_id) | notify_salesforce_task.s(status, tef_account, invoicing_address, sp_id) | notify_tef_accounts_task.s(status, tef_account, sp_id) | generate_sdr_and_upload_task.s(tef_account, contract_id, sp_id)
 

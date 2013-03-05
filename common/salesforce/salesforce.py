@@ -80,8 +80,8 @@ def update_contact(status, contact_id, invoicing_address):
     new_contact.Id = contact_id
 
     new_contact.PaymentState__c = status
-    new_contact.MailingPostalCode = invoicing_address.postal_code
-    new_contact.MailingStreet = invoicing_address.address
+    new_contact.MailingPostalCode = invoicing_address['postal_code']
+    new_contact.MailingStreet = invoicing_address['address']
 
     c.update(new_contact)
 

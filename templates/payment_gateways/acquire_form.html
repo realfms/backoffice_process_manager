@@ -33,37 +33,40 @@
                         </select></p>
 
                         <p><label class="profile">Value:</label>
-                        <input class="form text" name="payment_value" type="text"></p>
+                        <input class="form text" name="payment_value" type="text" /s></p>
 
                         <p><label class="profile">First name:</label>
-                        <input class="form text" name="first_name" type="text" value={{ first_name }}></p>
+                        <input class="form text" name="first_name" type="text" value="{{ first_name }}" /></p>
 
                         <p><label class="profile">Last name:</label>
-                        <input class="form text" name="last_name" type="text" value={{ last_name }}></p>
+                        <input class="form text" name="last_name" type="text" value="{{ last_name }}" /></p>
 
                         <p><label class="profile">Gender:</label>
-                        <input class="form text" name="gender" type="text" value={{ gender }}></p>
+                        <input class="form text" name="gender" type="text" value="{{ gender }}" /></p>
 
                         <p><label class="profile">Email:</label>
-                        <input class="form text" name="last_name" type="text" value={{ email }}></p>
+                        <input class="form text" name="last_name" type="text" value="{{ email }}" /></p>
 
                         <p><label class="profile">Address:</label>
-                        <input class="form text" name="address" type="text" value={{ address }}></p>
+                        <input class="form text" name="address" type="text" value="{{ address }}" /></p>
 
                         <p><label class="profile">Postal Code:</label>
-                        <input class="form text" name="address" type="text" value={{ postal_code }}></p>
+                        <input class="form text" name="postal_code" type="text" value="{{ postal_code }}" /></p>
 
                         <p><label class="profile">City:</label>
-                        <input class="form text" name="city" type="text" value={{ city }}></p>
+                        <input class="form text" name="city" type="text" value="{{ city }}" /></p>
 
                         <p><label class="profile">Country:</label>
-                        <input class="form text" name="address" type="text" value={{ country }}></p>
+                        <input class="form text" name="contry" type="text" value="{{ country }}"/></p>
 
-                        <p class="profile" id="tandc"><input class="form" id="check" type="checkbox" name="tandc" value={{ accept }}><label>I have read and agree to the <a href="/tos">Terms & Conditions</a></label></p>
+                        <p class="profile" id="tandc">
+                        <input class="form" id="check" type="checkbox" name="tandc" value="{{ accept }}" />
+                        <label>I have read and agree to the <a href="/tos">Terms & Conditions</a></label></p>
 
-                        <input name="token" type="hidden" value={{ code }}>
-
-                        <button class="button hire">Continue</button>
+						<p>
+                        	<input name="token" type="hidden" value="{{ code }}" />
+							<button class="button hire">Continue</button>
+						</p>
 
                     </form>
                 </div>

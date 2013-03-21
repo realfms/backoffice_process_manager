@@ -39,6 +39,8 @@ from processes.notifications.sdr_gen import generate_and_upload_sdr
 from common.salesforce.salesforce    import update_contact, create_contract, create_order_summary
 from payment_gateways.api_format     import UserData
 
+from processes.duty_calculator_connector import DutyCalculator
+
 from os.path import exists
 
 INVOICE = {
@@ -77,6 +79,7 @@ INVOICE = {
 }
 
 
+@unittest.skip("Making tests faster")
 class TestSalesforce(TestCase):
 
     @unittest.skip("Making tests faster")
@@ -109,7 +112,7 @@ class TestSalesforce(TestCase):
 
         print result
 
-
+@unittest.skip("Making tests faster")
 class TestSDR(TestCase):
 
     #@unittest.skip("Making tests faster")
@@ -117,4 +120,14 @@ class TestSDR(TestCase):
         (result, file_name) = generate_and_upload_sdr("82822", "00010010101s")
 
         self.assertEqual(result, True, "Problem uploading SDR")
+
+
+class TestDutyCalculator(TestCase):
+
+    def test_get_GBR_taxes(self):
+
+        (vat, duty) =  DutyCalculator.getTaxByCategory("GBR", 754)
+
+        self.assertEqual(vat, 20.0, "VAT doesn't fit")
+        self.assertEqual(duty, 0.0, "Withhold duty doesn't fit")
 

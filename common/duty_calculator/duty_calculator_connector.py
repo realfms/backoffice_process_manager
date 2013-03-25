@@ -26,32 +26,27 @@ Created on 21/03/2013
 '''
 
 from BeautifulSoup import BeautifulSoup
-from datetime import datetime
 
 import urllib2
 
 class DutyCalculator():
 
     BASE_URL = "http://www.dutycalculator.com/api2.1/sandbox/5295f62bad0be300/"
+
     HS_CODE_BY_CAT_URL = "get-hscode&to={0}&cat[0]={1}&detailed_result=1"
     HS_CODE_BY_SKU_URL = "get-hscode&to={0}&sku[0]={1}&detailed_result=1"
 
-    @classmethod
-    def getTaxByCategory(cls, country, category):
-        print datetime.now()
-        url = cls.BASE_URL + cls.HS_CODE_BY_CAT_URL.format(country, category)
+    def getTaxByCategory(self, country, category):
+        url = self.BASE_URL + self.HS_CODE_BY_CAT_URL.format(country, category)
 
         f = urllib2.urlopen(url)
 
         response = f.read()
 
-        print datetime.now()
+        return self._parseResponse(response)
 
-        return cls._parseResponse(response)
-
-    @classmethod
-    def getTaxBySKU(cls, country, sku):
-        url = cls.BASE_URL + cls.HS_CODE_BY_SKU_URL.format(country, sku)
+    def getTaxBySKU(self, country, sku):
+        url = self.BASE_URL + self.HS_CODE_BY_SKU_URL.format(country, sku)
 
         f = urllib2.urlopen(url)
 
@@ -59,10 +54,24 @@ class DutyCalculator():
 
         return response
 
-    @classmethod
-    def _parseResponse(cls, xml):
+    def getTaxByCountriesAndCategory(self, countries, category):
 
-        print xml
+        result = {}
+
+        for country in countries:
+            url = self.BASE_URL + self.HS_CODE_BY_CAT_URL.format(country, category)
+
+            f = urllib2.urlopen(url)
+
+            response = f.read()
+
+            result[country] = self._parseResponse(response)
+
+        print result
+
+        return result
+
+    def _parseResponse(self, xml):
 
         doc = BeautifulSoup(xml)
 
@@ -70,11 +79,10 @@ class DutyCalculator():
         VAT  = doc.find('sales-tax', {'name': 'VAT'}).string
 
         # Converting to float
-        duty = cls._parseTax(duty)
-        VAT  = cls._parseTax(VAT)
+        duty = self._parseTax(duty)
+        VAT  = self._parseTax(VAT)
 
         return (VAT, duty)
 
-    @classmethod
-    def _parseTax(cls, tax):
+    def _parseTax(self, tax):
         return float(tax[0:-1])

@@ -39,7 +39,7 @@ from processes.notifications.sdr_gen import generate_and_upload_sdr
 from common.salesforce.salesforce    import update_contact, create_contract, create_order_summary
 from payment_gateways.api_format     import UserData
 
-from processes.duty_calculator_connector import DutyCalculator
+from common.duty_calculator.duty_calculator_connector import DutyCalculator
 
 from os.path import exists
 
@@ -126,8 +126,18 @@ class TestDutyCalculator(TestCase):
 
     def test_get_GBR_taxes(self):
 
-        (vat, duty) =  DutyCalculator.getTaxByCategory("GBR", 754)
+        duty_calculator =  DutyCalculator()
+
+        (vat, duty) = duty_calculator.getTaxByCategory("GBR", 754)
 
         self.assertEqual(vat, 20.0, "VAT doesn't fit")
         self.assertEqual(duty, 0.0, "Withhold duty doesn't fit")
+
+    def test_get_taxes_by_countries(self):
+
+        duty_calculator =  DutyCalculator()
+
+        taxes = duty_calculator.getTaxByCountriesAndCategory(["GBR", "BRZ"], 754)
+
+        print taxes
 

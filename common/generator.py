@@ -27,16 +27,24 @@ Created on 06/11/2012
 
 from jinja2 import Template
 
-from common.salesforce.salesforce import get_catalogue
+from duty_calculator.duty_calculator_connector import DutyCalculator
+from salesforce.salesforce                     import get_catalogue
 
 import codecs
 
-TEMPLATE_PATH  = "catalogue/catalogue.tpl"
+TEMPLATE_PATH  = "templates/catalogue/template.tpl"
 CATALOGUE_PATH = "processes/rating/catalogue.py"
 
-def generate_catalogue_from_sf():
-    
-    catalogue = get_catalogue()
+def generate_catalogue_from_sf(country):
+
+    duty_calculator = DutyCalculator()
+
+    (tax, local_duty) = duty_calculator.getTaxByCategory(country, 754)
+
+    context = {
+                'products' : get_catalogue(),
+                'tax'      : tax,
+              }
     
     with codecs.open(TEMPLATE_PATH, 'r', 'utf-8') as f:
         template_content = f.read()
@@ -44,6 +52,8 @@ def generate_catalogue_from_sf():
     template = Template(template_content)
     
     with open (CATALOGUE_PATH, "wb") as f:
-        f.write(template.render(catalogue))
+        f.write(template.render(context))
     
     return CATALOGUE_PATH
+
+generate_catalogue_from_sf('GBR')

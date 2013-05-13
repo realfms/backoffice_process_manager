@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #coding=utf-8 
 
-# Django settings for backoffice_process_manager project.
+# Django settings for bpm_europe project.
 
 import os
 
@@ -45,11 +45,11 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'backoffice',                      # Or path to database file if using sqlite3.
-        'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+        'NAME': 'bpm',                        # Or path to database file if using sqlite3.
+        'USER': 'root',                       # Not used with sqlite3.
+        'PASSWORD': '',                       # Not used with sqlite3.
+        'HOST': 'localhost',                  # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306',                       # Set to empty string for default. Not used with sqlite3.
         'OPTIONS': {
             'use_unicode': True,
             'charset': 'utf8'
@@ -132,10 +132,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'backoffice_process_manager.urls'
+ROOT_URLCONF = 'bpm_europe.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'backoffice_process_manager.wsgi.application'
+WSGI_APPLICATION = 'bpm_europe.wsgi.application'
 
 TEMPLATE_DIRS = (
     os.path.join(FOLDER, 'templates'),
@@ -150,8 +150,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'payment_gateways',
     'processes',
-    'djcelery',
-    'kombu.transport.django',
+    #'kombu.transport.django',
     'gunicorn',
 )
 
@@ -197,5 +196,3 @@ CELERY_IMPORTS = ( 'processes.charging.tasks',
                    'processes.email.tasks',
                    'processes.notifications.tasks')
 
-import djcelery
-djcelery.setup_loader()

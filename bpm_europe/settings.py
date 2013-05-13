@@ -10,6 +10,13 @@ FOLDER = os.getcwd()
 DEPLOY_URL =  os.environ.get('DEPLOY_URL')
 
 #######################################################
+# HEROKU ADDONS : CLOUDAMQP
+#######################################################
+
+CELERY_BROKER_URL  =  os.environ.get('CLOUDAMQP_URL')
+CELERY_BACKEND_URL =  os.environ.get('CLOUDAMQP_URL')
+
+#######################################################
 # ADYEN PAYMENT GATEWAY
 #######################################################
 
@@ -93,7 +100,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(FOLDER, 'static')
+STATIC_ROOT = os.path.join(FOLDER, 'static_cache')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -148,9 +155,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djcelery',
     'payment_gateways',
     'processes',
-    #'kombu.transport.django',
     'gunicorn',
 )
 
@@ -187,7 +194,19 @@ if os.environ.get('DATABASE_URL'):
     import dj_database_url
     DATABASES['default'] =  dj_database_url.config()
 
-BROKER_BACKEND = 'django'
+######################################################
+# CONFIGURING CELERY
+######################################################
+
+BROKER_URL            = CELERY_BROKER_URL
+CELERY_RESULT_BACKEND = 'amqp'
+
+BROKER_POOL_LIMIT=1
+
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Madrid'
+CELERY_ENABLE_UTC = True
 
 CELERY_IMPORTS = ( 'processes.charging.tasks',
                    'processes.rating.tasks',
@@ -195,4 +214,3 @@ CELERY_IMPORTS = ( 'processes.charging.tasks',
                    'processes.customer.tasks',
                    'processes.email.tasks',
                    'processes.notifications.tasks')
-

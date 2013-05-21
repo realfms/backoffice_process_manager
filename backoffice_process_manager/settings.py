@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #coding=utf-8 
 
-# Django settings for bpm_europe project.
+# Django settings for backoffice_process_manager project.
 
 import os
 
@@ -139,10 +139,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'bpm_europe.urls'
+ROOT_URLCONF = 'backoffice_process_manager.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'bpm_europe.wsgi.application'
+WSGI_APPLICATION = 'backoffice_process_manager.wsgi.application'
 
 TEMPLATE_DIRS = (
     os.path.join(FOLDER, 'templates'),

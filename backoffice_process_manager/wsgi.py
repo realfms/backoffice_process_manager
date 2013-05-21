@@ -16,7 +16,7 @@ framework.
 import os
 import djcelery
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bpm_europe.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backoffice_process_manager.settings")
 
 djcelery.setup_loader()
 

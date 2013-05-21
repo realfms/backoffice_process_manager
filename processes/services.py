@@ -26,13 +26,18 @@ Created on 16/10/2012
 '''
 from common.aws.s3   import get_sdr_request_keys
 from processes       import models
-from processes.order_to_cash_process import OrderToCashProcess
 
+from processes.order_to_cash_process import OrderToCashProcess
+from processes.provision_process     import ProvisionProcess
 
 class ProcessManager:
 
     def __init__(self):
         self.order_to_cash_process = OrderToCashProcess()
+        self.provision_process     = ProvisionProcess()
+
+    def start_provision(self, tef_account, event_data):
+        self.provision_process.start_provision_process(tef_account, event_data)
 
     def start_order_to_cash(self):
         keys = get_sdr_request_keys()

@@ -153,3 +153,6 @@ def create_order_summary(invoice_json):
     c.create(order_summary)
 
     return (True, None)
+
+def register_provision_event(event_data):
+    return (True, None)

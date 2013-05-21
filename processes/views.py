@@ -55,6 +55,13 @@ class ProcessesController:
 
     @classmethod
     @transaction.commit_on_success
+    def launch_provision(cls, request):
+        cls.processManager.start_provision('tef_account_127', {})
+
+        return render(request, 'processes/running.html', {})
+
+    @classmethod
+    @transaction.commit_on_success
     def get_processes(cls, request, user_id):
 
         processes = cls.processManager.get_processes_by_user(user_id)

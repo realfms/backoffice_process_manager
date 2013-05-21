@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     # PROCESSES
     ######################################################
 
+    url(r'^processes/launch_provision$',         ProcessesController.launch_provision),
     url(r'^processes/launch_invoicing/$',        ProcessesController.launch_invoicing),
     url(r'^processes/launch_sync_invoicing/$',   ProcessesController.launch_sync_invoice),
     url(r'^processes/getinfo/(?P<user_id>\w+)$', ProcessesController.get_processes),

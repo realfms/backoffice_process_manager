@@ -29,7 +29,7 @@ def read_env(path):
             os.environ.setdefault(key, val)
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bpm_europe.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backoffice_process_manager.settings")
 
     from django.core.management import execute_from_command_line
 

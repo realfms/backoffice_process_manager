@@ -37,18 +37,24 @@ class DataAcquisitionProcess:
     def create_acquire_data_subprocess(self, tef_account):
         return self._generate_acquire_data_process(tef_account)
 
-    def create_notify_acquired_data_process(self, status, tef_account, contract_id, acquired_data):
+    def create_notify_acquired_data_process(self, status, tef_account, master_info):
         sub_process =  self._generate_notify_acquired_data_process(tef_account)
 
-        return self.start_notify_acquired_data(status, tef_account, sub_process.id, contract_id, acquired_data)
+        return self.start_notify_acquired_data(status, master_info)
 
-    def start_notify_acquired_data(self, status, tef_account, sp_id, contract_id, acquired_data):
+    def start_notify_acquired_data(self, status, master_info):
+
+        tef_account   = master_info.tef_account
+        sp_id         = master_info.subprocess.id
+        contract_id   = master_info.contract
+        acquired_data = master_info.acquired_data
+        order_code    = master_info.recurrent_order_code
 
         invoicing_address = {}
-        invoicing_address['address'] = acquired_data.address
+        invoicing_address['address']     = acquired_data.address
         invoicing_address['postal_code'] = acquired_data.postal_code
 
-        chain = activate_contract_task.s(True, contract_id, sp_id) | notify_salesforce_task.s(status, tef_account, invoicing_address, sp_id) | notify_tef_accounts_task.s(status, tef_account, sp_id) | generate_sdr_and_upload_task.s(tef_account, contract_id, sp_id)
+        chain = activate_contract_task.s(True, contract_id, sp_id) | notify_salesforce_task.s(status, tef_account, invoicing_address, order_code, sp_id) | notify_tef_accounts_task.s(status, tef_account, sp_id) | generate_sdr_and_upload_task.s(tef_account, contract_id, sp_id)
 
         chain()
 

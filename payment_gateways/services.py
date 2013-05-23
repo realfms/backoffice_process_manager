@@ -49,7 +49,13 @@ class ServiceManager:
 
         master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country, status = "VALIDATED")
 
-        return len(master_infos) > 0
+        registered = len(master_infos) > 0
+        first      = None
+
+        if registered:
+            first = master_infos[0]
+
+        return (registered, first)
 
     def createContract(self, user_data):
         return create_contract(user_data)
@@ -176,7 +182,7 @@ class ServiceManager:
                                      token=token, gender=user_data.gender, first_name=user_data.first_name,
                                      last_name=user_data.last_name)
 
-        acquired_data.save()
+        acquired_data.save()[0]
 
         url = settings.DEPLOY_URL + "/payment/acquire/form/" + token
 

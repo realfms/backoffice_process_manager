@@ -118,7 +118,7 @@ class PaymentController:
             cls.serviceManager.update_acquired_data(params)
 
             # Checking if this user has already set up payment data
-            registered = cls.serviceManager.isPaymentDataRegistered(acquired_data)
+            (registered, master_info) = cls.serviceManager.isPaymentDataRegistered(acquired_data)
 
             # Creating inactive contract a
             contract_id = cls.serviceManager.createContract(acquired_data)
@@ -128,8 +128,7 @@ class PaymentController:
                 url = cls.serviceManager.initial_payment_url(token, contract_id)
             else:
                 # We already have payment data, so activating contract
-                cls.serviceManager.data_acquisition_process.create_notify_acquired_data_process('Billable', acquired_data.tef_account,
-                                                                                                contract_id, acquired_data)
+                cls.serviceManager.data_acquisition_process.create_notify_acquired_data_process('Billable', master_info)
                 url = "/payment/gw/worldpay/success"
 
             return HttpResponseRedirect(url)

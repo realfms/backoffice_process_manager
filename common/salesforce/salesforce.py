@@ -73,7 +73,7 @@ def get_catalogue():
     
     return catalogue
 
-def update_contact(status, contact_id, invoicing_address):
+def update_contact(status, contact_id, invoicing_address, order_code):
     c = connect()
 
     new_contact    = c.generateObject('Contact')
@@ -82,6 +82,7 @@ def update_contact(status, contact_id, invoicing_address):
     new_contact.PaymentState__c = status
     new_contact.MailingPostalCode = invoicing_address['postal_code']
     new_contact.MailingStreet = invoicing_address['address']
+    new_contact.WorldPay_OrderCode__c = order_code
 
     c.update(new_contact)
 

@@ -104,6 +104,7 @@ class Adyen_Charger (PaymentGateway):
     def data_acquisition_flow(self, payment_method, status):
         # Callback of payment data acquisition flow
         print "DATA ACQUISITION FLOW"
+        print status
 
         payment_method.status = status
         payment_method.save()
@@ -113,7 +114,7 @@ class Adyen_Charger (PaymentGateway):
         print contract.id
 
         # Start Async notify process
-        self.data_acquisition_manager.start_notify_new_payment_method_data('Billable', payment_method, contract.contract_id)
+        self.data_acquisition_manager.start_notify_new_payment_method_data('Billable', payment_method, contract.subprocess, contract.contract_id)
 
         return True
 

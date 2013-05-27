@@ -59,7 +59,7 @@ class DataAcquisitionProcess:
         chain()
 
     def get_contract_by_payment_method(self, payment_method):
-            return self.service_manager.get_contract_by_payment_metrhod(payment_method)
+            return self.service_manager.get_contract_by_payment_method(payment_method)
 
     ################################################################################
     # Generating Processes

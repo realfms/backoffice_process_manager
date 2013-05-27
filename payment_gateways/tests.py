@@ -50,7 +50,7 @@ class TestPaymentDataAcquisition(TestCase):
 
         self.assertTrue(url.startswith('https://test.adyen.com/hpp/pay.shtml'), 'Problem testing connection with Adyen')
 
-    @unittest.skip("Making tests faster")
+    #@unittest.skip("Making tests faster")
     def test_already_registered(self):
 
         token  = 'mac'

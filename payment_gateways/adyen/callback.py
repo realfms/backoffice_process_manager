@@ -43,6 +43,8 @@ class AdyenCallbackController:
 
             (charger, pgw) = cls.getCharger()
 
+            print data
+
             result = charger.update_order_status(data, "VALIDATED")
 
             print "CALLBACK RESULT:  {0}".format(result)

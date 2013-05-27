@@ -89,7 +89,7 @@ class Adyen_Charger (PaymentGateway):
 
         # Distinguising flows
         if len(payment_methods) == 1:
-            return self.data_acquisition_flow(payment_methods, status)
+            return self.data_acquisition_flow(payment_methods[0], status)
 
         # Callback of recurrent payment flow
         orders = Order.objects.filter(order_code=order_code, status='PENDING')
@@ -104,8 +104,6 @@ class Adyen_Charger (PaymentGateway):
     def data_acquisition_flow(self, payment_method, status):
         # Callback of payment data acquisition flow
         print "DATA ACQUISITION FLOW"
-
-        payment_method = payment_method[0]
 
         payment_method.status = status
         payment_method.save()

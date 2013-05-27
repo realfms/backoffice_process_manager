@@ -28,7 +28,6 @@ Created on 15/10/2012
 from celery import task
 
 from common.salesforce.salesforce import update_contact, activate_contract, create_order_summary
-from sdr_gen                      import generate_and_upload_sdr
 
 from processes.task_manager import TaskManager
 

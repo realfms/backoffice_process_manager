@@ -110,6 +110,8 @@ class Adyen_Charger (PaymentGateway):
 
         contract = self.data_acquisition_manager.get_contract_by_payment_method(payment_method)
 
+        print contract.id
+
         # Start Async notify process
         self.data_acquisition_manager.start_notify_new_payment_method_data('Billable', payment_method, contract.contract_id)
 

@@ -63,6 +63,8 @@ class ServiceManager:
         # Creating inactive contract a
         contract_id = self.create_contract(payment_data_details)
 
+        print contract_id
+
         if (registered):
             # We already have payment data, so activating contract
             self.data_acquisition_process.create_notify_payment_method_process('Billable', payment_method, contract_id)

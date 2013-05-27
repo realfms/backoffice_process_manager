@@ -47,4 +47,4 @@ celerybeat-schedule
 # Environment variables
 .env
 
-static_cache/*
+static_cache

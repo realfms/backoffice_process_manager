@@ -27,46 +27,39 @@ Created on 05/02/2013
 
 from models import BusinessProcess, SubProcess
 
-from notifications.tasks  import notify_salesforce_task, notify_tef_accounts_task, activate_contract_task, generate_sdr_and_upload_task
+from notifications.tasks  import notify_salesforce_task, activate_contract_task
 
 class DataAcquisitionProcess:
 
-    def __init__(self):
-        pass
+    def __init__(self, service_manager):
+        self.service_manager = service_manager
 
-    def create_acquire_data_subprocess(self, tef_account):
+    def create_acquire_payment_method_subprocess(self, tef_account):
         return self._generate_acquire_data_process(tef_account)
 
-    def create_notify_acquired_data_process(self, status, tef_account, master_info):
-        sub_process =  self._generate_notify_acquired_data_process(tef_account)
+    def create_notify_payment_method_process(self, status, payment_method, contract_id):
+        subprocess =  self._generate_notify_acquired_data_process(payment_method.tef_account)
 
-        return self.start_notify_acquired_data(status, master_info)
+        return self.start_notify_new_payment_method_data(status, payment_method, subprocess, contract_id)
 
-    def start_notify_acquired_data(self, status, master_info):
+    def start_notify_new_payment_method_data(self, status, payment_method, subprocess, contract_id):
 
-        tef_account   = master_info.tef_account
-        sp_id         = master_info.subprocess.id
-        contract_id   = master_info.contract
-        acquired_data = master_info.acquired_data
-        order_code    = master_info.recurrent_order_code
+        tef_account = payment_method.tef_account
+        order_code  = payment_method.recurrent_order_code
+        sp_id       = subprocess.id
+
+        payment_method_details = payment_method.payment_method_details
 
         invoicing_address = {}
-        invoicing_address['address']     = acquired_data.address
-        invoicing_address['postal_code'] = acquired_data.postal_code
+        invoicing_address['address']     = payment_method_details.address
+        invoicing_address['postal_code'] = payment_method_details.postal_code
 
-        chain = activate_contract_task.s(True, contract_id, sp_id) | notify_salesforce_task.s(status, tef_account, invoicing_address, order_code, sp_id) | notify_tef_accounts_task.s(status, tef_account, sp_id) | generate_sdr_and_upload_task.s(tef_account, contract_id, sp_id)
+        chain = activate_contract_task.s(True, contract_id, sp_id) | notify_salesforce_task.s(status, tef_account, invoicing_address, order_code, sp_id)
 
         chain()
 
-    def sync_notify_acquired_data(self, status, master_info):
-        contact_id = master_info.tef_account
-
-        subprocess = master_info.subprocess
-
-        sucess = notify_salesforce_task(True, status, contact_id, subprocess.id)
-        sucess = notify_tef_accounts_task(sucess, status, contact_id, subprocess.id)
-
-        return sucess
+    def get_contract_by_payment_method(self, payment_method):
+            return self.service_manager.get_contract_by_payment_metrhod(payment_method)
 
     ################################################################################
     # Generating Processes

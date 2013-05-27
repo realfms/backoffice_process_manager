@@ -38,7 +38,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 class PaymentController:
 
-    serviceManager = ServiceManager()
+    service_manager = ServiceManager()
 
     @classmethod
     @transaction.commit_on_success
@@ -71,7 +71,7 @@ class PaymentController:
             user_data = UserData(tef_account, city, address, postal_code, country, phone,
                                  email, gender, first_name, last_name)
 
-            url = cls.serviceManager.generate_form_url(user_data)
+            url = cls.service_manager.generate_form_url(user_data)
 
             return HttpResponse(url, content_type='text/plain')
         else:
@@ -82,9 +82,9 @@ class PaymentController:
 
         if request.method == 'GET':
 
-            user_data = cls.serviceManager.get_user_data_by_token(token)
+            user_data = cls.service_manager.get_user_data_by_token(token)
 
-            registered = cls.serviceManager.isPaymentDataRegistered(user_data)
+            (registered, _) = cls.service_manager.is_payment_method_registered(user_data)
 
             context = {
                         'code': token,
@@ -109,28 +109,12 @@ class PaymentController:
 
         if request.method == 'POST':
 
-            params = request.POST.get
+            params = request.POST
+            token = params.get('token', None)
 
-            token = params('token', None)
-
-            # Storing user data in DB
-            acquired_data  = cls.serviceManager.get_acquired_data_by_token(token)
-            cls.serviceManager.update_acquired_data(params)
-
-            # Checking if this user has already set up payment data
-            (registered, master_info) = cls.serviceManager.isPaymentDataRegistered(acquired_data)
-
-            # Creating inactive contract a
-            contract_id = cls.serviceManager.createContract(acquired_data)
-
-            if (not registered):
-                # Start payment data acquisition flow
-                url = cls.serviceManager.initial_payment_url(token, contract_id)
-            else:
-                # We already have payment data, so activating contract
-                cls.serviceManager.data_acquisition_process.create_notify_acquired_data_process('Billable', master_info)
-                url = "/payment/gw/worldpay/success"
+            url = cls.service_manager.get_payment_gateway_redirect_url(token, params)
 
             return HttpResponseRedirect(url)
         else:
             return HttpResponse('<h1>Invalid Method</h1>', status=405)
+

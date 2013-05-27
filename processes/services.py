@@ -62,9 +62,7 @@ class ProcessManager:
         return processes.reverse()
 
     def get_subprocesses_by_process(self, process):
-        subprocesses = process.subprocess_set.all()
-        return subprocesses
+        return process.subprocess_set.all()
 
     def get_tasks_by_subprocess(self, subprocess):
-        tasks = subprocess.task_set.all()
-        return tasks
+        return subprocess.task_set.all()

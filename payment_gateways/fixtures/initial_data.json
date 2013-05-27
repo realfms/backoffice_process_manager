@@ -27,29 +27,17 @@
             }
   }, 
   {"pk": 1, 
-  "model": "payment_gateways.masterinformation", 
+  "model": "payment_gateways.paymentmethod",
   "fields": { "status": "VALIDATED",
   			  "recurrent_order_code": "a6f5512", 
   			  "gateway": 2, 
-  			  "tef_account": "1928jj2js", 
+  			  "tef_account": "003d000000wX82sAAC",
   			  "email": "mac@tid.es",
-              "contract": "00000112",
-              "acquired_data": 5
+              "payment_method_details": 5
   			  }
   },
-  {"pk": 2,
-    "model": "payment_gateways.masterinformation",
-    "fields": { "status": "VALIDATED",
-                "recurrent_order_code": "a6f5512",
-                "gateway": 2,
-                "tef_account": "003d000000wX82sAAC",
-                "email": "mac@tid.es",
-                "contract": "00000112",
-                "acquired_data": 5
-    }
-  },
   {"pk": 4,
-  "model": "payment_gateways.acquireddata", 
+  "model": "payment_gateways.paymentmethoddetails",
   "fields": { "city": "Sao Paulo", "last_name": "Augustin Row", 
   			  "first_name": "Martin", "email": "martin.augustin@gmail.com", 
   			  "postal_code": "0", "phone": "", "tef_account": "003d000000lpI8ZAAU", 
@@ -58,12 +46,20 @@
   			}
   },
     {"pk": 5,
-        "model": "payment_gateways.acquireddata",
+        "model": "payment_gateways.paymentmethoddetails",
         "fields": { "city": "Madrid", "last_name": "Cañas Vaz",
             "first_name": "Miguel", "email": "mac@tid.es",
             "postal_code": "0", "phone": "", "tef_account": "003d000000wX82sAAC",
             "address": "0", "token": "mac",
             "country": "BR", "gender": "Male"
+        }
+    },
+    {"pk": 6,
+        "model": "payment_gateways.contract",
+        "fields": {
+            "contract_id": "00000112",
+            "subprocess": null,
+            "payment_method" : 1
         }
     }
 ]

@@ -32,7 +32,8 @@ from py_adyen.adyen import Adyen
 from py_adyen.api import Api
 
 from payment_gateways.gateway_interface.PaymentGateway import PaymentGateway
-from payment_gateways.models import Order, MasterInformation
+from payment_gateways.models import Order, PaymentMethod
+from payment_gateways.services import ServiceManager
 
 from processes.data_acquisition_process import DataAcquisitionProcess
 
@@ -40,7 +41,8 @@ class Adyen_Charger (PaymentGateway):
 
     def __init__(self, model):
         super(Adyen_Charger, self).__init__(model)
-        self.data_acquisition_manager = DataAcquisitionProcess()
+        self.service_manager          = ServiceManager()
+        self.data_acquisition_manager = DataAcquisitionProcess(self.service_manager)
 
     def get_redirect_url(self, user_data):
 
@@ -83,11 +85,11 @@ class Adyen_Charger (PaymentGateway):
             print data
             return False
 
-        master_infos = MasterInformation.objects.filter(recurrent_order_code=order_code, status='PENDING')
+        payment_methods = PaymentMethod.objects.filter(recurrent_order_code=order_code, status='PENDING')
 
         # Distinguising flows
-        if len(master_infos) == 1:
-            return self.data_acquisition_flow(master_infos, status)
+        if len(payment_methods) == 1:
+            return self.data_acquisition_flow(payment_methods, status)
 
         # Callback of recurrent payment flow
         orders = Order.objects.filter(order_code=order_code, status='PENDING')
@@ -99,17 +101,19 @@ class Adyen_Charger (PaymentGateway):
         print "ERROR: NEITHER ACQUISITION NOR RECURRENT FLOW IN ADYEN CALLBACK"
         return False
 
-    def data_acquisition_flow(self, master_infos, status):
+    def data_acquisition_flow(self, payment_method, status):
         # Callback of payment data acquisition flow
         print "DATA ACQUISITION FLOW"
 
-        master_info = master_infos[0]
+        payment_method = payment_method[0]
 
-        master_info.status = status
-        master_info.save()
+        payment_method.status = status
+        payment_method.save()
+
+        contract = self.data_acquisition_manager.get_contract_by_payment_method(payment_method)
 
         # Start Async notify process
-        self.data_acquisition_manager.start_notify_acquired_data('Billable', master_info)
+        self.data_acquisition_manager.start_notify_new_payment_method_data('Billable', payment_method, contract.contract_id)
 
         return True
 

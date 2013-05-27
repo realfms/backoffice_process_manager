@@ -54,7 +54,7 @@ class PaymentGateway(models.Model):
     
     country    = models.CharField(max_length = 3)
 
-class AcquiredData(models.Model):
+class PaymentMethodDetails(models.Model):
 
     tef_account = models.CharField(max_length = 20)
     email       = models.EmailField(blank=True)
@@ -72,7 +72,7 @@ class AcquiredData(models.Model):
 
     token = models.CharField(unique=True, max_length=10)
 
-class MasterInformation(models.Model):
+class PaymentMethod(models.Model):
 
     gateway     = models.ForeignKey(PaymentGateway)
     
@@ -82,11 +82,8 @@ class MasterInformation(models.Model):
     recurrent_order_code = models.CharField(max_length=10)
     
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
-    
-    subprocess = models.ForeignKey(SubProcess, null=True)
-    contract = models.CharField(max_length = 20)
 
-    acquired_data = models.ForeignKey(AcquiredData)
+    payment_method_details = models.ForeignKey(PaymentMethodDetails)
 
 class Order(models.Model):
 
@@ -101,3 +98,10 @@ class Order(models.Model):
 
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
     result = models.TextField()
+
+class Contract(models.Model):
+
+    contract_id = models.CharField(max_length = 20)
+    subprocess  = models.ForeignKey(SubProcess, null=True)
+
+    payment_method = models.ForeignKey(PaymentMethod)

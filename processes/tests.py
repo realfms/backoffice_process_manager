@@ -26,16 +26,15 @@ Created on 16/01/2013
 """
 
 import manage
-import random
 import unittest
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('.env')
+
 from django.test import TestCase
 
 from customer.salesforce import get_customer_details_from_sf
 
-from processes.notifications.sdr_gen import generate_and_upload_sdr
 from common.salesforce.salesforce    import update_contact, create_contract, create_order_summary
 from payment_gateways.api_format     import UserData
 
@@ -109,12 +108,4 @@ class TestSalesforce(TestCase):
 
         print result
 
-
-class TestSDR(TestCase):
-
-    #@unittest.skip("Making tests faster")
-    def test_sdr(self):
-        (result, file_name) = generate_and_upload_sdr("82822", "00010010101s")
-
-        self.assertEqual(result, True, "Problem uploading SDR")
 

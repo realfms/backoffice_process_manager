@@ -25,7 +25,7 @@ Created on 30/10/2012
 @author: mac@tid.es
 '''
 
-from models     import PaymentGateway, MasterInformation, Order, AcquiredData
+from models     import PaymentGateway, PaymentMethod, Order, PaymentMethodDetails, Contract
 from api_format import UserData
 
 from processes.data_acquisition_process import DataAcquisitionProcess
@@ -41,35 +41,65 @@ import uuid
 class ServiceManager:
 
     def __init__(self):
-        self.data_acquisition_process = DataAcquisitionProcess()
+        self.data_acquisition_process = DataAcquisitionProcess(self)
 
-    def isPaymentDataRegistered(self, user_data):
+    def get_contract_by_payment_method(self, payment_method):
+        contracts = Contract.objects.filter(payment_method=payment_method)
+
+        if len(contracts) != 1:
+            print "Incorrect number of contracts"
+            return None
+
+        return contracts[0]
+
+    def get_payment_gateway_redirect_url(self, token, params):
+
+        # Storing user data in DB (maybe user changed data in web form)
+        payment_data_details  = self.update_payment_method_details(token, params)
+
+        # Checking if this user has already set up payment data
+        (registered, payment_method) = self.is_payment_method_registered(payment_data_details)
+
+        # Creating inactive contract a
+        contract_id = self.create_contract(payment_data_details)
+
+        if (registered):
+            # We already have payment data, so activating contract
+            self.data_acquisition_process.create_notify_payment_method_process('Billable', payment_method, contract_id)
+            url = "/payment/gw/worldpay/success"
+        else:
+            # Start payment data acquisition flow from the very beginning
+            url = self.initial_payment_url(token, contract_id)
+
+        return url
+
+    def is_payment_method_registered(self, user_data):
         tef_account = user_data.tef_account
         country     = user_data.country
 
-        master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country, status = "VALIDATED")
+        payment_methods = PaymentMethod.objects.filter(tef_account=tef_account, gateway__country=country, status = "VALIDATED")
 
-        registered = len(master_infos) > 0
+        registered = len(payment_methods) > 0
         first      = None
 
         if registered:
-            first = master_infos[0]
+            first = payment_methods[0]
 
         return (registered, first)
 
-    def createContract(self, user_data):
+    def create_contract(self, user_data):
         return create_contract(user_data)
 
     def initial_payment_url(self, token, contract_id):
-        acquired_data = self.get_acquired_data_by_token(token)
+        payment_method_details = self.get_payment_method_details_by_token(token)
 
-        (charger, gw) = self.get_first_available_charger_by_country(acquired_data.country)
+        (charger, gw) = self.get_first_available_charger_by_country(payment_method_details.country)
         if (charger == None):
             return "/error"
 
-        url = charger.get_redirect_url(acquired_data)
+        url = charger.get_redirect_url(payment_method_details)
 
-        self.store_master_information(acquired_data, charger.get_order(), gw, contract_id)
+        self.store_payment_method(payment_method_details, charger.get_order(), gw, contract_id)
 
         return url
 
@@ -90,7 +120,7 @@ class ServiceManager:
         return (self.dynamically_loading_charger(gw), gw)
 
     def get_charger_by_tef_account_and_country(self, tef_account, country):
-        master_info = self.get_master_info_by_tef_account_and_country(tef_account, country)
+        master_info = self.get_payment_method_by_tef_account_and_country(tef_account, country)
 
         if master_info == None:
             return (None, None)
@@ -116,16 +146,16 @@ class ServiceManager:
         # If several, getting the first one
         return gws[0]
 
-    def get_master_info_by_tef_account_and_country(self, tef_account, country):
-        master_infos = MasterInformation.objects.filter(tef_account=tef_account, gateway__country=country)
+    def get_payment_method_by_tef_account_and_country(self, tef_account, country):
+        payment_methods = PaymentMethod.objects.filter(tef_account=tef_account, gateway__country=country)
 
-        if len(master_infos) == 0:
+        if len(payment_methods) == 0:
             return None
 
         # If several, getting the first one
-        return master_infos[0]
+        return payment_methods[0]
 
-    def get_charger_by_master_information(self, country):
+    def get_charger_by_payment_method(self, country):
         gw = self.get_gateway_by_country(country)
 
         if gw == None:
@@ -149,15 +179,18 @@ class ServiceManager:
         return True
 
 
-    def store_master_information(self, acquired_data, recurrent_order_code, gateway, contract_id):
+    def store_payment_method(self, payment_method_details, recurrent_order_code, gateway, contract_id):
         # Creating subprocese
-        subprocess = self.data_acquisition_process.create_acquire_data_subprocess(acquired_data.tef_account)
+        subprocess = self.data_acquisition_process.create_acquire_payment_method_subprocess(payment_method_details.tef_account)
 
-        # Linking master info and subprocess
-        master_info = MasterInformation( tef_account=acquired_data.tef_account, recurrent_order_code=recurrent_order_code,
-                                         gateway=gateway, email=acquired_data.email, subprocess=subprocess, contract=contract_id,
-                                         acquired_data=acquired_data)
-        master_info.save()
+        # Creating PaymentMethod
+        payment_method = PaymentMethod(tef_account=payment_method_details.tef_account, recurrent_order_code=recurrent_order_code,
+                                       gateway=gateway, email=payment_method_details.email, payment_method_details=payment_method_details)
+        payment_method.save()
+
+        #Creating and Linking Contract
+        contract = Contract(subprocess=subprocess, contract_id=contract_id, payment_method=payment_method)
+        contract.save()
 
     def store_order(self, order_data):
         order = Order(total=order_data.total, currency=order_data.currency, country=order_data.country,
@@ -176,42 +209,42 @@ class ServiceManager:
     def generate_form_url(self, user_data):
         token = self.compute_unique_id()
 
-        acquired_data = AcquiredData(tef_account=user_data.tef_account, email=user_data.email,
-                                     city=user_data.city, address=user_data.address,
-                                     postal_code=user_data.postal_code, country=user_data.country,
-                                     token=token, gender=user_data.gender, first_name=user_data.first_name,
-                                     last_name=user_data.last_name)
+        payment_method_details = PaymentMethodDetails(tef_account=user_data.tef_account, email=user_data.email,
+                                                      city=user_data.city, address=user_data.address,
+                                                      postal_code=user_data.postal_code, country=user_data.country,
+                                                      token=token, gender=user_data.gender, first_name=user_data.first_name,
+                                                      last_name=user_data.last_name)
 
-        acquired_data.save()[0]
+        payment_method_details.save()
 
         url = settings.DEPLOY_URL + "/payment/acquire/form/" + token
 
         return url
 
     def get_user_data_by_token(self, token):
-        acquired_data = AcquiredData.objects.get(token=token)
+        payment_method_details = PaymentMethodDetails.objects.get(token=token)
 
-        user_data = UserData(acquired_data.tef_account, acquired_data.city, acquired_data.address,
-                             acquired_data.postal_code, acquired_data.country, acquired_data.phone, acquired_data.email,
-                             acquired_data.gender, acquired_data.first_name, acquired_data.last_name)
+        user_data = UserData(payment_method_details.tef_account, payment_method_details.city, payment_method_details.address,
+                             payment_method_details.postal_code, payment_method_details.country, payment_method_details.phone, payment_method_details.email,
+                             payment_method_details.gender, payment_method_details.first_name, payment_method_details.last_name)
 
         return user_data
 
-    def get_acquired_data_by_token(self, token):
-        acquired_data = AcquiredData.objects.get(token=token)
+    def get_payment_method_details_by_token(self, token):
+        payment_method_details = PaymentMethodDetails.objects.get(token=token)
 
-        return acquired_data
+        return payment_method_details
 
-    def update_acquired_data(self, params):
-        token = params('token', None)
+    def update_payment_method_details(self, token, params):
+        payment_method_details = PaymentMethodDetails.objects.get(token=token)
 
-        acquired_data = AcquiredData.objects.get(token=token)
+        payment_method_details.address     = params.get('address',     payment_method_details.address)
+        payment_method_details.city        = params.get('city',        payment_method_details.city)
+        payment_method_details.postal_code = params.get('postal_code', payment_method_details.postal_code)
 
-        acquired_data.address     = params('address', None)
-        acquired_data.city        = params('city', None)
-        acquired_data.postal_code = params('postal_code', 454)
+        payment_method_details.save()
 
-        acquired_data.save()
+        return payment_method_details
 
     def compute_unique_id(self):
         uid = uuid.uuid4()

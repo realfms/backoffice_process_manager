@@ -29,45 +29,36 @@ import manage
 
 from django.test import TestCase
 
-from api_format import OrderData
-from models     import PaymentGateway, MasterInformation, Order
 from services   import ServiceManager
 
-# Loading environment variables prior to initialice django framework
-manage.read_env('../.env')
+import unittest
 
-class TestGenerator(TestCase):
+# Loading environment variables prior to initialice django framework
+manage.read_env('.env')
+
+class TestPaymentDataAcquisition(TestCase):
 
     service_manager = ServiceManager()
-    
-    def test_adyen_data_acquisition(self):
-        self.service_manager.initial_payment_url('ccf0ff7333')
-        
-        gw = PaymentGateway.objects.get(name="ADYEN")
-        
-        master_infos = MasterInformation.objects.filter(tef_account='003d000000lpI8ZAAU', 
-                                                        gateway__country='BR')
-        
-        self.assertEqual(len(master_infos), 1)
 
-        master_info = master_infos[0]
-        
-        self.assertEqual(master_info.gateway, gw)
-        self.assertEqual(master_info.tef_account, '003d000000lpI8ZAAU')
-        self.assertEqual(master_info.email, 'martin.augustin@gmail.com')
-        self.assertEqual(master_info.status, 'PENDING')
-    
-    def test_adyen_recurrent_payment(self):
-        
-        order_data = OrderData(tef_account="1928jj2js", total=100, currency='EUR', country='BR', 
-                               statement="statement", order_code="20")
-        
-        self.service_manager.process_recurrent_payment(order_data)
-        
-        order = Order.objects.get(order_code=order_data.order_code)
-        
-        self.assertEqual(order.currency, order_data.currency)
-        self.assertEqual(order.country, order_data.country)
-        self.assertEqual(order.total, order_data.total)
-        self.assertEqual(order.statement, order_data.statement)
-        self.assertEqual(order.tef_account, order_data.tef_account)
+    #@unittest.skip("Making tests faster")
+    def test_redirect_to_adyen(self):
+
+        token  = 'ccf0ff7333'
+        params = {}
+
+        url = self.service_manager.get_payment_gateway_redirect_url(token, params)
+
+        self.assertTrue(url.startswith('https://test.adyen.com/hpp/pay.shtml'), 'Problem testing connection with Adyen')
+
+    @unittest.skip("Making tests faster")
+    def test_already_registered(self):
+
+        token  = 'mac'
+        params = {}
+
+        url = self.service_manager.get_payment_gateway_redirect_url(token, params)
+
+        print url
+
+        self.assertTrue(url.startswith('https://test.adyen.com/hpp/pay.shtml'), 'Problem testing connection with Adyen')
+

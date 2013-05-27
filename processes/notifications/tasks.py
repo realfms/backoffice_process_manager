@@ -48,11 +48,6 @@ def activate_contract_task(success, contract_id, sp_id):
     return tm.process_task(sp_id, 'ACTIVATE CONTRACT', success, lambda : activate_contract(contract_id))
 
 @task(ignore_result=True)
-def generate_sdr_and_upload_task(success, tef_account, contract_id, sp_id):
-    tm = TaskManager()
-    return tm.process_task(sp_id, 'GENERATE SDR & UPLOAD', success, lambda : generate_and_upload_sdr(tef_account, contract_id))
-
-@task(ignore_result=True)
 def create_order_summary_task(success, sp_id):
     tm = TaskManager()
     

@@ -116,4 +116,40 @@ class Worldpay_Charger (PaymentGateway):
         print doc
 
     def update_order_status(self, data, status):
-        pass
+        order_key = data['orderKey']
+        status    = data['paymentStatus']
+        
+        size       = len(self.USERNAME) + 1
+        order_code = order_key[order_key.find(self.USERNAME)+size:]
+
+        if status != "AUTHORISED":
+            print "ERROR: PAYMENT GATEWAY PROBLEM"
+            print data
+            return False
+
+        payment_methods = PaymentMethod.objects.filter(recurrent_order_code=order_code, status='PENDING')
+
+        # Distinguising flows
+        if len(payment_methods) == 1:
+            return self.data_acquisition_flow(payment_methods[0], status)
+
+        # Neither data acquistion flow nor recurrent payment flow, this is an error!
+        print "ERROR: NEITHER ACQUISITION NOR RECURRENT FLOW IN ADYEN CALLBACK"
+        return False
+    
+    def data_acquisition_flow(self, payment_method, status):
+        # Callback of payment data acquisition flow
+        print "DATA ACQUISITION FLOW"
+        print status
+
+        payment_method.status = status
+        payment_method.save()
+
+        contract = self.data_acquisition_manager.get_contract_by_payment_method(payment_method)
+
+        print contract.id
+
+        # Start Async notify process
+        self.data_acquisition_manager.start_notify_new_payment_method_data('Billable', payment_method, contract.subprocess, contract.contract_id)
+
+        return True

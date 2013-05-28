@@ -3,10 +3,10 @@
   "fields": { "merchant": "GLOBALBILLINGEUR",
               "endpoint": "https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp",
               "name": "WORLDPAY",
-              "error_callback": "http://payment-enabler.herokuapp.com/gw/worldpay/error",
-              "success_callback": "http://payment-enabler.herokuapp.com/gw/worldpay/success",
+              "error_callback": "http://bo-process-manager-europe.herokuapp.com/gw/worldpay/error",
+              "success_callback": "http://bo-process-manager-europe.herokuapp.com/gw/worldpay/success",
               "password": "xml2012launch",
-              "pending_callback": "http://payment-enabler.herokuapp.com/gw/worldpay/pending",
+              "pending_callback": "http://bo-process-manager-europe.herokuapp.com/gw/worldpay/pending",
               "module_name": "payment_gateways.worldpay.worldpay_charger",
               "class_name": "Worldpay_Charger",
               "country": "ES"

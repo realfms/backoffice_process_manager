@@ -49,4 +49,4 @@ class WorldpayCallbackController:
 
         print "FROM WorldPay Callback: {0}".format(data)
 
-        charger.update_order_status(data, "VALIDATED")
+        charger.update_order_status(data)

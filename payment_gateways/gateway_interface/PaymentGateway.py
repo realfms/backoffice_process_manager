@@ -27,6 +27,10 @@ Created on 17/10/2012
 
 import uuid
 
+from processes.data_acquisition_process import DataAcquisitionProcess
+from payment_gateways.services          import ServiceManager
+from payment_gateways.models            import Order, PaymentMethod
+
 class PaymentGateway(object):
 
     def __init__(self, model):
@@ -45,6 +49,9 @@ class PaymentGateway(object):
         self.order = self.compute_order_id()
 
         self.gw = model
+        
+        self.service_manager          = ServiceManager()
+        self.data_acquisition_manager = DataAcquisitionProcess(self.service_manager)
 
     def get_order(self):
         return self.order
@@ -54,6 +61,51 @@ class PaymentGateway(object):
         
         # Order = ten first characters of uuid
         return uid.hex[:10]
+    
+    ###########################################################
+    # Common data flows
+    ########################################################### 
+    
+    def identify_successful_flow(self, order_code, status):
+        payment_methods = PaymentMethod.objects.filter(recurrent_order_code=order_code, status='PENDING')
+
+        # Distinguising flows
+        if len(payment_methods) == 1:
+            return self._data_acquisition_flow(payment_methods[0], status)
+
+        # Callback of recurrent payment flow
+        orders = Order.objects.filter(order_code=order_code, status='PENDING')
+
+        if len(orders) == 1:
+            return self._recurrent_payment_flow(orders, status)
+
+        # Neither data acquistion flow nor recurrent payment flow, this is an error!
+        print "ERROR: NEITHER ACQUISITION NOR RECURRENT FLOW IN ADYEN CALLBACK"
+        return False
+    
+    def _data_acquisition_flow(self, payment_method, status):
+        # Callback of payment data acquisition flow
+        print "DATA ACQUISITION FLOW"
+        print status
+
+        payment_method.status = status
+        payment_method.save()
+
+        contract = self.data_acquisition_manager.get_contract_by_payment_method(payment_method)
+
+        print contract.id
+
+        # Start Async notify process
+        self.data_acquisition_manager.start_notify_new_payment_method_data('Billable', payment_method, contract.subprocess, contract.contract_id)
+    
+    def _recurrent_payment_flow(self, orders, status):
+        # Callback of recuerrent payment flow
+        print "RECURRENT ORDER FLOW"
+
+        order = orders[0]
+
+        order.status = status
+        order.save()
  
     ###########################################################
     # Should be overwritten by specific implementations of Payment Gateways

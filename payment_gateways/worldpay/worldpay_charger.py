@@ -31,6 +31,9 @@ from BeautifulSoup import BeautifulSoup
 
 from payloads import FIRST_PAYMENT_PAYLOAD, RECURRENT_PAYMENT_PAYLOAD
 from payment_gateways.gateway_interface.PaymentGateway import PaymentGateway
+from payment_gateways.models import Order, PaymentMethod
+
+from processes.data_acquisition_process import DataAcquisitionProcess
 
 class Worldpay_Charger (PaymentGateway):
 
@@ -115,7 +118,7 @@ class Worldpay_Charger (PaymentGateway):
 
         print doc
 
-    def update_order_status(self, data, status):
+    def update_order_status(self, data):
         order_key = data['orderKey']
         status    = data['paymentStatus']
         
@@ -127,29 +130,4 @@ class Worldpay_Charger (PaymentGateway):
             print data
             return False
 
-        payment_methods = PaymentMethod.objects.filter(recurrent_order_code=order_code, status='PENDING')
-
-        # Distinguising flows
-        if len(payment_methods) == 1:
-            return self.data_acquisition_flow(payment_methods[0], status)
-
-        # Neither data acquistion flow nor recurrent payment flow, this is an error!
-        print "ERROR: NEITHER ACQUISITION NOR RECURRENT FLOW IN ADYEN CALLBACK"
-        return False
-    
-    def data_acquisition_flow(self, payment_method, status):
-        # Callback of payment data acquisition flow
-        print "DATA ACQUISITION FLOW"
-        print status
-
-        payment_method.status = status
-        payment_method.save()
-
-        contract = self.data_acquisition_manager.get_contract_by_payment_method(payment_method)
-
-        print contract.id
-
-        # Start Async notify process
-        self.data_acquisition_manager.start_notify_new_payment_method_data('Billable', payment_method, contract.subprocess, contract.contract_id)
-
-        return True
+        return self.identify_successful_flow(order_code, 'VALIDATED')

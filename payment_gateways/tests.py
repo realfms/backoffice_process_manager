@@ -58,7 +58,7 @@ class TestPaymentDataAcquisition(TestCase):
 
         url = self.service_manager.get_payment_gateway_redirect_url(token, params)
 
-        print url
+        print "URL : " + url
 
-        self.assertTrue(url.startswith('https://test.adyen.com/hpp/pay.shtml'), 'Problem testing connection with Adyen')
+        self.assertTrue(url.startswith('/payment/gw/worldpay/success'), 'Problem testing connection with Adyen')
 

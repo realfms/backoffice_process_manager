@@ -36,6 +36,11 @@ STATUS = (
     ('CANCELED',  'CANCELED'),
 )
 
+CHANNEL = (
+    ('ONLINE',       'ONLINE'),
+    ('DIRECT_SALES', 'DIRECT_SALES'),
+)
+
 class PaymentGateway(models.Model):
 
     name = models.CharField(max_length = 100)
@@ -54,36 +59,32 @@ class PaymentGateway(models.Model):
     
     country    = models.CharField(max_length = 3)
 
-class PaymentMethodDetails(models.Model):
+class Account(models.Model):
 
-    tef_account = models.CharField(max_length = 20)
-    email       = models.EmailField(blank=True)
+    account_id  = models.CharField(max_length = 20, null=True)
+    email       = models.EmailField()
 
-    gender      = models.CharField(max_length = 100)
+    gender      = models.CharField(max_length = 100, null=True)
 
-    first_name  = models.CharField(max_length = 100)
-    last_name   = models.CharField(max_length = 100)
+    first_name  = models.CharField(max_length = 100, null=True)
+    last_name   = models.CharField(max_length = 100, null=True)
 
-    city        = models.CharField(max_length = 100)
-    address     = models.CharField(max_length = 200)
-    postal_code = models.CharField(max_length = 10)
-    country     = models.CharField(max_length = 3)
-    phone       = models.CharField(max_length = 10)
+    city        = models.CharField(max_length = 100, null=True)
+    address     = models.CharField(max_length = 200, null=True)
+    postal_code = models.CharField(max_length = 10,  null=True)
+    country     = models.CharField(max_length = 3,   null=True)
+    phone       = models.CharField(max_length = 10,  null=True)
 
-    token = models.CharField(unique=True, max_length=10)
+    channel     = models.CharField(max_length=10, choices=CHANNEL)
 
 class PaymentMethod(models.Model):
 
-    gateway     = models.ForeignKey(PaymentGateway)
-    
-    tef_account = models.CharField(max_length = 20)
-    email       = models.EmailField(blank=True)
+    gateway = models.ForeignKey(PaymentGateway)
+    account = models.CharField(max_length = 20)
     
     recurrent_order_code = models.CharField(max_length=10)
     
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
-
-    payment_method_details = models.ForeignKey(PaymentMethodDetails)
 
 class Order(models.Model):
 
@@ -92,16 +93,24 @@ class Order(models.Model):
     country  = models.CharField(max_length = 3)
     
     order_code  = models.CharField(max_length=10)
-    tef_account = models.CharField(max_length = 20)
+    account     = models.CharField(max_length = 20)
 
     statement = models.CharField(max_length = 200)
 
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
     result = models.TextField()
 
+    payment_method = models.ForeignKey(PaymentMethod)
+
 class Contract(models.Model):
 
-    contract_id = models.CharField(max_length = 20)
+    account     = models.ForeignKey(Account)
     subprocess  = models.ForeignKey(SubProcess, null=True)
 
-    payment_method = models.ForeignKey(PaymentMethod)
+    contract_id = models.CharField(max_length = 20, null=True)
+    tos         = models.URLField(max_length = 200)
+    sign_date   = models.DateTimeField()
+    start_date  = models.DateTimeField()
+    end_date    = models.DateTimeField(null=True)
+
+    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')

@@ -28,6 +28,7 @@ Created on 16/10/2012
 
 from django.db import models
 
+from payment_gateways.models import Account
 from datetime import datetime
 
 from django.utils.timezone import utc
@@ -41,7 +42,7 @@ STATUS = (
 
 class BusinessProcess(models.Model):
 
-    tef_account = models.CharField(max_length = 20)
+    account = models.ForeignKey(Account)
 
     name = models.CharField(max_length = 100)
 

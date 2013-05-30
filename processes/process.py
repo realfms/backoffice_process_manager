@@ -20,20 +20,31 @@ For those usages not covered by the GNU Affero General Public License please con
 """
 
 '''
-Created on 05/02/2013
+Created on 29/05/2013
 
 @author: mac@tid.es
 '''
 
-from tasks import create_financial_accounting_record, update_charging_result
+from models import BusinessProcess, SubProcess
 
-class CollectionsProcess():
+class Process:
 
-    def __init__(self):
-        pass
+    ################################################################################
+    # Generating Processes
+    ################################################################################
 
-    def start_collections_process(self, json):
-        chain = update_charging_result.s(json) | create_financial_accounting_record.s()
+    def create_process_model(self, account, name):
+        process = BusinessProcess(account=account, name=name)
+        process.save()
 
-        chain()
+        return process
 
+    ################################################################################
+    # Generating Subprocesses
+    ################################################################################
+
+    def create_subprocess_model(self, process, name):
+        subprocess = SubProcess(process=process, name=name)
+        subprocess.save()
+
+        return subprocess

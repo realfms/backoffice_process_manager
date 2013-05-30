@@ -7,7 +7,17 @@ import os
 
 FOLDER = os.getcwd()
 
-DEPLOY_URL =  os.environ.get('DEPLOY_URL')
+#######################################################
+# CHANNEL TO MARKET
+#######################################################
+
+CHANNELS_TO_MARKET = ["ONLINE","DIRECT_SALES"]
+
+#######################################################
+# SERVICE LANDING PAGE
+#######################################################
+
+SERVICE_LANDING_PAGE_URL  =  os.environ.get('SERVICE_LANDING_PAGE_URL')
 
 #######################################################
 # HEROKU ADDONS : CLOUDAMQP

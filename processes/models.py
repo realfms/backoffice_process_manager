@@ -28,7 +28,7 @@ Created on 16/10/2012
 
 from django.db import models
 
-from payment_gateways.models import Account
+from customers.models import Account
 from datetime import datetime
 
 from django.utils.timezone import utc

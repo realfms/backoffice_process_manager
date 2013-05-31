@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'djcelery',
+    'customers',
     'payment_gateways',
     'processes',
     'gunicorn',

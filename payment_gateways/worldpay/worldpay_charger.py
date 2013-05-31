@@ -33,8 +33,6 @@ from payloads import FIRST_PAYMENT_PAYLOAD, RECURRENT_PAYMENT_PAYLOAD
 from payment_gateways.gateway_interface.PaymentGateway import PaymentGateway
 from payment_gateways.models import Order, PaymentMethod
 
-from processes.data_acquisition_process import DataAcquisitionProcess
-
 class Worldpay_Charger (PaymentGateway):
 
     def __init__(self, model):

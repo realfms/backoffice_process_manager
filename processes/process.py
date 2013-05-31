@@ -33,6 +33,9 @@ class Process:
     # Generating Processes
     ################################################################################
 
+    # account: customers.models.Account
+    # name: text
+    # return: customers.models.Account
     def create_process_model(self, account, name):
         process = BusinessProcess(account=account, name=name)
         process.save()

@@ -34,43 +34,45 @@ from pdf.tasks           import generate_pdf_and_upload_task
 from email.tasks         import send_email_task
 from notifications.tasks import create_order_summary_on_salesforce_task
 
-class OrderToCashProcess:
+from process import Process
 
-    def __init__(self):
-        pass
+class OrderToCashProcess(Process):
 
-    def start_order_to_cash_process(self, bucket_key, tef_account):
+    ################################################################################
+    # CREATE & START PROCESS
+    ################################################################################
+    def start_order_to_cash_process(self, bucket_key, account):
+        
+        process    = self.create_process_model(account,    'ORDER TO CASH')
+        subprocess = self.create_subprocess_model(process, 'BILLING')
 
-        sub_process = self._generate_billing_subprocess(bucket_key, tef_account)
+        self._start_order_to_cash_process(bucket_key, account, subprocess)
 
-        sp_id = sub_process.id
+    def sync_order_to_cash(self, bucket_key, account):
 
-        chain = download_and_parse_sdr_task.s(True, bucket_key, tef_account, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id) | create_order_summary_on_salesforce_task.s(sp_id)
+        process    = self.create_process_model(account,    'ORDER TO CASH')
+        subprocess = self.create_subprocess_model(process, 'BILLING')
 
-        chain()
+        sp_id      = subprocess.id
+        account_id = account.account_id
 
-    def sync_order_to_cash(self, bucket_key, tef_account):
-
-        sub_process = self._generate_billing_subprocess(bucket_key, tef_account)
-
-        sp_id = sub_process.id
-
-        success = download_and_parse_sdr_task(True, bucket_key, tef_account, sp_id)
+        success = download_and_parse_sdr_task(True, bucket_key, account_id, sp_id)
         success = get_customer_details_from_sf_task(success, sp_id)
         success = generate_pdf_and_upload_task(success, sp_id)
         success = send_email_task(success, sp_id)
         success = charge_user_task(success, sp_id)
 
         return success
+    
+    ################################################################################
+    # PRIVATE METHODS
+    ################################################################################
 
-    def _generate_billing_subprocess(self, bucket_key, tef_account):
+    def _start_order_to_cash_process(self, bucket_key, account, subprocess):
+        
+        sp_id      = subprocess.id
+        account_id = account.account_id
+        
+        chain = download_and_parse_sdr_task.s(True, bucket_key, account_id, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id) | create_order_summary_on_salesforce_task.s(sp_id)
 
-        process = BusinessProcess(tef_account=tef_account, name='ORDER TO CASH', initial_data=bucket_key)
-        process.save()
-
-        sub_process = SubProcess(process=process, name='BILLING')
-        sub_process.save()
-
-        return sub_process
-
-
+        chain()

@@ -56,17 +56,19 @@ class Adyen_Charger (PaymentGateway):
 
         return adyen_data.get_redirect_url()
 
-    def recurrent_payment(self, order_data, master_info):
+    def recurrent_payment(self, order, payment_method):
         ws = Api()
 
-        statement = order_data.statement  
-        reference = order_data.order_code
+        account   = payment_method.account
+        reference = order.order_code
 
-        shopper_email     = master_info.email
-        shopper_reference = master_info.tef_account
+        shopper_email     = account.email
+        shopper_reference = account.account_id
 
-        amount   = order_data.total
-        currency = order_data.currency
+        amount   = order.total
+        currency = order.currency
+        
+        statement = "TBD"
 
         ws.authorise_recurring_payment(reference, statement, amount, currency, shopper_reference, shopper_email,
                                        shopper_ip=None, recurring_detail_reference='LATEST')

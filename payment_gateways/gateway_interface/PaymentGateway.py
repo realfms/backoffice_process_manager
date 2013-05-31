@@ -27,9 +27,10 @@ Created on 17/10/2012
 
 import uuid
 
-from processes.data_acquisition_process import DataAcquisitionProcess
+from processes.payment_method_process   import PaymentMethodProcess
 from payment_gateways.services          import ServiceManager
-from payment_gateways.models            import Order, PaymentMethod
+from payment_gateways.models            import PaymentMethod
+from customers.models                   import Order
 
 class PaymentGateway(object):
 
@@ -51,7 +52,7 @@ class PaymentGateway(object):
         self.gw = model
         
         self.service_manager          = ServiceManager()
-        self.data_acquisition_manager = DataAcquisitionProcess(self.service_manager)
+        self.payment_method_process   = PaymentMethodProcess(self.service_manager)
 
     def get_order(self):
         return self.order
@@ -91,12 +92,12 @@ class PaymentGateway(object):
         payment_method.status = status
         payment_method.save()
 
-        contract = self.data_acquisition_manager.get_contract_by_payment_method(payment_method)
+        contract = self.payment_method_process.get_contract_by_payment_method(payment_method)
 
         print contract.id
 
         # Start Async notify process
-        self.data_acquisition_manager.start_notify_new_payment_method_data('Billable', payment_method, contract.subprocess, contract.contract_id)
+        self.payment_method_process.start_notify_new_payment_method_data('Billable', payment_method, contract.subprocess, contract.contract_id)
     
     def _recurrent_payment_flow(self, orders, status):
         # Callback of recuerrent payment flow

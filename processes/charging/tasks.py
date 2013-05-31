@@ -27,8 +27,7 @@ Created on 15/10/2012
 
 from celery import task
 
-from payment_gateways.models   import Order
-from payment_gateways.models   import Order
+from customers.models          import Order, Account
 from payment_gateways.services import ServiceManager
 
 from processes.task_manager import TaskManager
@@ -49,16 +48,16 @@ def charge_user(json):
     total    = int(json['total'] * 100)
     currency = 'EUR'
 
-    tef_account = customer_data['tef_account']
+    account_id  = customer_data['tef_account']
     country     = customer_data['country']
-    statement   = "statement"
     order_code  = compute_order_id()
+    
+    account = Account.objects.get(account_id=account_id)
 
-    print order_code
+    order = Order(account=account, total=total, currency=currency, country=country, order_code=order_code, payment_method=None)
+    order.save()
 
-    data = Order(tef_account, total, currency, country, statement, order_code)
-
-    ServiceManager().process_recurrent_payment(data)
+    ServiceManager().process_recurrent_payment(order)
 
     return (json, None)
 

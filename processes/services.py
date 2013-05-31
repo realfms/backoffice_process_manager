@@ -25,7 +25,9 @@ Created on 16/10/2012
 @author: mac@tid.es
 '''
 from common.aws.s3   import get_sdr_request_keys
-from processes       import models
+
+from processes.models import BusinessProcess
+from customers.models import Account
 
 from processes.order_to_cash_process import OrderToCashProcess
 from processes.provision_process     import ProvisionProcess
@@ -36,28 +38,24 @@ class ProcessManager:
         self.order_to_cash_process = OrderToCashProcess()
         self.provision_process     = ProvisionProcess()
 
-    def start_provision(self, tef_account, event_data):
-        self.provision_process.start_provision_process(tef_account, event_data)
+    def start_provision(self, account_id, event_data):
+        self.provision_process.start_provision_process(account_id, event_data)
 
     def start_order_to_cash(self):
         keys = get_sdr_request_keys()
 
         for key in keys:
-            self.order_to_cash_process.start_order_to_cash_process(key.name, self._get_tef_account(key))
+            self.order_to_cash_process.start_order_to_cash_process(key.name, self._get_account(key))
 
     def sync_first_order_to_cash(self):
         keys = get_sdr_request_keys()
 
         for key in keys:
-            self.order_to_cash_process.sync_order_to_cash(key.name, self._get_tef_account(key))
+            self.order_to_cash_process.sync_order_to_cash(key.name, self._get_account(key))
             break
 
-    def _get_tef_account(self, key):
-        # By convention, by removing the last 4 characters from key, the tef_account is returned!
-        return key.name[0:-4]
-
     def get_processes_by_user(self, user_id):
-        processes = models.BusinessProcess.objects.filter(tef_account=user_id).order_by("start")
+        processes = BusinessProcess.objects.filter(tef_account=user_id).order_by("start")
 
         return processes.reverse()
 
@@ -66,3 +64,18 @@ class ProcessManager:
 
     def get_tasks_by_subprocess(self, subprocess):
         return subprocess.task_set.all()
+    
+    ################################################################################
+    # PRIVATE METHODS
+    ################################################################################
+    
+    # return customers.model.Account
+    def _get_account(self, key):
+        # By convention, by removing the last 4 characters from key, the tef_account is returned!
+        account_id = key.name[0:-4]
+        
+        try:
+            return Account.objects.get(account_id=account_id)
+        except Exception, e:
+            print "Missing account: {0}".format(account_id)
+            return None

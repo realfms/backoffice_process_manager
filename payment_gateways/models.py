@@ -27,19 +27,7 @@ Created on 16/10/2012
 
 from django.db import models
 
-from processes.models import SubProcess
-
-STATUS = (
-    ('PENDING',   'PENDING'),
-    ('VALIDATED', 'VALIDATED'),
-    ('ERROR',     'ERROR'),
-    ('CANCELED',  'CANCELED'),
-)
-
-CHANNEL = (
-    ('ONLINE',       'ONLINE'),
-    ('DIRECT_SALES', 'DIRECT_SALES'),
-)
+from common.constants.constants import ACTIVATION_STATUS
 
 class PaymentGateway(models.Model):
 
@@ -59,58 +47,11 @@ class PaymentGateway(models.Model):
     
     country    = models.CharField(max_length = 3)
 
-class Account(models.Model):
-
-    account_id  = models.CharField(max_length = 20, null=True)
-    email       = models.EmailField()
-
-    gender      = models.CharField(max_length = 100, null=True)
-
-    first_name  = models.CharField(max_length = 100, null=True)
-    last_name   = models.CharField(max_length = 100, null=True)
-
-    city        = models.CharField(max_length = 100, null=True)
-    address     = models.CharField(max_length = 200, null=True)
-    postal_code = models.CharField(max_length = 10,  null=True)
-    country     = models.CharField(max_length = 3,   null=True)
-    phone       = models.CharField(max_length = 10,  null=True)
-
-    channel     = models.CharField(max_length=10, choices=CHANNEL)
-
 class PaymentMethod(models.Model):
 
-    gateway = models.ForeignKey(PaymentGateway)
-    account = models.CharField(max_length = 20)
+    gateway = models.ForeignKey('PaymentGateway')
+    account = models.ForeignKey('customers.Account')
     
     recurrent_order_code = models.CharField(max_length=10)
     
-    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
-
-class Order(models.Model):
-
-    total    = models.IntegerField()
-    currency = models.CharField(max_length = 3)
-    country  = models.CharField(max_length = 3)
-    
-    order_code  = models.CharField(max_length=10)
-    account     = models.CharField(max_length = 20)
-
-    statement = models.CharField(max_length = 200)
-
-    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
-    result = models.TextField()
-
-    payment_method = models.ForeignKey(PaymentMethod)
-
-class Contract(models.Model):
-
-    account     = models.ForeignKey(Account)
-    subprocess  = models.ForeignKey(SubProcess, null=True)
-
-    contract_id = models.CharField(max_length = 20, null=True)
-    tos         = models.URLField(max_length = 200)
-    sign_date   = models.DateTimeField()
-    start_date  = models.DateTimeField()
-    end_date    = models.DateTimeField(null=True)
-
-    status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
+    status = models.CharField(max_length=10, choices=ACTIVATION_STATUS, default='PENDING')

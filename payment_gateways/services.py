@@ -25,7 +25,8 @@ Created on 30/10/2012
 @author: mac@tid.es
 '''
 
-from models     import PaymentGateway, PaymentMethod, Order, Account, Contract
+from models           import PaymentGateway, PaymentMethod
+from customers.models import Order, Account, Contract
 
 from processes.payment_method_process import PaymentMethodProcess
 
@@ -120,14 +121,12 @@ class ServiceManager:
     def create_contract(self, user_data):
         return create_contract(user_data)
 
-    def initial_payment_url(self, token, contract_id):
-        payment_method_details = self.get_payment_method_details(token)
-
-        (charger, gw) = self.get_first_available_charger_by_country(payment_method_details.country)
+    def initial_payment_url(self, account, contract_id):
+        (charger, gw) = self.get_first_available_charger_by_country(account.country)
         if (charger == None):
             return "/error"
 
-        url = charger.get_redirect_url(payment_method_details)
+        url = charger.get_redirect_url(account)
 
         self.store_payment_method(payment_method_details, charger.get_order(), gw, contract_id)
 
@@ -149,15 +148,15 @@ class ServiceManager:
 
         return (self.dynamically_loading_charger(gw), gw)
 
-    def get_charger_by_tef_account_and_country(self, tef_account, country):
-        master_info = self.get_payment_method_by_tef_account_and_country(tef_account, country)
+    def get_charger_by_account_and_country(self, account, country):
+        payment_method = self.get_payment_method_by_account_and_country(account, country)
 
-        if master_info == None:
+        if not payment_method:
             return (None, None)
 
-        gw = master_info.gateway
+        gw = payment_method.gateway
 
-        return (self.dynamically_loading_charger(gw), master_info)
+        return (self.dynamically_loading_charger(gw), payment_method)
 
     def get_gateway_by_name(self, name):
         gws = PaymentGateway.objects.filter(name=name)
@@ -176,8 +175,8 @@ class ServiceManager:
         # If several, getting the first one
         return gws[0]
 
-    def get_payment_method_by_tef_account_and_country(self, tef_account, country):
-        payment_methods = PaymentMethod.objects.filter(tef_account=tef_account, gateway__country=country)
+    def get_payment_method_by_account_and_country(self, account, country):
+        payment_methods = PaymentMethod.objects.filter(account=account, gateway__country=country, status='VALIDATED')
 
         if len(payment_methods) == 0:
             return None
@@ -193,51 +192,34 @@ class ServiceManager:
 
         return self.dynamically_loading_charger(gw)
 
-    def process_recurrent_payment(self, order_data):
+    def process_recurrent_payment(self, order):
 
-        self.store_order(order_data)
+        account = order.account
+        country = order.country
 
-        tef_account = order_data.tef_account
-        country     = order_data.country
-
-        (charger, master_info) = self.get_charger_by_tef_account_and_country(tef_account, country)
+        (charger, payment_method) = self.get_charger_by_account_and_country(account, country)
         if charger == None:
             return False
 
-        charger.recurrent_payment(order_data, master_info)
+        charger.recurrent_payment(order, payment_method)
 
         return True
 
 
-    def store_payment_method(self, payment_method_details, recurrent_order_code, gateway, contract_id):
+    def store_payment_method(self, account, recurrent_order_code, gateway):
         # Creating subprocese
-        subprocess = self.payment_method_process.create_acquire_payment_method_subprocess(payment_method_details.tef_account)
+        subprocess = self.payment_method_process.create_acquire_payment_method_subprocess(payment_method_details.account_id)
 
         # Creating PaymentMethod
-        payment_method = PaymentMethod(tef_account=payment_method_details.tef_account, recurrent_order_code=recurrent_order_code,
+        payment_method = PaymentMethod(account=account, recurrent_order_code=recurrent_order_code,
                                        gateway=gateway, email=payment_method_details.email, payment_method_details=payment_method_details)
         payment_method.save()
-
-        #Creating and Linking Contract
-        contract = Contract(subprocess=subprocess, contract_id=contract_id, payment_method=payment_method)
-        contract.save()
-
-    def store_order(self, order_data):
-        order = Order(total=order_data.total, currency=order_data.currency, country=order_data.country,
-                      tef_account=order_data.tef_account, statement=order_data.statement,
-                      order_code=order_data.order_code)
-
-        order.save()
-
 
     def dynamically_loading_charger(self, gw):
         charger_module = importlib.import_module(gw.module_name)
         charger = getattr(charger_module, gw.class_name)(gw)
 
         return charger
-
-    def get_payment_method_details(self, account):
-        return Account.objects.get(account=account)
 
     def update_account(self, params):
         email = params.get('account_id', None)

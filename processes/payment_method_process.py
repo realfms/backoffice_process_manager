@@ -35,14 +35,17 @@ class PaymentMethodProcess(Process):
         self.service_manager = service_manager
 
     ################################################################################
-    # CREATE PROCESS
+    # CREATE & START PROCESS
     ################################################################################
     def start_payment_method_acquisition_process(self, account, payment_method):
         process    = self.create_process_model(account,    'ACQUIRE PAYMENT METHOD')
         subprocess = self.create_subprocess_model(process, 'NOTIFYING CONTRACT')
 
         self._start_payment_method_acquisition_process(account, payment_method, subprocess)
-
+    
+    ################################################################################
+    # PRIVATE METHODS
+    ################################################################################
     def _start_payment_method_acquisition_process(self, account, payment_method, subprocess):
         chain = update_contact_on_salesforce_task.s(True, account, payment_method, subprocess.id)
 

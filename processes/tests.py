@@ -35,8 +35,8 @@ from django.test import TestCase
 
 from customer.salesforce import get_customer_details_from_sf
 
-from common.salesforce.salesforce    import update_contact, create_contract, create_order_summary
-from payment_gateways.api_format     import UserData
+from common.salesforce.salesforce import update_contact, create_contract, create_order_summary
+from payment_gateways.models      import Account
 
 from os.path import exists
 
@@ -95,7 +95,7 @@ class TestSalesforce(TestCase):
     @unittest.skip("Making tests faster")
     def test_salesforce_create_contract(self):
 
-        user_data = UserData("003d000000wX82sAAC", "", "", "", "", "", "", "", "", "")
+        user_data = Account("003d000000wX82sAAC", "", "", "", "", "", "", "", "", "")
 
         result = create_contract(user_data, True)
 

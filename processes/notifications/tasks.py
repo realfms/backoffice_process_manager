@@ -27,27 +27,32 @@ Created on 15/10/2012
 
 from celery import task
 
-from common.salesforce.salesforce import update_contact, activate_contract, create_order_summary
+from common.salesforce.salesforce import update_contact, activate_contract, create_order_summary, create_contract
 
 from processes.task_manager import TaskManager
 
 @task(ignore_result=True)
-def notify_salesforce_task(success, status, contact_id, invoicing_address, order_code, sp_id):
+def update_contact_on_salesforce_task(success, status, contact_id, invoicing_address, order_code, sp_id):
     tm = TaskManager()
     return tm.process_task(sp_id, 'NOTIFY SALESFORCE', success, lambda : update_contact(status, contact_id, invoicing_address, order_code))
 
 @task(ignore_result=True)
-def notify_tef_accounts_task(success, status, contact_id, sp_id):
+def send_contracting_email_task(success, account, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'NOTIFY TEF ACCOUNT', success, lambda : (True, None))
+    return tm.process_task(sp_id, 'SEND CONTRACTING EMAIL', success, lambda : (True, None))
 
 @task(ignore_result=True)
-def activate_contract_task(success, contract_id, sp_id):
+def create_contract_on_salesforce_task(success, status, contract, sp_id):
+    tm = TaskManager()
+    return tm.process_task(sp_id, 'CREATE CONTRACT', success, lambda : create_contract(status, contract))
+
+@task(ignore_result=True)
+def activate_contract_on_salesforce_task(success, contract_id, sp_id):
     tm = TaskManager()
     return tm.process_task(sp_id, 'ACTIVATE CONTRACT', success, lambda : activate_contract(contract_id))
 
 @task(ignore_result=True)
-def create_order_summary_task(success, sp_id):
+def create_order_summary_on_salesforce_task(success, sp_id):
     tm = TaskManager()
     
     invoice_json = tm.get_subprocess_data(sp_id)

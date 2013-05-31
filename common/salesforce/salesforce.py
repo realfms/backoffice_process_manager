@@ -88,7 +88,7 @@ def update_contact(status, contact_id, invoicing_address, order_code):
 
     return (True, None)
 
-def create_contract(user_data):
+def create_contract(status, contract):
     c = connect()
 
     today = date.today()
@@ -106,29 +106,29 @@ def create_contract(user_data):
     new_contract.CompanySignedId = "005d0000001LDCMAA4"
 
     # Dynamic => Contact_Id of the Customer
-    new_contract.CustomerSignedId = user_data.tef_account
+    new_contract.CustomerSignedId = contract.account.account_id
 
     new_contract.CustomerSignedDate = today_date
     new_contract.CompanySignedDate = today_date
 
     new_contract.OwnerExpirationNotice = 15
 
-    new_contract.ToS_URI__c = "http://backoffice-process-manager.herokuapp.com/tos"
+    new_contract.ToS_URI__c = contract.tos
 
     result = c.create(new_contract)
 
     contract_id = result['id']
 
-    return contract_id
+    return (True, None)
 
-def activate_contract(contract_id):
+def activate_contract(contract):
 
     c = connect()
 
     contract = c.generateObject('Contract')
 
     contract.Status = "Activated"
-    contract.Id = contract_id
+    contract.Id = contract.contract_id
 
     c.update(contract)
 

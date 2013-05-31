@@ -6,7 +6,7 @@ from django.conf.urls import patterns, include, url
 
 import settings
 
-from payment_gateways.views import PaymentController
+from payment_gateways.views import PaymentMethodController, ContractController, OrderingController
 from processes.views        import ProcessesController
 from processes.tos          import ToSController
 
@@ -19,21 +19,35 @@ urlpatterns = patterns('',
     url(r'^$', ProcessesController.index),
 
     ######################################################
-    # PAYMENT URLS
+    # CONTRACT URLS
     ######################################################
 
-    # payment data acquisition API
-    url(r'^payment/acquire/service$',             PaymentController.acquire_service),
-    url(r'^payment/acquire/form/(?P<token>\w+)$', PaymentController.acquire_form),
-    url(r'^payment/acquire/redirect$',            PaymentController.acquire_redirect),
+    # contract management API
+    url(r'^contract/new$', ContractController.create),
+
+    ######################################################
+    # PAYMENT METHOD URLS
+    ######################################################
+
+    # payment method acquisition API
+    url(r'^account/(?P<account>\w+)/payment_method$',     PaymentMethodController.list),
+    url(r'^account/(?P<account>\w+)/payment_method/new$', PaymentMethodController.create),
 
     # adyen callback API
-    url(r'^payment/gw/adyen$', AdyenCallbackController.callback),
+    url(r'^payment_method/gw/adyen$', AdyenCallbackController.callback),
 
     # worldpay callback API
-    url(r'^payment/gw/worldpay/success$', WorldpayCallbackController.success),
-    url(r'^payment/gw/worldpay/pending$', WorldpayCallbackController.pending),
-    url(r'^payment/gw/worldpay/error$',   WorldpayCallbackController.error),
+    url(r'^payment_method/gw/worldpay/success$', WorldpayCallbackController.success),
+    url(r'^payment_method/gw/worldpay/pending$', WorldpayCallbackController.pending),
+    url(r'^payment_method/gw/worldpay/error$',   WorldpayCallbackController.error),
+
+    ######################################################
+    # ORDERING
+    ######################################################
+
+    # ordering API
+    url(r'^account/(?P<account>\w+)/order/new$', OrderingController.create),
+
 
     ######################################################
     # PROCESSES

@@ -27,8 +27,9 @@ Created on 15/10/2012
 
 from celery import task
 
-from payment_gateways.api_format import OrderData
-from payment_gateways.services   import ServiceManager
+from payment_gateways.models   import Order
+from payment_gateways.models   import Order
+from payment_gateways.services import ServiceManager
 
 from processes.task_manager import TaskManager
 
@@ -55,7 +56,7 @@ def charge_user(json):
 
     print order_code
 
-    data = OrderData(tef_account, total, currency, country, statement, order_code)
+    data = Order(tef_account, total, currency, country, statement, order_code)
 
     ServiceManager().process_recurrent_payment(data)
 

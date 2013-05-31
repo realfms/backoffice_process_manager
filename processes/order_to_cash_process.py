@@ -32,7 +32,7 @@ from charging.tasks      import charge_user_task
 from rating.tasks        import download_and_parse_sdr_task
 from pdf.tasks           import generate_pdf_and_upload_task
 from email.tasks         import send_email_task
-from notifications.tasks import create_order_summary_task
+from notifications.tasks import create_order_summary_on_salesforce_task
 
 class OrderToCashProcess:
 
@@ -45,7 +45,7 @@ class OrderToCashProcess:
 
         sp_id = sub_process.id
 
-        chain = download_and_parse_sdr_task.s(True, bucket_key, tef_account, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id) | create_order_summary_task.s(sp_id)
+        chain = download_and_parse_sdr_task.s(True, bucket_key, tef_account, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id) | create_order_summary_on_salesforce_task.s(sp_id)
 
         chain()
 

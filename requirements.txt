@@ -11,3 +11,4 @@ psycopg2==2.4.5
 xhtml2pdf==0.0.4
 py-adyen==0.1.6
 suds==0.3.9
+pytz==2012h

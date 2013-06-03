@@ -29,36 +29,49 @@ import manage
 
 from django.test import TestCase
 
-from services   import ServiceManager
+from services           import ServiceManager
+from customers.services import CustomerManager
 
 import unittest
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('.env')
 
+#@unittest.skip("Making tests faster")
 class TestPaymentDataAcquisition(TestCase):
 
-    service_manager = ServiceManager()
+    service_manager  = ServiceManager()
+    customer_manager = CustomerManager()
 
-    #@unittest.skip("Making tests faster")
-    def test_redirect_to_adyen(self):
+    def setUp(self):
+        self.create_dummy_account()
 
-        token  = 'ccf0ff7333'
-        params = {}
+    def create_dummy_account(self):
+        params = {'channel': 'ONLINE', 'email': 'mac@tid.es'}
 
-        url = self.service_manager.get_payment_gateway_redirect_url(token, params)
+        return self.customer_manager.store_account(params)
 
-        self.assertTrue(url.startswith('https://test.adyen.com/hpp/pay.shtml'), 'Problem testing connection with Adyen')
+    def test_wrong_invalid_payment_data(self):
+        params = {'channel': 'ONLINE', 'email': 'mac@tid.es'}
 
-    #@unittest.skip("Making tests faster")
-    def test_already_registered(self):
+        url = self.service_manager.get_payment_gateway_redirect_url(params)
 
-        token  = 'mac'
-        params = {}
+        self.assertEquals(url, None, 'Response should be None when this params')
 
-        url = self.service_manager.get_payment_gateway_redirect_url(token, params)
+    def test_valid_redirection_to_adyen(self):
+        country = 'BR'
+        params  = { 'email': 'mac@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
+                   'postal_code': '28393', 'city': 'madrid', 'country': country}
 
-        print "URL : " + url
+        url = self.service_manager.get_payment_gateway_redirect_url(params)
 
-        self.assertTrue(url.startswith('/payment/gw/worldpay/success'), 'Problem testing connection with Adyen')
+        self.assertTrue(url.startswith('https://test.adyen.com/hpp/pay.shtml'), 'Accounts from BR should redirect to Adyen')
 
+    def test_valid_redirection_to_adyen(self):
+        country = 'ES'
+        params  = { 'email': 'mac@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
+                   'postal_code': '28393', 'city': 'madrid', 'country': country}
+
+        url = self.service_manager.get_payment_gateway_redirect_url(params)
+
+        self.assertTrue(url.startswith('https://secure-test.worldpay.com/wcc/dispatcher'), 'Accounts from ES should redirect to WorldPay')

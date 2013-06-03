@@ -36,9 +36,8 @@ from django.test import TestCase
 from customer.salesforce import get_customer_details_from_sf
 
 from common.salesforce.salesforce import update_contact, create_contract, create_order_summary
-from payment_gateways.models      import Account
+from customers.models             import Account
 
-from os.path import exists
 
 INVOICE = {
   "customer": {
@@ -75,24 +74,21 @@ INVOICE = {
   "sdr_file_name": "003d000000wX82sAAC.xml"
 }
 
-
+@unittest.skip("Making tests faster")
 class TestSalesforce(TestCase):
 
-    @unittest.skip("Making tests faster")
     def test_salesforce_update_contact(self):
 
         result = update_contact('Billable', '003d000000lKGP2AAO')
 
         print result
 
-    @unittest.skip("Making tests faster")
     def test_salesforce_get_gustomer(self):
 
         result = get_customer_details_from_sf('003d000000kC2JHAA0')
 
         print result
 
-    @unittest.skip("Making tests faster")
     def test_salesforce_create_contract(self):
 
         user_data = Account("003d000000wX82sAAC", "", "", "", "", "", "", "", "", "")
@@ -100,8 +96,7 @@ class TestSalesforce(TestCase):
         result = create_contract(user_data, True)
 
         print result
-    
-    #@unittest.skip("Making tests faster")
+
     def test_salesforce_create_order_summary(self):
         
         result = create_order_summary(INVOICE)

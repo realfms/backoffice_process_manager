@@ -25,10 +25,10 @@ Created on 30/10/2012
 @author: mac@tid.es
 '''
 
-from models           import PaymentGateway, PaymentMethod
-from customers.models import Order, Account, Contract
+from models import PaymentGateway, PaymentMethod
 
 from processes.payment_method_process import PaymentMethodProcess
+from customers.services               import CustomerManager
 
 from common.salesforce.salesforce import create_contract
 
@@ -40,97 +40,29 @@ class ServiceManager:
 
     def __init__(self):
         self.payment_method_process = PaymentMethodProcess(self)
-
-    def store_account(self, params):
-
-        account_id  = params.get('account',     None)
-        email       = params.get('email',       None)
-        city        = params.get('city',        None)
-        address     = params.get('address',     None)
-        postal_code = params.get('postal_code', None)
-        country     = params.get('country',     None)
-        phone       = params.get('phone',       None)
-        gender      = params.get('gender',      None)
-        first_name  = params.get('first_name',  None)
-        last_name   = params.get('last_name',   None)
-        channel     = params.get('channel',     None)
-
-        if (not account_id or not channel):
-            return None
-
-        account = Account  (account=account_id, city=city, address=address, postal_code=postal_code, country=country,
-                            phone=phone, email=email, gender=gender, first_name=first_name, last_name=last_name,
-                            channel=channel)
-
-        account.save()
-
-        return account
-
-    def store_contract(self, params, account):
-
-        tos        = params.get('tos',        None)
-        sign_date  = params.get('ign_date',   None)
-        start_date = params.get('start_date', None)
-        end_date   = params.get('end_date',   None)
-
-        if (not tos or not sign_date or not start_date or account):
-            return None
-
-        contract = Contract(account=account, tos=tos, start_date=start_date, end_data=end_date)
-
-        contract.save()
-
-        return contract
-
-    def get_contract_by_payment_method(self, payment_method):
-        contracts = Contract.objects.filter(payment_method=payment_method)
-
-        if len(contracts) != 1:
-            print "Incorrect number of contracts"
-            return None
-
-        return contracts[0]
+        self.customer_manager       = CustomerManager()
 
     def get_payment_gateway_redirect_url(self, params):
-
         # Storing account info
-        account  = self.update_account(params)
+        account  = self.customer_manager.update_account_with_payment_details(params)
 
-        # Checking if this user has already set up payment data
-        (registered, payment_method) = self.is_billable_account(payment_data_details)
+        if not account:
+            return None
 
-        # Creating inactive contract a
-        contract_id = self.create_contract(payment_data_details)
-
-        print contract_id
-
-        if (registered):
-            # We already have payment data, so activating contract
-            self.payment_method_process.create_notify_payment_method_process('Billable', payment_method, contract_id)
-            url = "/payment/gw/worldpay/success"
-        else:
-            # Start payment data acquisition flow from the very beginning
-            url = self.initial_payment_url(token, contract_id)
-
-        return url
+        return self.initial_payment_url(account)
 
     def is_billable_account(self, payment_method):
         return payment_method.status == "VALIDATED"
 
-
     def create_contract(self, user_data):
         return create_contract(user_data)
 
-    def initial_payment_url(self, account, contract_id):
+    def initial_payment_url(self, account):
         (charger, gw) = self.get_first_available_charger_by_country(account.country)
         if (charger == None):
-            return "/error"
+            return None
 
-        url = charger.get_redirect_url(account)
-
-        self.store_payment_method(payment_method_details, charger.get_order(), gw, contract_id)
-
-        return url
+        return charger.get_redirect_url(account)
 
     def get_charger_by_name(self, name):
         gw = self.get_gateway_by_name(name)
@@ -221,26 +153,9 @@ class ServiceManager:
 
         return charger
 
-    def update_account(self, params):
-        email = params.get('account_id', None)
-
-        account = Account.objects.get(email=email)
-
-        account.first_name  = params.get('first_name',  account.first_name)
-        account.last_name   = params.get('last_name',   account.last_name)
-        account.address     = params.get('address',     account.address)
-        account.city        = params.get('city',        account.city)
-        account.postal_code = params.get('postal_code', account.postal_code)
-        account.gender      = params.get('gender',      account.gender)
-        account.phone       = params.get('phone',       account.phone)
-        account.country     = params.get('country',     account.country)
-
-        params.save()
-
-        return params
-
     def compute_unique_id(self):
         uid = uuid.uuid4()
 
         return uid.hex[:10]
+
 

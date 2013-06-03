@@ -33,6 +33,7 @@ from django.utils       import simplejson
 
 from processes.contracting_process import ContractingProcess
 from services                      import ServiceManager
+from customers.services            import CustomerManager
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -46,6 +47,7 @@ class ContractController:
 
     service_manager     = ServiceManager()
     contracting_process = ContractingProcess(service_manager)
+    customer_manager    = CustomerManager()
 
     @classmethod
     @transaction.commit_on_success
@@ -62,8 +64,8 @@ class ContractController:
         if channel not in settings.CHANNELS_TO_MARKET:
             return HttpResponse('<h1>Invalid Channel to market</h1>', status=405)
 
-        account  = cls.service_manager.store_account(params)
-        contract = cls.service_manager.store_contract(params, account)
+        account  = cls.customer_manager.store_account(params)
+        contract = cls.customer_manager.store_contract(params, account)
 
         if not account:
             return HttpResponse('<h1>Insufficient parameters!</h1>', status=405)

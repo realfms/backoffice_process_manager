@@ -5,7 +5,7 @@ from common.constants.constants import ACTIVATION_STATUS, CHANNEL, COMPLETION_ST
 class Account(models.Model):
 
     account_id  = models.CharField(max_length = 20, null=True)
-    email       = models.EmailField()
+    email       = models.EmailField(null=True)
 
     gender      = models.CharField(max_length = 100, null=True)
 

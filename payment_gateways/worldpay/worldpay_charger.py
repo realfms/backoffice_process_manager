@@ -30,8 +30,8 @@ import urllib2
 from BeautifulSoup import BeautifulSoup
 
 from payloads import FIRST_PAYMENT_PAYLOAD, RECURRENT_PAYMENT_PAYLOAD
+
 from payment_gateways.gateway_interface.PaymentGateway import PaymentGateway
-from payment_gateways.models import Order, PaymentMethod
 
 class Worldpay_Charger (PaymentGateway):
 
@@ -61,8 +61,6 @@ class Worldpay_Charger (PaymentGateway):
             f = opener.open(req)
             response_xml = f.read()
 
-            print response_xml
-
             doc = BeautifulSoup(response_xml)
 
             return doc
@@ -72,22 +70,22 @@ class Worldpay_Charger (PaymentGateway):
             print "Errortransaction. HTTP Error code:",e.code
             return None
 
-    def get_redirect_url(self, user_data):
+    def get_redirect_url(self, account):
         
         xml = FIRST_PAYMENT_PAYLOAD % {
-                                        "merchantCode" : self.USERNAME,
-                                        "fillmoney": self.MONEY,
-                                        "ordercode" : self.order,
-                                        "city" : user_data.city,
-                                        "address" : user_data.address,
-                                        "postal_code" : user_data.postal_code,
-                                        "country": user_data.country,
-                                        "phone": user_data.phone
+                                        "merchantCode": self.USERNAME,
+                                        "fillmoney":    self.MONEY,
+                                        "ordercode" :   self.order,
+                                        "city" :        account.city,
+                                        "address" :     account.address,
+                                        "postal_code" : account.postal_code,
+                                        "country":      account.country,
+                                        "phone":        account.phone
                                       }
 
         doc = self.get_response_document(xml, self.USERNAME, self.PASSWORD)
 
-        if (not doc):
+        if not doc:
             return
 
         redirect_url = doc.find('reference').text
@@ -97,24 +95,22 @@ class Worldpay_Charger (PaymentGateway):
 
         return finalUrl
 
-    def recurrent_payment(self, order_data, master_info):
+    def recurrent_payment(self, order, payment_method):
 
-        order = order_data.order_code
+        order_code = order.order_code
 
         xml = RECURRENT_PAYMENT_PAYLOAD % {
-                                            "merchantCode": self.RECURRENT_USERNAME,
-                                            "fillmoney": order_data.total,
-                                            "ordercode": order,
-                                            "lastordercode": master_info.recurrent_order_code,
+                                            "merchantCode":      self.RECURRENT_USERNAME,
+                                            "fillmoney":         order.total,
+                                            "ordercode":         order_code,
+                                            "lastordercode":     payment_method.recurrent_order_code,
                                             "firstMerchantCode": self.USERNAME
                                             }
 
         doc = self.get_response_document(xml, self.RECURRENT_USERNAME, self.RECURRENT_PASSWORD)
 
-        if (not doc):
+        if not doc:
             return
-
-        print doc
 
     def update_order_status(self, data):
         order_key = data['orderKey']

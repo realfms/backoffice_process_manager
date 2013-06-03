@@ -112,11 +112,15 @@ class PaymentGateway(object):
     # Should be overwritten by specific implementations of Payment Gateways
     ########################################################### 
 
-    def get_redirect_url(self, user_data):
-        pass
-    
-    def recurrent_payment(self, order_data, master_info):
+    # account: customers.models.Account
+    def get_redirect_url(self, account):
         pass
 
-    def update_order_status(self, data, status):
+    # order: customers.models.Order
+    # payment_method: payment_gateways.models.PaymentMethod
+    def recurrent_payment(self, order, payment_method):
+        pass
+
+    # data: dict. Data from the callback from the Payment Gateway
+    def update_order_status(self, data):
         pass

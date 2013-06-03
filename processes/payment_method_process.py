@@ -50,6 +50,3 @@ class PaymentMethodProcess(Process):
         chain = update_contact_on_salesforce_task.s(True, account, payment_method, subprocess.id)
 
         chain()
-
-    def get_contract_by_payment_method(self, payment_method):
-        return self.service_manager.get_contract_by_payment_method(payment_method)

@@ -38,20 +38,20 @@ class Adyen_Charger (PaymentGateway):
     def __init__(self, model):
         super(Adyen_Charger, self).__init__(model)
 
-    def get_redirect_url(self, user_data):
+    def get_redirect_url(self, account):
 
-        user_data = {
+        data = {
             'merchantReference': self.order,
-            'paymentAmount': self.MONEY,
-            'currencyCode': self.CURRENCY,
-            'shipBeforeDate': datetime.now(),
-            'shopperEmail': user_data.email,                   
-            'shopperReference': user_data.tef_account,         
-            'sessionValidity': datetime.now(),                  
+            'paymentAmount':     self.MONEY,
+            'currencyCode':      self.CURRENCY,
+            'shipBeforeDate':    datetime.now(),
+            'shopperEmail':      account.email,
+            'shopperReference':  account.account_id,
+            'sessionValidity':   datetime.now(),
             'recurringContract': 'RECURRING',     
         }
 
-        adyen_data = Adyen(user_data)
+        adyen_data = Adyen(data)
         adyen_data.sign()
 
         return adyen_data.get_redirect_url()
@@ -73,7 +73,7 @@ class Adyen_Charger (PaymentGateway):
         ws.authorise_recurring_payment(reference, statement, amount, currency, shopper_reference, shopper_email,
                                        shopper_ip=None, recurring_detail_reference='LATEST')
 
-    def update_order_status(self, data, status):
+    def update_order_status(self, data):
         order_code = data['merchantReference']
 
         if data['success'] == "false":
@@ -81,4 +81,4 @@ class Adyen_Charger (PaymentGateway):
             print data
             return False
         
-        return self.identify_successful_flow(order, 'VALIDATED')
+        return self.identify_successful_flow(order_code, 'VALIDATED')

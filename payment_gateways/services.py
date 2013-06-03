@@ -35,7 +35,7 @@ import importlib
 class PaymentGatewayManager:
 
     def __init__(self):
-        self.payment_method_process = PaymentMethodProcess(self)
+        self.payment_method_process = PaymentMethodProcess()
         self.customer_manager       = CustomerManager()
 
     def get_payment_gateway_redirect_url(self, params):

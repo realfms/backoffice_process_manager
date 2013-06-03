@@ -34,7 +34,9 @@ class PaymentMethodProcess(Process):
     ################################################################################
     # CREATE & START PROCESS
     ################################################################################
-    def start_payment_method_acquisition_process(self, account, payment_method):
+    def start_payment_method_acquisition_process(self, payment_method):
+        account    = payment_method.account
+
         process    = self.create_process_model(account,    'ACQUIRE PAYMENT METHOD')
         subprocess = self.create_subprocess_model(process, 'NOTIFYING CONTRACT')
 

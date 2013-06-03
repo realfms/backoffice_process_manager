@@ -29,7 +29,7 @@ import manage
 
 from django.test import TestCase
 
-from services           import ServiceManager
+from services           import PaymentGatewayManager
 from customers.services import CustomerManager
 
 import unittest
@@ -40,7 +40,7 @@ manage.read_env('.env')
 #@unittest.skip("Making tests faster")
 class TestPaymentDataAcquisition(TestCase):
 
-    service_manager  = ServiceManager()
+    service_manager  = PaymentGatewayManager()
     customer_manager = CustomerManager()
 
     def setUp(self):

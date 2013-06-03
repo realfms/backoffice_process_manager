@@ -31,9 +31,6 @@ from notifications.tasks  import update_contact_on_salesforce_task
 
 class PaymentMethodProcess(Process):
 
-    def __init__(self, service_manager):
-        self.service_manager = service_manager
-
     ################################################################################
     # CREATE & START PROCESS
     ################################################################################

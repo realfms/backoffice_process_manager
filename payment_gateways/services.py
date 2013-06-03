@@ -30,13 +30,9 @@ from models import PaymentGateway, PaymentMethod
 from processes.payment_method_process import PaymentMethodProcess
 from customers.services               import CustomerManager
 
-from common.salesforce.salesforce import create_contract
-
 import importlib
-import uuid
 
-
-class ServiceManager:
+class PaymentGatewayManager:
 
     def __init__(self):
         self.payment_method_process = PaymentMethodProcess(self)
@@ -51,14 +47,8 @@ class ServiceManager:
 
         return self.initial_payment_url(account)
 
-    def is_billable_account(self, payment_method):
-        return payment_method.status == "VALIDATED"
-
-    def create_contract(self, user_data):
-        return create_contract(user_data)
-
     def initial_payment_url(self, account):
-        (charger, gw) = self.get_first_available_charger_by_country(account.country)
+        (charger, gw) = self.get_charger_by_country(account.country)
         if (charger == None):
             return None
 
@@ -70,15 +60,15 @@ class ServiceManager:
         if gw == None:
             return (None, None)
 
-        return (self.dynamically_loading_charger(gw), gw)
+        return (self._dynamically_loading_charger(gw), gw)
 
-    def get_first_available_charger_by_country(self, country):
+    def get_charger_by_country(self, country):
         gw = self.get_gateway_by_country(country)
 
         if gw == None:
             return (None, None)
 
-        return (self.dynamically_loading_charger(gw), gw)
+        return (self._dynamically_loading_charger(gw), gw)
 
     def get_charger_by_account_and_country(self, account, country):
         payment_method = self.get_payment_method_by_account_and_country(account, country)
@@ -88,33 +78,25 @@ class ServiceManager:
 
         gw = payment_method.gateway
 
-        return (self.dynamically_loading_charger(gw), payment_method)
-
-    def get_gateway_by_name(self, name):
-        gws = PaymentGateway.objects.filter(name=name)
-
-        if len(gws) == 0:
-            return None
-
-        return gws[0]
+        return (self._dynamically_loading_charger(gw), payment_method)
 
     def get_gateway_by_country(self, country):
-        gws = PaymentGateway.objects.filter(country=country)
-
-        if len(gws) == 0:
+        try:
+            return  PaymentGateway.objects.get(country=country)
+        except PaymentMethod.DoesNotExist:
             return None
 
-        # If several, getting the first one
-        return gws[0]
+    def get_gateway_by_name(self, name):
+        try:
+            return  PaymentGateway.objects.get(name=name)
+        except PaymentMethod.DoesNotExist:
+            return None
 
     def get_payment_method_by_account_and_country(self, account, country):
-        payment_methods = PaymentMethod.objects.filter(account=account, gateway__country=country, status='VALIDATED')
-
-        if len(payment_methods) == 0:
+        try:
+            return PaymentMethod.objects.get(account=account, gateway__country=country, status='VALIDATED')
+        except PaymentMethod.DoesNotExist:
             return None
-
-        # If several, getting the first one
-        return payment_methods[0]
 
     def get_charger_by_payment_method(self, country):
         gw = self.get_gateway_by_country(country)
@@ -122,10 +104,9 @@ class ServiceManager:
         if gw == None:
             return None
 
-        return self.dynamically_loading_charger(gw)
+        return self._dynamically_loading_charger(gw)
 
     def process_recurrent_payment(self, order):
-
         account = order.account
         country = order.country
 
@@ -137,25 +118,23 @@ class ServiceManager:
 
         return True
 
-
-    def store_payment_method(self, account, recurrent_order_code, gateway):
-        # Creating subprocese
-        subprocess = self.payment_method_process.create_acquire_payment_method_subprocess(payment_method_details.account_id)
-
-        # Creating PaymentMethod
-        payment_method = PaymentMethod(account=account, recurrent_order_code=recurrent_order_code,
-                                       gateway=gateway, email=payment_method_details.email, payment_method_details=payment_method_details)
-        payment_method.save()
-
-    def dynamically_loading_charger(self, gw):
+    def _dynamically_loading_charger(self, gw):
         charger_module = importlib.import_module(gw.module_name)
         charger = getattr(charger_module, gw.class_name)(gw)
 
         return charger
 
-    def compute_unique_id(self):
-        uid = uuid.uuid4()
+class PaymentMethodManager:
 
-        return uid.hex[:10]
+    payment_method_manager = PaymentMethodProcess()
+
+    def store_payment_method(self, account, recurrent_order_code, gateway):
+
+        # Creating PaymentMethod
+        payment_method = PaymentMethod(account=account, recurrent_order_code=recurrent_order_code, gateway=gateway)
+        payment_method.save()
+
+        # Async. Starting notification process
+        self.payment_method_manager.start_payment_method_acquisition_process(account, payment_method)
 
 

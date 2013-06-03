@@ -28,7 +28,7 @@ Created on 17/10/2012
 import uuid
 
 from processes.payment_method_process   import PaymentMethodProcess
-from payment_gateways.services          import ServiceManager
+from payment_gateways.services          import PaymentGatewayManager
 from payment_gateways.models            import PaymentMethod
 from customers.models                   import Order
 
@@ -51,7 +51,7 @@ class PaymentGateway(object):
 
         self.gw = model
         
-        self.service_manager          = ServiceManager()
+        self.service_manager          = PaymentGatewayManager()
         self.payment_method_process   = PaymentMethodProcess(self.service_manager)
 
     def get_order(self):

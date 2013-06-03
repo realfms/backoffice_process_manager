@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.db        import transaction
 
-from payment_gateways.services    import ServiceManager
+from payment_gateways.services    import PaymentGatewayManager
 from django.views.decorators.csrf import csrf_exempt
 
 class WorldpayCallbackController:
 
-    serviceManager = ServiceManager()
+    serviceManager = PaymentGatewayManager()
 
     @classmethod
     def getCharger(cls):

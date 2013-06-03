@@ -32,7 +32,7 @@ from django.db          import transaction
 from django.utils       import simplejson
 
 from processes.contracting_process import ContractingProcess
-from services                      import ServiceManager
+from services                      import PaymentGatewayManager
 from customers.services            import CustomerManager
 
 from django.views.decorators.csrf import csrf_exempt
@@ -45,7 +45,7 @@ from django.conf import settings
 
 class ContractController:
 
-    service_manager     = ServiceManager()
+    service_manager     = PaymentGatewayManager()
     contracting_process = ContractingProcess(service_manager)
     customer_manager    = CustomerManager()
 
@@ -86,7 +86,7 @@ class ContractController:
 
 class PaymentMethodController:
 
-    service_manager = ServiceManager()
+    service_manager = PaymentGatewayManager()
 
     @classmethod
     def list(cls, request, account):
@@ -119,7 +119,7 @@ class PaymentMethodController:
 
 class OrderingController:
 
-    service_manager = ServiceManager()
+    service_manager = PaymentGatewayManager()
 
     @classmethod
     @transaction.commit_on_success

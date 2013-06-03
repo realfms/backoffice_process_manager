@@ -28,7 +28,7 @@ Created on 15/10/2012
 from celery import task
 
 from customers.models          import Order, Account
-from payment_gateways.services import ServiceManager
+from payment_gateways.services import PaymentGatewayManager
 
 from processes.task_manager import TaskManager
 
@@ -57,7 +57,7 @@ def charge_user(json):
     order = Order(account=account, total=total, currency=currency, country=country, order_code=order_code, payment_method=None)
     order.save()
 
-    ServiceManager().process_recurrent_payment(order)
+    PaymentGatewayManager().process_recurrent_payment(order)
 
     return (json, None)
 

@@ -1,0 +1,53 @@
+<{% extends "base.html" %}-->
+
+{% block title %}Opt-in Dummy Screen{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="utf-8" />
+    <title>Payment Method</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/paymentform.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/commons_fonts.css" />
+</head>
+
+<body>
+    <div class="general">
+        <header class="header">
+                <h1 class="titlePage">Opt-In<img src="{{ STATIC_URL }}img/lgo_telefonica_main.gif" class="logo"></h1>
+        </header>
+
+        <section>
+            <article>
+
+            	<h2 id="welcome">Enter your basic account information</h2>
+
+                <div id="subscribe-form">
+
+                    <form method="post" action="contract/new" class="top bottom">
+
+	                        <p><label>My name is :</label>
+	                        <input class="form text" name="payment_value" type="text"/></p>
+	
+	                        <p><label>My email is :</label>
+	                        <input class="form text" name="first_name" type="text" value="" /></p>
+	
+	                        <p><label>Type it again :</label>
+	                        <input class="form text" name="last_name" type="text" value="" /></p>
+	                        
+	                        {% csrf_token %}
+
+                            <p></p>
+                            <p></p>
+
+                            <p  id="tandc">By creating an account, you agree to our <a href="/tos">Terms & Conditions</a></p>
+
+                            <p>
+                                <button class="button hire">Create</button>
+                            </p>
+
+                    </form>
+                </div>
+            </article>
+        </section>
+    </div>
+{% endblock %}

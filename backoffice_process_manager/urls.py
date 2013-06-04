@@ -9,14 +9,13 @@ import settings
 from payment_gateways.views import PaymentMethodController, ContractController, OrderingController
 from processes.views        import ProcessesController
 from processes.tos          import ToSController
+from demo.views             import DemoController
+
 
 from payment_gateways.adyen.callback    import AdyenCallbackController
 from payment_gateways.worldpay.callback import WorldpayCallbackController
 
 urlpatterns = patterns('',
-
-    # ROOT. Now redirecting to processes index
-    url(r'^$', ProcessesController.index),
 
     ######################################################
     # CONTRACT URLS
@@ -63,6 +62,16 @@ urlpatterns = patterns('',
     ######################################################
 
     url(r'^tos/$', ToSController.show),
+
+    ######################################################
+    # DEMO
+    ######################################################
+
+    url(r'^demo/$',               DemoController.index),
+    url(r'^demo/opt_in$',         DemoController.opt_in),
+    url(r'^demo/payment_method$', DemoController.payment_method),
+    url(r'^demo/order$',          DemoController.order),
+
 
     ######################################################
     # STATIC CONTENT

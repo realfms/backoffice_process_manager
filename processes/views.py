@@ -36,10 +36,6 @@ class ProcessesController:
     processManager = ProcessManager()
 
     @classmethod
-    def index(cls, request):
-        return render(request, 'index.html', {})
-
-    @classmethod
     @transaction.commit_on_success
     def launch_invoicing(cls, request):
         cls.processManager.start_order_to_cash()

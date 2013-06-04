@@ -1,0 +1,53 @@
+<{% extends "base.html" %}-->
+
+{% block title %}Order Dummy Screen{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="utf-8" />
+    <title>Payment Method</title>
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/paymentform.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/commons_fonts.css" />
+
+    <style>
+        .billing li, .payment_method li{
+            display: block;
+            float: none;
+            font-size: 14px;
+        }
+
+        .billing .name, .payment_method .name{
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .billing,  .payment_method {
+            height: auto;
+            top: auto;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="general">
+        <header class="header">
+                <h1 class="titlePage">Your shopping cart<img src="{{ STATIC_URL }}img/lgo_telefonica_main.gif" class="logo"></h1>
+        </header>
+
+        <ul class="billing">
+            <li class="name">Miguel Angel Cañas Vaz</li>
+            <li>Calle Infanta</li>
+            <li>Madrid</li>
+            <li>España</li>
+            <li>39494944</li>
+        </ul>
+
+         <ul class="payment_method">
+            <li class="name">Card ending in 873</li>
+            <li>Expiring at 05/20</li>
+        </ul>
+
+    </div>
+{% endblock %}

@@ -32,7 +32,6 @@ from services import CustomerManager
 
 from customers.models import Account, Contract
 
-#@unittest.skip("Making tests faster")
 class TestValidations(TestCase):
 
     customer_manager = CustomerManager()
@@ -49,7 +48,7 @@ class TestValidations(TestCase):
 
         result = self.customer_manager.store_account(params)
 
-        self.assertTrue(result==None, 'Account validation should return None')
+        self.assertEquals(result, None, 'Account validation should return None')
 
     def test_valid_account_with_email(self):
 
@@ -57,7 +56,7 @@ class TestValidations(TestCase):
 
         result = self.customer_manager.store_account(params)
 
-        self.assertTrue(type(result)==Account, 'Should return an Account instance')
+        self.assertEquals(type(result), Account, 'Should return an Account instance')
 
     def test_valid_account_with_account_id(self):
 
@@ -65,35 +64,35 @@ class TestValidations(TestCase):
 
         result = self.customer_manager.store_account(params)
 
-        self.assertTrue(type(result)==Account, 'Should return an Account instance')
+        self.assertEquals(type(result), Account, 'Should return an Account instance')
 
     def test_valid_contract(self):
 
         account = self.dummy_account()
 
-        params = {'sign_date': '29/05/2013', 'tos': 'http://contratos.com', 'start_date': '29/05/2013', 'account': account}
+        params = {'sign_date': '29/05/2013', 'tos': 'http://contratos.com', 'start_date': '29/05/2013'}
 
         result = self.customer_manager.store_contract(params, account)
 
-        self.assertTrue(type(result)==Contract, 'Should return a Contract instance')
+        self.assertEquals(type(result), Contract, 'Should return a Contract instance')
 
     def test_wrong_contract_with_invalid_date_format(self):
 
         account = self.dummy_account()
 
-        params = {'sign_date': '29-05-2013', 'tos': 'http://contratos.com', 'start_date': '29-05-2013', 'account': account}
+        params = {'sign_date': '29-05-2013', 'tos': 'http://contratos.com', 'start_date': '29-05-2013'}
 
         result = self.customer_manager.store_contract(params, account)
 
-        self.assertTrue(result==None, 'Contract validation should return None')
+        self.assertEquals(result, None, 'Contract validation should return None')
 
     def test_wrong_contract_with_invalid_end_date(self):
 
         account = self.dummy_account()
 
         params = {'sign_date': '29/05/2013', 'tos': 'http://contratos.com', 'start_date': '29/05/2013',
-                  'account': account, 'end_date': '29-05-2013'}
+                  'end_date': '29-05-2013'}
 
         result = self.customer_manager.store_contract(params, account)
 
-        self.assertTrue(result==None, 'Contract validation should return None')
+        self.assertEquals(result, None, 'Contract validation should return None')

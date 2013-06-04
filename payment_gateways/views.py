@@ -45,8 +45,7 @@ from django.conf import settings
 
 class ContractController:
 
-    service_manager     = PaymentGatewayManager()
-    contracting_process = ContractingProcess(service_manager)
+    contracting_process = ContractingProcess()
     customer_manager    = CustomerManager()
 
     @classmethod
@@ -78,7 +77,7 @@ class ContractController:
             # Redirecting user to Service landing page if online channel
             return HttpResponseRedirect(settings.SERVICE_LANDING_PAGE_URL)
 
-        return HttpResponse('<h1>Contracting process started</h1>', status=405)
+        return HttpResponse('<h1>Contracting process started</h1>', status=200)
 
 ######################################################
 # PAYMENT METHODS
@@ -86,7 +85,7 @@ class ContractController:
 
 class PaymentMethodController:
 
-    service_manager = PaymentGatewayManager()
+    payment_gateways_manager = PaymentGatewayManager()
 
     @classmethod
     def list(cls, request, account):
@@ -107,7 +106,7 @@ class PaymentMethodController:
 
             params = request.POST
 
-            url = cls.service_manager.get_payment_gateway_redirect_url(params)
+            url = cls.payment_gateways_manager.get_payment_gateway_redirect_url(params)
 
             return HttpResponseRedirect(url)
         else:
@@ -118,8 +117,6 @@ class PaymentMethodController:
 ######################################################
 
 class OrderingController:
-
-    service_manager = PaymentGatewayManager()
 
     @classmethod
     @transaction.commit_on_success

@@ -31,9 +31,6 @@ from notifications.tasks import create_contract_on_salesforce_task, activate_con
 
 class ContractingProcess(Process):
 
-    def __init__(self, service_manager):
-        self.service_manager = service_manager
-
     def start_contracting_process(self, contract):
         process    = self.create_process_model(contract.account, 'CONTRACTING')
         subprocess = self.create_subprocess_model(process,       'NOTIFYING CONTRACT')
@@ -45,6 +42,6 @@ class ContractingProcess(Process):
         account = contract.account
         sp_id   = subprocess.id
 
-        chain = send_contracting_email_task.s(account) | create_contract_on_salesforce_task.s(contract, sp_id) | activate_contract_on_salesforce_task.s(contract, sp_id)
+        chain = send_contracting_email_task.s(True, account, sp_id) | create_contract_on_salesforce_task.s(contract, sp_id) | activate_contract_on_salesforce_task.s(contract, sp_id)
 
         chain()

@@ -26,81 +26,48 @@ Created on 16/01/2013
 """
 
 import manage
-import unittest
+
+from customers.services  import CustomerManager
+from contracting_process import ContractingProcess
+
+from models import BusinessProcess, SubProcess, Task
+
+from django.test.utils import override_settings
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('.env')
 
 from django.test import TestCase
 
-from customer.salesforce import get_customer_details_from_sf
+class TestContractingProcess(TestCase):
 
-from common.salesforce.salesforce import update_contact, create_contract, create_order_summary
-from customers.models             import Account
+    customer_manager = CustomerManager()
+    contracting_process = ContractingProcess()
 
+    def setUp(self):
+        self.dummy_account  = self.create_dummy_account()
+        self.dummy_contract = self.create_dummy_contract()
 
-INVOICE = {
-  "customer": {
-    "city": "Madrid",
-    "name": "Miguel Angel Ca\u00f1as Vaz",
-    "tef_account": "003d000000wX82sAAC",
-    "country": "BR",
-    "postal_code": "28020",
-    "address": "Lazaga n\u00ba13",
-    "email": "mac@tid.es"
-  },
-  "tef_account": "003d000000wX82sAAC",
-  "items": [
-    {
-      "total": 47.66,
-      "amount": 259,
-      "concept": "10052",
-      "price": 0.184,
-      "description": "Smart OS M 1vCPU - 4 GB"
-    }
-  ],
-  "pdf_file_name": "003d000000wX82sAAC.xml.pdf",
-  "contract": "800d00000001giTAAQ",
-  "tax_rate": 20,
-  "taxes": 9.53,
-  "invoice": {
-    "date": "2013-03-05",
-    "head": "processes\/pdf\/template\/head.jpg",
-    "number": "TF0000000088",
-    "month": "January"
-  },
-  "total": 57.19,
-  "subtotal": 47.66,
-  "sdr_file_name": "003d000000wX82sAAC.xml"
-}
+    def create_dummy_account(self):
+        params = {'channel': 'ONLINE', 'email': 'mac@tid.es'}
 
-@unittest.skip("Making tests faster")
-class TestSalesforce(TestCase):
+        return self.customer_manager.store_account(params)
 
-    def test_salesforce_update_contact(self):
+    def create_dummy_contract(self):
+        params = {'sign_date': '29/05/2013', 'tos': 'http://contratos.com', 'start_date': '29/05/2013', 'account': self.dummy_account}
 
-        result = update_contact('Billable', '003d000000lKGP2AAO')
+        return self.customer_manager.store_contract(params, self.dummy_account)
 
-        print result
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS = True, CELERY_ALWAYS_EAGER = True,
+                       BROKER_BACKEND = 'memory')
+    def test_valid_contracting_process(self):
+        self.contracting_process.start_contracting_process(self.dummy_contract)
 
-    def test_salesforce_get_gustomer(self):
+        bp = BusinessProcess.objects.get(account=self.dummy_account, name='CONTRACTING')
+        sp = SubProcess.objects.get(process=bp, name='NOTIFYING CONTRACT')
 
-        result = get_customer_details_from_sf('003d000000kC2JHAA0')
+        tasks = Task.objects.filter(subprocess=sp)
 
-        print result
-
-    def test_salesforce_create_contract(self):
-
-        user_data = Account("003d000000wX82sAAC", "", "", "", "", "", "", "", "", "")
-
-        result = create_contract(user_data, True)
-
-        print result
-
-    def test_salesforce_create_order_summary(self):
-        
-        result = create_order_summary(INVOICE)
-
-        print result
+        self.assertEquals(len(tasks), 3, 'Wrong number of tasks in contracting process')
 
 

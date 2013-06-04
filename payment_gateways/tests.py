@@ -40,7 +40,7 @@ manage.read_env('.env')
 #@unittest.skip("Making tests faster")
 class TestPaymentDataAcquisition(TestCase):
 
-    service_manager  = PaymentGatewayManager()
+    gateways_manager = PaymentGatewayManager()
     customer_manager = CustomerManager()
 
     def setUp(self):
@@ -54,7 +54,7 @@ class TestPaymentDataAcquisition(TestCase):
     def test_wrong_invalid_payment_data(self):
         params = {'channel': 'ONLINE', 'email': 'mac@tid.es'}
 
-        url = self.service_manager.get_payment_gateway_redirect_url(params)
+        url = self.gateways_manager.get_payment_gateway_redirect_url(params)
 
         self.assertEquals(url, None, 'Response should be None when this params')
 
@@ -63,7 +63,7 @@ class TestPaymentDataAcquisition(TestCase):
         params  = { 'email': 'mac@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
                    'postal_code': '28393', 'city': 'madrid', 'country': country}
 
-        url = self.service_manager.get_payment_gateway_redirect_url(params)
+        url = self.gateways_manager.get_payment_gateway_redirect_url(params)
 
         self.assertTrue(url.startswith('https://test.adyen.com/hpp/pay.shtml'), 'Accounts from BR should redirect to Adyen')
 
@@ -72,6 +72,6 @@ class TestPaymentDataAcquisition(TestCase):
         params  = { 'email': 'mac@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
                    'postal_code': '28393', 'city': 'madrid', 'country': country}
 
-        url = self.service_manager.get_payment_gateway_redirect_url(params)
+        url = self.gateways_manager.get_payment_gateway_redirect_url(params)
 
         self.assertTrue(url.startswith('https://secure-test.worldpay.com/wcc/dispatcher'), 'Accounts from ES should redirect to WorldPay')

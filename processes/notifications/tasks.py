@@ -42,14 +42,14 @@ def send_contracting_email_task(success, account, sp_id):
     return tm.process_task(sp_id, 'SEND CONTRACTING EMAIL', success, lambda : (True, None))
 
 @task(ignore_result=True)
-def create_contract_on_salesforce_task(success, status, contract, sp_id):
+def create_contract_on_salesforce_task(success, contract, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'CREATE CONTRACT', success, lambda : create_contract(status, contract))
+    return tm.process_task(sp_id, 'CREATE CONTRACT', success, lambda : create_contract(contract))
 
 @task(ignore_result=True)
-def activate_contract_on_salesforce_task(success, contract_id, sp_id):
+def activate_contract_on_salesforce_task(success, contract, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'ACTIVATE CONTRACT', success, lambda : activate_contract(contract_id))
+    return tm.process_task(sp_id, 'ACTIVATE CONTRACT', success, lambda : activate_contract(contract))
 
 @task(ignore_result=True)
 def create_order_summary_on_salesforce_task(success, sp_id):

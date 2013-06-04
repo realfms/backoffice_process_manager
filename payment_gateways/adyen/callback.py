@@ -7,11 +7,11 @@ from django.db        import transaction
 
 class AdyenCallbackController:
 
-    serviceManager = PaymentGatewayManager()
+    gateways_manager = PaymentGatewayManager()
 
     @classmethod
     def getCharger(cls):
-        return cls.serviceManager.get_charger_by_name("ADYEN")
+        return cls.gateways_manager.get_charger_by_name("ADYEN")
 
     @classmethod
     def success(cls, request):

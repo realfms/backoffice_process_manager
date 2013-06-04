@@ -6,11 +6,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 class WorldpayCallbackController:
 
-    serviceManager = PaymentGatewayManager()
+    gateways_manager = PaymentGatewayManager()
 
     @classmethod
     def getCharger(cls):
-        return cls.serviceManager.get_charger_by_name("WORLDPAY")
+        return cls.gateways_manager.get_charger_by_name("WORLDPAY")
 
     @classmethod
     @transaction.commit_on_success

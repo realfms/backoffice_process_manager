@@ -51,7 +51,7 @@ class PaymentGateway(object):
 
         self.gw = model
         
-        self.service_manager          = PaymentGatewayManager()
+        self.gateways_manager         = PaymentGatewayManager()
         self.payment_method_process   = PaymentMethodProcess()
 
     def get_order(self):

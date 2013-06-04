@@ -88,7 +88,7 @@ def update_contact(status, contact_id, invoicing_address, order_code):
 
     return (True, None)
 
-def create_contract(status, contract):
+def create_contract(contract):
     c = connect()
 
     today = date.today()
@@ -125,12 +125,12 @@ def activate_contract(contract):
 
     c = connect()
 
-    contract = c.generateObject('Contract')
+    sf_contract = c.generateObject('Contract')
 
-    contract.Status = "Activated"
-    contract.Id = contract.contract_id
+    sf_contract.Status = "Activated"
+    sf_contract.Id     = contract.contract_id
 
-    c.update(contract)
+    c.update(sf_contract)
 
     return (True, None)
 

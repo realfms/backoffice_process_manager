@@ -32,6 +32,8 @@ from payment_gateways.services          import PaymentGatewayManager
 from payment_gateways.models            import PaymentMethod
 from customers.models                   import Order
 
+from common.distributed.distributed import compute_uuid
+
 class PaymentGateway(object):
 
     def __init__(self, model):
@@ -47,7 +49,7 @@ class PaymentGateway(object):
         self.MONEY    = 100
         self.CURRENCY = 'EUR'
 
-        self.order = self.compute_order_id()
+        self.order = compute_uuid()
 
         self.gw = model
         
@@ -56,12 +58,6 @@ class PaymentGateway(object):
 
     def get_order(self):
         return self.order
-    
-    def compute_order_id(self):
-        uid = uuid.uuid4()
-        
-        # Order = ten first characters of uuid
-        return uid.hex[:10]
     
     ###########################################################
     # Common data flows

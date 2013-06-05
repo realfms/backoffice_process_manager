@@ -39,6 +39,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.conf import settings
 
+import json
+
 ######################################################
 # CONTRACTS
 ######################################################
@@ -53,7 +55,7 @@ class ContractController:
     @csrf_exempt
     def create(cls, request):
         if request.method != 'POST':
-            return HttpResponse('<h1>Invalid Method</h1>', status=405)
+            return cls._build_error_response('Invalid HTTP method')
 
         body   = request.body
         params = simplejson.loads(body)
@@ -61,23 +63,32 @@ class ContractController:
         channel = params.get('channel', None)
 
         if channel not in settings.CHANNELS_TO_MARKET:
-            return HttpResponse('<h1>Invalid Channel to market</h1>', status=405)
+            return cls._build_error_response('Invalid channel')
 
         account  = cls.customer_manager.store_account(params)
-        contract = cls.customer_manager.store_contract(params, account)
 
         if not account:
-            return HttpResponse('<h1>Insufficient parameters!</h1>', status=405)
+            return cls._build_error_response('Missing account parameters')
+
+        contract = cls.customer_manager.store_contract(params, account)
 
         # Starting Contracting process
         # Async, request doesn't block until process finish
         cls.contracting_process.start_contracting_process(contract)
 
-        if channel == 'ONLINE':
-            # Redirecting user to Service landing page if online channel
-            return HttpResponseRedirect(settings.SERVICE_LANDING_PAGE_URL)
+        return cls._build_ok_response('Contracting process started properly')
 
-        return HttpResponse('<h1>Contracting process started</h1>', status=200)
+    @classmethod
+    def _build_error_response(cls, message):
+        error_message = {'result': 'error', 'message': message}
+
+        return HttpResponse(json.dumps(error_message), mimetype="application/json", status=405)
+
+    @classmethod
+    def _build_ok_response(cls, message):
+        ok_message = {'result': 'ok', 'message': message}
+
+        return HttpResponse(json.dumps(ok_message), mimetype="application/json", status=200)
 
 ######################################################
 # PAYMENT METHODS

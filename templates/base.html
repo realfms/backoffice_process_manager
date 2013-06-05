@@ -12,6 +12,48 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}css/telefonica3css.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/zen-componentsCompatible.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/acquire.css" />
+
+    <script src="{{ STATIC_URL }}/js/jquery-1.10.1.min.js"></script>
+
+    <script language="javascript">
+
+            function send_form (url, method, form_id) {
+                $.ajax({
+                     url: url,
+                     type: method,
+                     data: JSON.stringify($(form_id).serializeObject()),
+                     contentType: 'application/json',
+                     success: function(data) {
+                         var response = data.responseJSON;
+
+                         alert(response.message);
+                     },
+                     error: function(data) {
+                         var response = data.responseJSON;
+
+                         alert(response.message);
+                     }
+                });
+            }
+
+            $.fn.serializeObject = function()
+            {
+                var o = {};
+                var a = this.serializeArray();
+                $.each(a, function() {
+                    if (o[this.name] !== undefined) {
+                        if (!o[this.name].push) {
+                            o[this.name] = [o[this.name]];
+                        }
+                        o[this.name].push(this.value || '');
+                    } else {
+                        o[this.name] = this.value || '';
+                    }
+                });
+                return o;
+            };
+
+        </script>
     
     <title>{% block title %}{% endblock %}</title>
 </head>
@@ -21,8 +63,8 @@
         {% block content %}{% endblock %}
     </div>
 
-    <footer class="footer">
+    <!--<footer class="footer">
         <p class="foot">&copy; Telefonica Digital and Open Innovation Lab (UPM), 2013</p>
-    </footer>
+    </footer>-->
 </body>
 </html>

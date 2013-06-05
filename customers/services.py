@@ -30,9 +30,9 @@ from models import Account, Contract
 from django.utils.timezone import utc
 from datetime              import datetime
 
-class CustomerManager:
+from common.constants.constants import DATE_FORMAT
 
-    DATE_FORMAT = '%d/%m/%Y'
+class CustomerManager:
 
     def store_account(self, params):
 
@@ -70,7 +70,7 @@ class CustomerManager:
 
         end_date_string = params.get('end_date',   None)
 
-        if (not tos or not sign_date or not start_date or not account):
+        if not tos or not sign_date or not start_date or not account:
             return None
 
         start_date = self._format_date(start_date)
@@ -135,7 +135,7 @@ class CustomerManager:
 
     def _format_date(self, date_string):
         try:
-            return datetime.strptime(date_string, self.DATE_FORMAT).replace(tzinfo=utc)
+            return datetime.strptime(date_string, DATE_FORMAT).replace(tzinfo=utc)
         except Exception:
             return None
 

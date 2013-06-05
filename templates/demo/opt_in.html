@@ -23,16 +23,23 @@
 
                 <div id="subscribe-form">
 
-                    <form method="post" action="contract/new" class="top bottom">
+                    <form class="top bottom" id="form" onsubmit="return false;">
 
 	                        <p><label>My name is :</label>
-	                        <input class="form text" name="payment_value" type="text"/></p>
+	                        <input class="form text" name="name" type="text"/></p>
 	
 	                        <p><label>My email is :</label>
-	                        <input class="form text" name="first_name" type="text" value="" /></p>
+	                        <input class="form text" name="email" type="text" value="" /></p>
 	
 	                        <p><label>Type it again :</label>
-	                        <input class="form text" name="last_name" type="text" value="" /></p>
+	                        <input class="form text" name="email2" type="text" value="" /></p>
+
+                            <p>
+	                        <input class="form text" name="channel"    type="hidden" value="ONLINE" />
+                            <input class="form text" name="tos"        type="hidden" value="/tos" />
+                            <input class="form text" name="sign_date"  type="hidden" value="29/05/2013" />
+                            <input class="form text" name="start_date" type="hidden" value="29/05/2013" />
+                            </p>
 	                        
 	                        {% csrf_token %}
 
@@ -42,7 +49,7 @@
                             <p  id="tandc">By creating an account, you agree to our <a href="/tos">Terms & Conditions</a></p>
 
                             <p>
-                                <button class="button hire">Create</button>
+                                <button class="button hire" onclick="send_form('/contract/new', 'POST', '#form')">Create</button>
                             </p>
 
                     </form>

@@ -32,7 +32,7 @@ from payment_gateways.services import PaymentGatewayManager
 
 from processes.task_manager import TaskManager
 
-import uuid
+from common.distributed.distributed import compute_uuid
 
 @task(ignore_result=True)
 def charge_user_task(success, sp_id):
@@ -50,7 +50,7 @@ def charge_user(json):
 
     account_id  = customer_data['tef_account']
     country     = customer_data['country']
-    order_code  = compute_order_id()
+    order_code  = compute_uuid()
     
     account = Account.objects.get(account_id=account_id)
 
@@ -60,10 +60,3 @@ def charge_user(json):
     PaymentGatewayManager().process_recurrent_payment(order)
 
     return (json, None)
-
-# TODO: Guarantee uid is unique among different nodes if this code is distributed
-def compute_order_id():
-    uid = uuid.uuid4()
-
-    # Order = ten first characters of uuid
-    return uid.hex[:10]

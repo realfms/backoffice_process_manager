@@ -1,6 +1,6 @@
 from django.db import models
 
-from common.constants.constants import ACTIVATION_STATUS, CHANNEL, COMPLETION_STATUS
+from common.constants.constants import ACTIVATION_STATUS, CHANNEL, COMPLETION_STATUS, DATE_FORMAT
 
 class Account(models.Model):
 
@@ -20,6 +20,23 @@ class Account(models.Model):
 
     channel     = models.CharField(max_length=10, choices=CHANNEL)
 
+    def to_dict(self):
+        return {
+            'account_id':  self.account_id,
+            'email':       self.email,
+
+            'first_name':  self.first_name,
+            'last_name':   self.last_name,
+
+            'city':        self.city,
+            'address':     self.address,
+            'postal_code': self.postal_code,
+            'phone':       self.phone,
+            'country':     self.country,
+
+            'channel':     self.channel
+        }
+
 class Contract(models.Model):
 
     account     = models.ForeignKey('Account')
@@ -32,6 +49,20 @@ class Contract(models.Model):
     end_date    = models.DateTimeField(null=True)
 
     status = models.CharField(max_length=10, choices=ACTIVATION_STATUS, default='PENDING')
+
+    def to_dict(self):
+        return {
+            'account_id':  self.account.account_id,
+            'subprocess':  self.subprocess.id,
+
+            'contract_id': self.contract_id,
+            'tos':         self.tos,
+            'sign_date':   self.sign_date.strftime(DATE_FORMAT),
+            'start_date':  self.start_date.strftime(DATE_FORMAT),
+            'end_date':    None if not self.end_date else self.end_date.strftime(DATE_FORMAT),
+
+            'status':      self.status,
+        }
     
 class Order(models.Model):
 

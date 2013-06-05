@@ -27,21 +27,38 @@ Created on 29/05/2013
 
 from process import Process
 
-from notifications.tasks import create_contract_on_salesforce_task, activate_contract_on_salesforce_task, send_contracting_email_task
+from notifications.tasks            import create_contract_on_salesforce_task, activate_contract_on_salesforce_task, send_contracting_email_task
+from common.distributed.distributed import compute_uuid
 
 class ContractingProcess(Process):
 
-    def start_contracting_process(self, contract):
+    def start_contracting_process(self, contract, fn):
         process    = self.create_process_model(contract.account, 'CONTRACTING')
         subprocess = self.create_subprocess_model(process,       'NOTIFYING CONTRACT')
 
-        self._start_contracting_process(subprocess, contract)
+        contract.subprocess = subprocess
+        contract.save()
 
-    def _start_contracting_process(self, subprocess, contract):
+        fn(subprocess, contract)
+
+    def _start_salesforce_contracting_process(self, subprocess, contract):
 
         account = contract.account
         sp_id   = subprocess.id
 
-        chain = send_contracting_email_task.s(True, account, sp_id) | create_contract_on_salesforce_task.s(contract, sp_id) | activate_contract_on_salesforce_task.s(contract, sp_id)
+        # Serializing data objects in order to remove no-serializable fields (database connections, etc)
+        # Every argument passed to Celery tasks must be JSON serializable => python dict for example, objects are not Json serializable
+        account_dict  = account.to_dict()
+        contract_dict = contract.to_dict()
+
+        chain = send_contracting_email_task.s(True, account_dict, sp_id) | create_contract_on_salesforce_task.s(contract_dict, sp_id) | activate_contract_on_salesforce_task.s(contract_dict, sp_id)
 
         chain()
+
+    # The standalone contracting process is currently SYNC.
+    # Only creating the contract UUID
+    def _start_standalone_contracting_process(self, subprocess, contract):
+
+        contract.contract_id = compute_uuid()
+        contract.save()
+

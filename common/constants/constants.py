@@ -23,3 +23,5 @@ CHANNEL = (
     ('DIRECT_SALES', 'DIRECT_SALES'),
 )
 
+DATE_FORMAT = '%d/%m/%Y'
+

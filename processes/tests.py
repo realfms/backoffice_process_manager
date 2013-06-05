@@ -60,14 +60,28 @@ class TestContractingProcess(TestCase):
 
     @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS = True, CELERY_ALWAYS_EAGER = True,
                        BROKER_BACKEND = 'memory')
-    def test_valid_contracting_process(self):
-        self.contracting_process.start_contracting_process(self.dummy_contract)
+    def test_valid_salesforce_contracting_process(self):
+        fn = self.contracting_process._start_salesforce_contracting_process
+
+        self.contracting_process.start_contracting_process(self.dummy_contract, fn)
 
         bp = BusinessProcess.objects.get(account=self.dummy_account, name='CONTRACTING')
         sp = SubProcess.objects.get(process=bp, name='NOTIFYING CONTRACT')
 
         tasks = Task.objects.filter(subprocess=sp)
 
-        self.assertEquals(len(tasks), 3, 'Wrong number of tasks in contracting process')
+        self.assertEquals(len(tasks), 3, 'Wrong number of tasks in salesforce contracting process')
+
+    def test_valid_standalone_contracting_process(self):
+        fn = self.contracting_process._start_standalone_contracting_process
+
+        self.contracting_process.start_contracting_process(self.dummy_contract, fn)
+
+        bp = BusinessProcess.objects.get(account=self.dummy_account, name='CONTRACTING')
+        sp = SubProcess.objects.get(process=bp, name='NOTIFYING CONTRACT')
+
+        tasks = Task.objects.filter(subprocess=sp)
+
+        self.assertEquals(len(tasks), 0, 'Wrong number of tasks in standalone contracting process')
 
 

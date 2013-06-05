@@ -88,6 +88,7 @@ def update_contact(status, contact_id, invoicing_address, order_code):
 
     return (True, None)
 
+#contract. python dictionary
 def create_contract(contract):
     c = connect()
 
@@ -106,18 +107,18 @@ def create_contract(contract):
     new_contract.CompanySignedId = "005d0000001LDCMAA4"
 
     # Dynamic => Contact_Id of the Customer
-    new_contract.CustomerSignedId = contract.account.account_id
+    new_contract.CustomerSignedId = contract['account_id']
 
     new_contract.CustomerSignedDate = today_date
     new_contract.CompanySignedDate = today_date
 
     new_contract.OwnerExpirationNotice = 15
 
-    new_contract.ToS_URI__c = contract.tos
+    new_contract.ToS_URI__c = contract['tos']
 
     result = c.create(new_contract)
 
-    contract_id = result['id']
+    contract['contract_id'] = result['id']
 
     return (True, None)
 
@@ -128,7 +129,7 @@ def activate_contract(contract):
     sf_contract = c.generateObject('Contract')
 
     sf_contract.Status = "Activated"
-    sf_contract.Id     = contract.contract_id
+    sf_contract.Id     = contract['contract_id']
 
     c.update(sf_contract)
 

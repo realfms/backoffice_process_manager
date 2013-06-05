@@ -24,9 +24,7 @@
                      data: JSON.stringify($(form_id).serializeObject()),
                      contentType: 'application/json',
                      success: function(data) {
-                         var response = data.responseJSON;
-
-                         alert(response.message);
+                         alert(data.message);
                      },
                      error: function(data) {
                          var response = data.responseJSON;

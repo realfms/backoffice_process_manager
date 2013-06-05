@@ -72,9 +72,11 @@ class ContractController:
 
         contract = cls.customer_manager.store_contract(params, account)
 
-        # Starting Contracting process
+        # Starting Contracting process (in this case, STAND ALONE version
         # Async, request doesn't block until process finish
-        cls.contracting_process.start_contracting_process(contract)
+        stand_alone_fn = cls.contracting_process._start_standalone_contracting_process
+
+        cls.contracting_process.start_contracting_process(contract, stand_alone_fn)
 
         return cls._build_ok_response('Contracting process started properly')
 

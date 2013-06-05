@@ -38,7 +38,7 @@ class TestValidations(TestCase):
 
     def dummy_account(self):
 
-        params = {'channel': 'ONLINE', 'email': 'mac@tid.es'}
+        params = {'channel': 'ONLINE', 'email': 'FAKE@tid.es'}
 
         return self.customer_manager.store_account(params)
 
@@ -52,15 +52,7 @@ class TestValidations(TestCase):
 
     def test_valid_account_with_email(self):
 
-        params = {'channel': 'ONLINE', 'email': 'mac@tid.es'}
-
-        result = self.customer_manager.store_account(params)
-
-        self.assertEquals(type(result), Account, 'Should return an Account instance')
-
-    def test_valid_account_with_account_id(self):
-
-        params = {'channel': 'ONLINE', 'account_id': 'dkdkdkdd'}
+        params = {'channel': 'ONLINE', 'email': 'FAKE@tid.es'}
 
         result = self.customer_manager.store_account(params)
 

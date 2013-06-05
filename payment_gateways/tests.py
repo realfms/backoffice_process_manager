@@ -47,7 +47,7 @@ class TestPaymentDataAcquisition(TestCase):
         self.create_dummy_account()
 
     def create_dummy_account(self):
-        params = {'channel': 'ONLINE', 'email': 'mac@tid.es'}
+        params = {'channel': 'ONLINE', 'email': 'FAKE@tid.es'}
 
         return self.customer_manager.store_account(params)
 

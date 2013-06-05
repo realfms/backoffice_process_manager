@@ -4,8 +4,8 @@ from common.constants.constants import ACTIVATION_STATUS, CHANNEL, COMPLETION_ST
 
 class Account(models.Model):
 
-    account_id  = models.CharField(max_length = 20, null=True)
-    email       = models.EmailField(null=True)
+    account_id  = models.CharField(max_length = 20, null=True, unique=True)
+    email       = models.EmailField(null=True, unique=True)
 
     gender      = models.CharField(max_length = 100, null=True)
 

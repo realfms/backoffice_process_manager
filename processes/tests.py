@@ -49,7 +49,7 @@ class TestContractingProcess(TestCase):
         self.dummy_contract = self.create_dummy_contract()
 
     def create_dummy_account(self):
-        params = {'channel': 'ONLINE', 'email': 'mac@tid.es'}
+        params = {'channel': 'ONLINE', 'email': 'FAKE@tid.es'}
 
         return self.customer_manager.store_account(params)
 

@@ -36,7 +36,6 @@ class CustomerManager:
 
     def store_account(self, params):
 
-        account_id  = params.get('account_id',  None)
         email       = params.get('email',       None)
         city        = params.get('city',        None)
         address     = params.get('address',     None)
@@ -48,15 +47,24 @@ class CustomerManager:
         last_name   = params.get('last_name',   None)
         channel     = params.get('channel',     None)
 
-        # Identified if account_id or email is provided
-        identified = account_id or email
+        # Identified if email is provided
+        identified = email
 
         if not identified or not channel:
             return None
 
-        account = Account  (account_id=account_id, city=city, address=address, postal_code=postal_code, country=country,
-            phone=phone, email=email, gender=gender, first_name=first_name, last_name=last_name,
-            channel=channel)
+        account, _ = Account.objects.get_or_create(email=email)
+
+        account.city        = city
+        account.address     = address
+        account.postal_code = postal_code
+        account.country     = country
+        account.phone       = phone
+        account.email       = email
+        account.gender      = gender
+        account.first_name  = first_name
+        account.last_name   = last_name
+        account.channel     = channel
 
         account.save()
 

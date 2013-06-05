@@ -18,6 +18,7 @@ If not, see http://www.gnu.org/licenses/.
 
 For those usages not covered by the GNU Affero General Public License please contact with::mac@tid.es
 """
+from customers.models import BillingAddress
 
 '''
 Created on 01/06/2013
@@ -36,39 +37,47 @@ class CustomerManager:
 
     def store_account(self, params):
 
+        email   = params.get('email',       None)
+        channel = params.get('channel',     None)
+
+        if not email or not channel:
+            return None
+
+        account, created = Account.objects.get_or_create(email=email)
+
+        if created:
+            account.channel = channel
+            account.save()
+
+        return account
+
+    def store_billing_address(self, params):
+
         email       = params.get('email',       None)
         city        = params.get('city',        None)
         address     = params.get('address',     None)
         postal_code = params.get('postal_code', None)
         country     = params.get('country',     None)
         phone       = params.get('phone',       None)
-        gender      = params.get('gender',      None)
         first_name  = params.get('first_name',  None)
         last_name   = params.get('last_name',   None)
-        channel     = params.get('channel',     None)
 
-        # Identified if email is provided
-        identified = email
-
-        if not identified or not channel:
+        if not email or not city or not address or not postal_code or not country or not first_name or not last_name:
             return None
 
-        account, _ = Account.objects.get_or_create(email=email)
+        billing_address, _ = BillingAddress.objects.get_or_create(account__email=email)
 
-        account.city        = city
-        account.address     = address
-        account.postal_code = postal_code
-        account.country     = country
-        account.phone       = phone
-        account.email       = email
-        account.gender      = gender
-        account.first_name  = first_name
-        account.last_name   = last_name
-        account.channel     = channel
+        billing_address.city        = city
+        billing_address.address     = address
+        billing_address.postal_code = postal_code
+        billing_address.country     = country
+        billing_address.phone       = phone
+        billing_address.first_name  = first_name
+        billing_address.last_name   = last_name
 
-        account.save()
+        billing_address.save()
 
-        return account
+        return billing_address
 
     def store_contract(self, params, account):
 

@@ -67,7 +67,7 @@ class TestPaymentDataAcquisition(TestCase):
 
         self.assertTrue(url.startswith('https://test.adyen.com/hpp/pay.shtml'), 'Accounts from BR should redirect to Adyen')
 
-    def test_valid_redirection_to_adyen(self):
+    def test_valid_redirection_to_worldpay(self):
         country = 'ES'
         params  = { 'email': 'mac@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
                    'postal_code': '28393', 'city': 'madrid', 'country': country}

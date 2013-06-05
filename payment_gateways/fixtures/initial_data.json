@@ -1,1 +1,26 @@
-[{"pk": 1, "model": "payment_gateways.paymentgateway", "fields": {"merchant": "GLOBALBILLINGEUR", "endpoint": "https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp", "name": "WORLDPAY", "class_name": "Worldpay_Charger", "country": "ES", "error_callback": "http://bo-process-manager-europe.herokuapp.com/payment/gw/worldpay/error", "success_callback": "http://bo-process-manager-europe.herokuapp.com/payment/gw/worldpay/success", "module_name": "payment_gateways.worldpay.worldpay_charger", "password": "xml2012launch", "pending_callback": "http://bo-process-manager-europe.herokuapp.com/payment/gw/worldpay/pending"}}, {"pk": 2, "model": "payment_gateways.paymentgateway", "fields": {"merchant": "", "endpoint": "", "name": "ADYEN", "class_name": "Adyen_Charger", "country": "BR", "error_callback": "", "success_callback": "", "module_name": "payment_gateways.adyen.adyen_charger", "password": "", "pending_callback": ""}}, {"pk": 1, "model": "payment_gateways.paymentmethod", "fields": {"status": "VALIDATED", "account": 1, "gateway": 2, "recurrent_order_code": "a6f5512"}}, {"pk": 1, "model": "customers.account", "fields": {"city": null, "first_name": null, "last_name": null, "account_id": "003d000000kC2JPAA0", "gender": null, "phone": null, "postal_code": null, "address": null, "country": null, "email": "mac@tid.es", "channel": ""}}, {"pk": 2, "model": "customers.order", "fields": {"status": "PENDING", "account": 1, "payment_method": null, "country": "US", "currency": "EUR", "order_code": "f55d549f4d", "total": 221}}, {"pk": 5, "model": "customers.order", "fields": {"status": "PENDING", "account": 1, "payment_method": null, "country": "BR", "currency": "EUR", "order_code": "b35f2af863", "total": 221}}, {"pk": 6, "model": "customers.order", "fields": {"status": "PENDING", "account": 1, "payment_method": null, "country": "BR", "currency": "EUR", "order_code": "ae11f8f1bb", "total": 221}}, {"pk": 7, "model": "customers.order", "fields": {"status": "PENDING", "account": 1, "payment_method": null, "country": "BR", "currency": "EUR", "order_code": "487691a5dc", "total": 221}}]
+[
+    {"pk": 1, "model": "payment_gateways.paymentgateway",
+    "fields": {"merchant": "GLOBALBILLINGEUR", "endpoint": "https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp",
+                "name": "WORLDPAY", "class_name": "Worldpay_Charger", "country": "ES",
+                "error_callback": "http://bo-process-manager-europe.herokuapp.com/payment/gw/worldpay/error",
+                "success_callback": "http://bo-process-manager-europe.herokuapp.com/payment/gw/worldpay/success",
+                "module_name": "payment_gateways.worldpay.worldpay_charger",
+                "password": "xml2012launch",
+                "pending_callback": "http://bo-process-manager-europe.herokuapp.com/payment/gw/worldpay/pending"}
+    },
+    {"pk": 2, "model": "payment_gateways.paymentgateway",
+    "fields": {"merchant": "", "endpoint": "", "name": "ADYEN", "class_name": "Adyen_Charger", "country": "BR",
+               "error_callback": "", "success_callback": "", "module_name": "payment_gateways.adyen.adyen_charger",
+               "password": "", "pending_callback": ""}
+    },
+    {"pk": 1, "model": "payment_gateways.paymentmethod",
+    "fields": {"status": "VALIDATED", "account": 1, "gateway": 2, "recurrent_order_code": "a6f5512"}
+    },
+    {"pk": 1, "model": "customers.billingaddress",
+    "fields": {"city": "Madrid", "first_name": "Miguel Angel", "last_name": "Cañas Vaz", "account": 1,
+               "phone": "38383833", "postal_code": "29022", "address": "Castellana, 12", "country": "BR"}
+    },
+    {"pk": 1, "model": "customers.account",
+    "fields": {"gender": null, "account_id": "003d000000kC2JPAA0", "email": "mac@tid.es", "channel": "ONLINE"}
+    }
+]

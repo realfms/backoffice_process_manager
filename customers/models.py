@@ -4,26 +4,37 @@ from common.constants.constants import ACTIVATION_STATUS, CHANNEL, COMPLETION_ST
 
 class Account(models.Model):
 
-    account_id  = models.CharField(max_length = 20, null=True, unique=True)
-    email       = models.EmailField(null=True, unique=True)
+    account_id = models.CharField(max_length = 20, null=True, unique=True)
 
-    gender      = models.CharField(max_length = 100, null=True)
+    email   = models.EmailField(null=True, unique=True)
+    channel = models.CharField(max_length=10, choices=CHANNEL)
 
-    first_name  = models.CharField(max_length = 100, null=True)
-    last_name   = models.CharField(max_length = 100, null=True)
-
-    city        = models.CharField(max_length = 100, null=True)
-    address     = models.CharField(max_length = 200, null=True)
-    postal_code = models.CharField(max_length = 10,  null=True)
-    country     = models.CharField(max_length = 3,   null=True)
-    phone       = models.CharField(max_length = 10,  null=True)
-
-    channel     = models.CharField(max_length=10, choices=CHANNEL)
+    gender  = models.CharField(max_length=100, null=True)
 
     def to_dict(self):
         return {
-            'account_id':  self.account_id,
-            'email':       self.email,
+            'account_id': self.account_id,
+            'email':      self.email,
+            'channel':    self.channel,
+            'gender' :    self.gender
+        }
+
+class BillingAddress(models.Model):
+
+    account = models.ForeignKey('Account')
+
+    first_name  = models.CharField(max_length = 100)
+    last_name   = models.CharField(max_length = 100)
+
+    city        = models.CharField(max_length = 100)
+    address     = models.CharField(max_length = 200)
+    postal_code = models.CharField(max_length = 10)
+    country     = models.CharField(max_length = 3)
+    phone       = models.CharField(max_length = 10, null=True)
+
+    def to_dict(self):
+        return {
+            'account_id':  self.account.account_id,
 
             'first_name':  self.first_name,
             'last_name':   self.last_name,
@@ -33,8 +44,6 @@ class Account(models.Model):
             'postal_code': self.postal_code,
             'phone':       self.phone,
             'country':     self.country,
-
-            'channel':     self.channel
         }
 
 class Contract(models.Model):

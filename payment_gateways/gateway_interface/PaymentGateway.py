@@ -108,8 +108,8 @@ class PaymentGateway(object):
     # Should be overwritten by specific implementations of Payment Gateways
     ########################################################### 
 
-    # account: customers.models.Account
-    def get_redirect_url(self, account):
+    # account: customers.models.BillingAddress
+    def get_redirect_url(self, billing_address):
         pass
 
     # order: customers.models.Order

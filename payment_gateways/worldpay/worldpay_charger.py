@@ -70,17 +70,17 @@ class Worldpay_Charger (PaymentGateway):
             print "Errortransaction. HTTP Error code:",e.code
             return None
 
-    def get_redirect_url(self, account):
+    def get_redirect_url(self, billing_address):
         
         xml = FIRST_PAYMENT_PAYLOAD % {
                                         "merchantCode": self.USERNAME,
                                         "fillmoney":    self.MONEY,
                                         "ordercode" :   self.order,
-                                        "city" :        account.city,
-                                        "address" :     account.address,
-                                        "postal_code" : account.postal_code,
-                                        "country":      account.country,
-                                        "phone":        account.phone
+                                        "city" :        billing_address.city,
+                                        "address" :     billing_address.address,
+                                        "postal_code" : billing_address.postal_code,
+                                        "country":      billing_address.country,
+                                        "phone":        billing_address.phone
                                       }
 
         doc = self.get_response_document(xml, self.USERNAME, self.PASSWORD)

@@ -38,15 +38,15 @@ class Adyen_Charger (PaymentGateway):
     def __init__(self, model):
         super(Adyen_Charger, self).__init__(model)
 
-    def get_redirect_url(self, account):
+    def get_redirect_url(self, billing_address):
 
         data = {
             'merchantReference': self.order,
             'paymentAmount':     self.MONEY,
             'currencyCode':      self.CURRENCY,
             'shipBeforeDate':    datetime.now(),
-            'shopperEmail':      account.email,
-            'shopperReference':  account.account_id,
+            'shopperEmail':      billing_address.account.email,
+            'shopperReference':  billing_address.account.account_id,
             'sessionValidity':   datetime.now(),
             'recurringContract': 'RECURRING',     
         }

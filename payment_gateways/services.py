@@ -40,19 +40,19 @@ class PaymentGatewayManager:
 
     def get_payment_gateway_redirect_url(self, params):
         # Storing account info
-        account  = self.customer_manager.update_account_with_payment_details(params)
+        billing_address  = self.customer_manager.store_billing_address(params)
 
-        if not account:
+        if not billing_address:
             return None
 
-        return self.initial_payment_url(account)
+        return self.initial_payment_url(billing_address)
 
-    def initial_payment_url(self, account):
-        (charger, gw) = self.get_charger_by_country(account.country)
+    def initial_payment_url(self, billing_address):
+        (charger, gw) = self.get_charger_by_country(billing_address.country)
         if (charger == None):
             return None
 
-        return charger.get_redirect_url(account)
+        return charger.get_redirect_url(billing_address)
 
     def get_charger_by_name(self, name):
         gw = self.get_gateway_by_name(name)

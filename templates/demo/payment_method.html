@@ -23,7 +23,7 @@
 
                 <div id="subscribe-form">
 
-                    <form method="post" action="/payment/acquire/redirect" class="top bottom">
+                    <form id="form" class="top bottom" onsubmit="return false;">
 	
 	                        <p><label>First name:</label>
 	                        <input class="form text" name="first_name" type="text" value="" /></p>
@@ -32,7 +32,7 @@
 	                        <input class="form text" name="last_name" type="text" value="" /></p>
 
 	                        <p><label>Email:</label>
-	                        <input class="form text" name="last_name" type="text" value="" /></p>
+	                        <input class="form text" name="email" type="text" value="" /></p>
 	
 	                        <p><label>Address:</label>
 	                        <input class="form text" name="address" type="text" value="" /></p>
@@ -44,12 +44,12 @@
 	                        <input class="form text" name="city" type="text" value="" /></p>
 	
 	                        <p><label>Country:</label>
-	                        <input class="form text" name="contry" type="text" value=""/></p>
+	                        <input class="form text" name="country" type="text" value=""/></p>
 	                        
 	                        {% csrf_token %}
 
 						<p>
-							<button class="button hire">Accept</button>
+							<button class="button hire" onclick="send_form('/payment_method/new', 'POST', '#form', redirect)">Accept</button>
 						</p>
 
                     </form>

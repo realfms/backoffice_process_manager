@@ -29,8 +29,8 @@ urlpatterns = patterns('',
     ######################################################
 
     # payment method acquisition API
-    url(r'^account/(?P<account>\w+)/payment_method$',     PaymentMethodController.list),
-    url(r'^account/(?P<account>\w+)/payment_method/new$', PaymentMethodController.create),
+    url(r'^payment_method$',     PaymentMethodController.list),
+    url(r'^payment_method/new$', PaymentMethodController.create),
 
     # adyen callback API
     url(r'^payment_method/gw/adyen$', AdyenCallbackController.callback),

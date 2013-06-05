@@ -92,6 +92,12 @@ class ContractController:
 
         return HttpResponse(json.dumps(ok_message), mimetype="application/json", status=200)
 
+    @classmethod
+    def _build_redirect_response(cls, message, url):
+        ok_message = {'result': 'ok', 'message': message, 'url': url}
+
+        return HttpResponse(json.dumps(ok_message), mimetype="application/json", status=200)
+
 ######################################################
 # PAYMENT METHODS
 ######################################################
@@ -99,8 +105,10 @@ class ContractController:
 class PaymentMethodController:
 
     payment_gateways_manager = PaymentGatewayManager()
+    customer_manager         = CustomerManager()
 
     @classmethod
+    @csrf_exempt
     def list(cls, request, account):
 
         if request.method == 'GET':
@@ -112,18 +120,26 @@ class PaymentMethodController:
             return HttpResponse('<h1>Invalid Method</h1>', status=405)
 
     @classmethod
+    @csrf_exempt
     @transaction.commit_on_success
     def create(cls, request):
 
         if request.method == 'POST':
 
-            params = request.POST
+            body   = request.body
+            params = simplejson.loads(body)
 
-            url = cls.payment_gateways_manager.get_payment_gateway_redirect_url(params)
+            billing_address = cls.customer_manager.store_billing_address(params)
 
-            return HttpResponseRedirect(url)
-        else:
-            return HttpResponse('<h1>Invalid Method</h1>', status=405)
+            if not billing_address:
+                return ContractController._build_error_response('Missing parameters')
+
+            url = cls.payment_gateways_manager.get_payment_gateway_redirect_url(billing_address)
+
+            if not url:
+                return ContractController._build_error_response('Problem with payment gateway')
+
+            return ContractController._build_redirect_response('Redirect to Payment Gateway', url)
 
 ######################################################
 # ORDERS

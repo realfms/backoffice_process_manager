@@ -45,33 +45,31 @@ class TestPaymentDataAcquisition(TestCase):
 
     def setUp(self):
         self.create_dummy_account()
+        self.dummy_billing_address = self.create_dummy_billing_address()
 
     def create_dummy_account(self):
         params = {'channel': 'ONLINE', 'email': 'FAKE@tid.es'}
 
         return self.customer_manager.store_account(params)
 
-    def test_wrong_invalid_payment_data(self):
-        params = {'channel': 'ONLINE', 'email': 'mac@tid.es'}
+    def create_dummy_billing_address(self):
+        params  = { 'email': 'mac@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
+                    'postal_code': '28393', 'city': 'madrid', 'country': "ES"}
 
-        url = self.gateways_manager.get_payment_gateway_redirect_url(params)
-
-        self.assertEquals(url, None, 'Response should be None when this params')
+        return self.customer_manager.store_billing_address(params)
 
     def test_valid_redirection_to_adyen(self):
-        country = 'BR'
-        params  = { 'email': 'mac@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
-                   'postal_code': '28393', 'city': 'madrid', 'country': country}
+        self.dummy_billing_address.country = 'BR'
+        self.dummy_billing_address.save()
 
-        url = self.gateways_manager.get_payment_gateway_redirect_url(params)
+        url = self.gateways_manager.get_payment_gateway_redirect_url(self.dummy_billing_address)
 
         self.assertTrue(url.startswith('https://test.adyen.com/hpp/pay.shtml'), 'Accounts from BR should redirect to Adyen')
 
     def test_valid_redirection_to_worldpay(self):
-        country = 'ES'
-        params  = { 'email': 'mac@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
-                   'postal_code': '28393', 'city': 'madrid', 'country': country}
+        self.dummy_billing_address.country = 'ES'
+        self.dummy_billing_address.save()
 
-        url = self.gateways_manager.get_payment_gateway_redirect_url(params)
+        url = self.gateways_manager.get_payment_gateway_redirect_url(self.dummy_billing_address)
 
         self.assertTrue(url.startswith('https://secure-test.worldpay.com/wcc/dispatcher'), 'Accounts from ES should redirect to WorldPay')

@@ -116,8 +116,8 @@ class Worldpay_Charger (PaymentGateway):
         order_key = data['orderKey']
         status    = data['paymentStatus']
 
-        mask       = data.get('mask', None)
-        expiration = data.get('expiration', None)
+        mask       = data.get('mask', '4111 **** **** 1111')
+        expiration = data.get('expiration', '29/12/2016')
         
         size       = len(self.USERNAME) + 1
         order_code = order_key[order_key.find(self.USERNAME)+size:]

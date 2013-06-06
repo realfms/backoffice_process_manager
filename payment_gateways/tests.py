@@ -29,10 +29,11 @@ import manage
 
 from django.test import TestCase
 
-from services           import PaymentGatewayManager
+from services           import PaymentGatewayManager, PaymentMethodManager
 from customers.services import CustomerManager
 
 import unittest
+import urlparse
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('.env')
@@ -43,8 +44,10 @@ class TestPaymentDataAcquisition(TestCase):
     gateways_manager = PaymentGatewayManager()
     customer_manager = CustomerManager()
 
+    payment_method_manager = PaymentMethodManager()
+
     def setUp(self):
-        self.create_dummy_account()
+        self.dummy_account         = self.create_dummy_account()
         self.dummy_billing_address = self.create_dummy_billing_address()
 
     def create_dummy_account(self):
@@ -53,7 +56,7 @@ class TestPaymentDataAcquisition(TestCase):
         return self.customer_manager.store_account(params)
 
     def create_dummy_billing_address(self):
-        params  = { 'email': 'mac@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
+        params  = { 'email': 'FAKE@tid.es', 'first_name': 'nombre', 'last_name': 'apellidos', 'address': 'direccion',
                     'postal_code': '28393', 'city': 'madrid', 'country': "ES"}
 
         return self.customer_manager.store_billing_address(params)
@@ -73,3 +76,33 @@ class TestPaymentDataAcquisition(TestCase):
         url = self.gateways_manager.get_payment_gateway_redirect_url(self.dummy_billing_address)
 
         self.assertTrue(url.startswith('https://secure-test.worldpay.com/wcc/dispatcher'), 'Accounts from ES should redirect to WorldPay')
+
+    def test_valid_billing_address_storage(self):
+        # Storing number of billing method BEFORE calling
+        num_before = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'PENDING'))
+
+        url = self.gateways_manager.get_payment_gateway_redirect_url(self.dummy_billing_address)
+
+        # Storing number of billing method AFTER calling
+        num_after = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'PENDING'))
+
+        self.assertEqual(num_before, 0, 'No payment method should be registered!')
+        self.assertEqual(num_after,  1, '1 payment method should be registered!')
+
+    def test_valid_worldpay_charger_callback(self):
+        data = dict(urlparse.parse_qsl('orderKey=TELEFONICA^GLOBALBILLINGEUR^c99831a4b9&paymentStatus=AUTHORISED&paymentAmount=100&paymentCurrency=EUR&mac=065230066a0bfefcde9b60ebfa73de44&source=WP'))
+
+        charger, gateway = self.gateways_manager.get_charger_by_name("WORLDPAY")
+
+        num_before = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED'))
+
+        self.payment_method_manager.store_payment_method(self.dummy_account, 'c99831a4b9', gateway)
+
+        charger.update_order_status(data)
+
+        num_after = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED'))
+
+        self.assertEqual(num_before, 0, 'No VALIDATED payment method should be registered!')
+        self.assertEqual(num_after,  1, '1 VALIDATED payment method should be registered!')
+
+

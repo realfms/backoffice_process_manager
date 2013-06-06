@@ -58,6 +58,9 @@ class PaymentGateway(object):
 
     def get_order(self):
         return self.order
+
+    def get_gateway(self):
+        return self.gw
     
     ###########################################################
     # Common data flows
@@ -94,8 +97,10 @@ class PaymentGateway(object):
         payment_method.status = status
         payment_method.save()
 
+        fn = self.payment_method_process._start_standalone_new_payment_method_process
+
         # Start Async notify process
-        self.payment_method_process.start_payment_method_acquisition_process(payment_method)
+        self.payment_method_process.start_new_payment_method_notification_process(payment_method, fn)
     
     def _recurrent_payment_flow(self, order, status):
         # Callback of recuerrent payment flow

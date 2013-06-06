@@ -62,10 +62,18 @@ class CustomerManager:
         first_name  = params.get('first_name',  None)
         last_name   = params.get('last_name',   None)
 
-        if not email or not city or not address or not postal_code or not country or not first_name or not last_name:
+        if not email:
             return None
 
-        billing_address, _ = BillingAddress.objects.get_or_create(account__email=email)
+        try:
+            account = Account.objects.get(email=email)
+        except Account.DoesNotExist:
+            return None
+
+        if not city or not address or not postal_code or not country or not first_name or not last_name:
+            return None
+
+        billing_address, _ = BillingAddress.objects.get_or_create(account=account)
 
         billing_address.city        = city
         billing_address.address     = address

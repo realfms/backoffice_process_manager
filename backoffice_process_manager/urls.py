@@ -6,7 +6,8 @@ from django.conf.urls import patterns, include, url
 
 import settings
 
-from payment_gateways.views import PaymentMethodController, ContractController, OrderingController
+from payment_gateways.views import PaymentMethodController, ContractController
+from customers.views        import BillingAddressController
 from processes.views        import ProcessesController
 from processes.tos          import ToSController
 from demo.views             import DemoController
@@ -32,6 +33,10 @@ urlpatterns = patterns('',
     url(r'^payment_method$',     PaymentMethodController.list),
     url(r'^payment_method/new$', PaymentMethodController.create),
 
+    # billing address API
+    url(r'^billing_address$',     BillingAddressController.list),
+    url(r'^billing_address/new$', BillingAddressController.create),
+
     # adyen callback API
     url(r'^payment_gateway/adyen$', AdyenCallbackController.callback),
 
@@ -45,8 +50,6 @@ urlpatterns = patterns('',
     ######################################################
 
     # ordering API
-    url(r'^account/(?P<account>\w+)/order/new$', OrderingController.create),
-
 
     ######################################################
     # PROCESSES
@@ -67,10 +70,11 @@ urlpatterns = patterns('',
     # DEMO
     ######################################################
 
-    url(r'^demo/$',               DemoController.index),
-    url(r'^demo/opt_in$',         DemoController.opt_in),
-    url(r'^demo/payment_method$', DemoController.payment_method),
-    url(r'^demo/order$',          DemoController.order),
+    url(r'^demo/$',                DemoController.index),
+    url(r'^demo/opt_in$',          DemoController.opt_in),
+    url(r'^demo/billing_address$', DemoController.billing_address),
+    url(r'^demo/payment_method$',  DemoController.payment_method),
+    url(r'^demo/order$',           DemoController.order),
 
 
     ######################################################

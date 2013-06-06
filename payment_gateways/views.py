@@ -147,10 +147,20 @@ class PaymentMethodController:
             body   = request.body
             params = simplejson.loads(body)
 
-            billing_address = cls.customer_manager.store_billing_address(params)
+            email = params.get('account', None)
+
+            if not email:
+                return ContractController._build_error_response('Missing account parameters')
+
+            account = cls.customer_manager.get_account(email)
+
+            if not account:
+                return ContractController._build_error_response('Invalid account account parameters')
+
+            billing_address = cls.customer_manager.get_billing_address(account)
 
             if not billing_address:
-                return ContractController._build_error_response('Missing parameters')
+                return ContractController._build_error_response('Missing billing address. Add billing address before')
 
             url = cls.payment_gateways_manager.get_payment_gateway_redirect_url(billing_address)
 
@@ -158,15 +168,3 @@ class PaymentMethodController:
                 return ContractController._build_error_response('Problem with payment gateway')
 
             return ContractController._build_redirect_response('Redirecting to Payment Gateway', url)
-
-######################################################
-# ORDERS
-######################################################
-
-class OrderingController:
-
-    @classmethod
-    @transaction.commit_on_success
-    @csrf_exempt
-    def create(cls, request, account, payment_method):
-        pass

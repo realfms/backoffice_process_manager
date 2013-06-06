@@ -1,0 +1,60 @@
+<{% extends "base.html" %}-->
+
+{% block title %}Get Billing Address Dummy Screen{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="utf-8" />
+    <title>Payment Method</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/paymentform.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/commons_fonts.css" />
+</head>
+
+<body>
+    <div class="general">
+        <header class="header">
+                <h1 class="titlePage">Billing address<img src="{{ STATIC_URL }}img/lgo_telefonica_main.gif" class="logo"></h1>
+        </header>
+
+        <section>
+            <article>
+
+            	<h2 id="welcome">Enter your billing information:</h2>
+
+                <div id="subscribe-form">
+
+                    <form id="form" class="top bottom" onsubmit="return false;">
+	
+	                        <p><label>First name:</label>
+	                        <input class="form text" name="first_name" type="text" value="" /></p>
+	
+	                        <p><label>Last name:</label>
+	                        <input class="form text" name="last_name" type="text" value="" /></p>
+
+	                        <p><label>Email:</label>
+	                        <input class="form text" name="email" type="text" value="" /></p>
+	
+	                        <p><label>Address:</label>
+	                        <input class="form text" name="address" type="text" value="" /></p>
+	
+	                        <p><label>Postal Code:</label>
+	                        <input class="form text" name="postal_code" type="text" value="" /></p>
+	
+	                        <p><label>City:</label>
+	                        <input class="form text" name="city" type="text" value="" /></p>
+	
+	                        <p><label>Country:</label>
+	                        <input class="form text" name="country" type="text" value=""/></p>
+	                        
+	                        {% csrf_token %}
+
+						<p>
+							<button class="button hire" onclick="send_form('/billing_address/new', 'POST', '#form', show_response)">Accept</button>
+						</p>
+
+                    </form>
+                </div>
+            </article>
+        </section>
+    </div>
+{% endblock %}

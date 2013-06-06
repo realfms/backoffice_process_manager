@@ -38,6 +38,10 @@ class DemoController():
         return render(request, 'demo/opt_in.html', {})
 
     @classmethod
+    def billing_address(self, request):
+        return render(request, 'demo/billing_address.html', {})
+
+    @classmethod
     def payment_method(self, request):
         return render(request, 'demo/payment_method.html', {})
 

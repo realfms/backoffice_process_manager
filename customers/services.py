@@ -33,6 +33,12 @@ from common.dates.dates import format_date
 
 class CustomerManager:
 
+    def get_billing_address(self, account):
+        try:
+            return BillingAddress.objects.get(account=account)
+        except BillingAddress.DoesNotExist:
+            return None
+
     def store_account(self, params):
 
         email   = params.get('email',       None)

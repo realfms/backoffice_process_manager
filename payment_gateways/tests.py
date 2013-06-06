@@ -89,8 +89,11 @@ class TestPaymentDataAcquisition(TestCase):
         self.assertEqual(num_before, 0, 'No payment method should be registered!')
         self.assertEqual(num_after,  1, '1 payment method should be registered!')
 
-    def test_valid_worldpay_charger_callback(self):
+    def test_worldpay_validated_payment_method_callback(self):
         data = dict(urlparse.parse_qsl('orderKey=TELEFONICA^GLOBALBILLINGEUR^c99831a4b9&paymentStatus=AUTHORISED&paymentAmount=100&paymentCurrency=EUR&mac=065230066a0bfefcde9b60ebfa73de44&source=WP'))
+
+        # Marking callback data as VALID
+        data['paymentStatus'] = 'AUTHORISED'
 
         charger, gateway = self.gateways_manager.get_charger_by_name("WORLDPAY")
 
@@ -104,5 +107,24 @@ class TestPaymentDataAcquisition(TestCase):
 
         self.assertEqual(num_before, 0, 'No VALIDATED payment method should be registered!')
         self.assertEqual(num_after,  1, '1 VALIDATED payment method should be registered!')
+
+    def test_worldpay_pending_payment_method_callback(self):
+        data = dict(urlparse.parse_qsl('orderKey=TELEFONICA^GLOBALBILLINGEUR^c99831a4b9&paymentStatus=ERROR&paymentAmount=100&paymentCurrency=EUR&mac=065230066a0bfefcde9b60ebfa73de44&source=WP'))
+
+        # Marking callback data as ERROR
+        data['paymentStatus'] = 'ERROR'
+
+        charger, gateway = self.gateways_manager.get_charger_by_name("WORLDPAY")
+
+        num_before = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED'))
+
+        self.payment_method_manager.store_payment_method(self.dummy_account, 'c99831a4b9', gateway)
+
+        charger.update_order_status(data)
+
+        num_after = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED'))
+
+        self.assertEqual(num_before, 0, 'No VALIDATED payment method should be registered!')
+        self.assertEqual(num_after,  0, 'No VALIDATED payment method should be registered!')
 
 

@@ -25,14 +25,14 @@ Created on 17/10/2012
 @author: mac@tid.es
 '''
 
-import uuid
-
 from processes.payment_method_process   import PaymentMethodProcess
 from payment_gateways.services          import PaymentGatewayManager
 from payment_gateways.models            import PaymentMethod
 from customers.models                   import Order
 
 from common.distributed.distributed import compute_uuid
+
+from common.dates.dates import format_date
 
 class PaymentGateway(object):
 
@@ -66,7 +66,7 @@ class PaymentGateway(object):
     # Common data flows
     ########################################################### 
     
-    def identify_successful_flow(self, order_code, status):
+    def identify_successful_flow(self, order_code, mask, expiration, status):
         try:
             payment_method = PaymentMethod.objects.get(recurrent_order_code=order_code, status='PENDING')
         except PaymentMethod.DoesNotExist:
@@ -74,7 +74,7 @@ class PaymentGateway(object):
 
         # Distinguising flows
         if payment_method:
-            return self._data_acquisition_flow(payment_method, status)
+            return self._data_acquisition_flow(payment_method, mask, expiration, status)
 
         # Callback of recurrent payment flow
         try:
@@ -89,10 +89,13 @@ class PaymentGateway(object):
         print "ERROR: NEITHER ACQUISITION NOR RECURRENT FLOW IN ADYEN CALLBACK"
         return False
     
-    def _data_acquisition_flow(self, payment_method, status):
+    def _data_acquisition_flow(self, payment_method, mask, expiration, status):
         # Callback of payment data acquisition flow
         print "DATA ACQUISITION FLOW"
         print status
+
+        payment_method.mask   = mask
+        payment_method.expiration = format_date(expiration)
 
         payment_method.status = status
         payment_method.save()

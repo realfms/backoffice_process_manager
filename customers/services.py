@@ -18,7 +18,6 @@ If not, see http://www.gnu.org/licenses/.
 
 For those usages not covered by the GNU Affero General Public License please contact with::mac@tid.es
 """
-from customers.models import BillingAddress
 
 '''
 Created on 01/06/2013
@@ -28,10 +27,9 @@ Created on 01/06/2013
 
 from models import Account, Contract
 
-from django.utils.timezone import utc
-from datetime              import datetime
+from customers.models import BillingAddress
 
-from common.constants.constants import DATE_FORMAT
+from common.dates.dates import format_date
 
 class CustomerManager:
 
@@ -98,13 +96,13 @@ class CustomerManager:
         if not tos or not sign_date or not start_date or not account:
             return None
 
-        start_date = self._format_date(start_date)
-        sign_date  = self._format_date(sign_date)
+        start_date = format_date(start_date)
+        sign_date  = format_date(sign_date)
 
         if not start_date or not sign_date:
             return None
 
-        end_date = self._format_date(end_date_string)
+        end_date = format_date(end_date_string)
 
         if end_date_string and not end_date:
             return None
@@ -157,12 +155,6 @@ class CustomerManager:
     ######################################################
     # PRIVATE METHODS
     ######################################################
-
-    def _format_date(self, date_string):
-        try:
-            return datetime.strptime(date_string, DATE_FORMAT).replace(tzinfo=utc)
-        except Exception:
-            return None
 
     def _get_account(self, email, account_id):
         try:

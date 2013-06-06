@@ -51,6 +51,9 @@ class PaymentMethod(models.Model):
 
     gateway = models.ForeignKey('PaymentGateway')
     account = models.ForeignKey('customers.Account')
+
+    mask       = models.CharField(max_length=20, null=True)
+    expiration = models.DateTimeField(null=True)
     
     recurrent_order_code = models.CharField(max_length=10)
     

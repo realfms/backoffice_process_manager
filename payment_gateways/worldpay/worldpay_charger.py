@@ -115,6 +115,9 @@ class Worldpay_Charger (PaymentGateway):
     def update_order_status(self, data):
         order_key = data['orderKey']
         status    = data['paymentStatus']
+
+        mask       = data['mask']
+        expiration = data['expiration']
         
         size       = len(self.USERNAME) + 1
         order_code = order_key[order_key.find(self.USERNAME)+size:]
@@ -124,4 +127,4 @@ class Worldpay_Charger (PaymentGateway):
             print data
             return False
 
-        return self.identify_successful_flow(order_code, 'VALIDATED')
+        return self.identify_successful_flow(order_code, mask, expiration, 'VALIDATED')

@@ -33,12 +33,12 @@ urlpatterns = patterns('',
     url(r'^payment_method/new$', PaymentMethodController.create),
 
     # adyen callback API
-    url(r'^payment_method/gw/adyen$', AdyenCallbackController.callback),
+    url(r'^payment_gateway/adyen$', AdyenCallbackController.callback),
 
     # worldpay callback API
-    url(r'^payment_method/gw/worldpay/success$', WorldpayCallbackController.success),
-    url(r'^payment_method/gw/worldpay/pending$', WorldpayCallbackController.pending),
-    url(r'^payment_method/gw/worldpay/error$',   WorldpayCallbackController.error),
+    url(r'^payment_gateway/worldpay/success$', WorldpayCallbackController.success),
+    url(r'^payment_gateway/worldpay/pending$', WorldpayCallbackController.pending),
+    url(r'^payment_gateway/worldpay/error$',   WorldpayCallbackController.error),
 
     ######################################################
     # ORDERING

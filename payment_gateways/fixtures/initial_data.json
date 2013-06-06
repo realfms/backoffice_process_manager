@@ -2,11 +2,11 @@
     {"pk": 1, "model": "payment_gateways.paymentgateway",
     "fields": {"merchant": "GLOBALBILLINGEUR", "endpoint": "https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp",
                 "name": "WORLDPAY", "class_name": "Worldpay_Charger", "country": "ES",
-                "error_callback": "http://bo-process-manager-europe.herokuapp.com/payment/gw/worldpay/error",
-                "success_callback": "http://bo-process-manager-europe.herokuapp.com/payment/gw/worldpay/success",
+                "error_callback": "http://bo-process-manager-europe.herokuapp.com/payment_gateway/worldpay/error",
+                "success_callback": "http://bo-process-manager-europe.herokuapp.com/payment_gateway/worldpay/success",
                 "module_name": "payment_gateways.worldpay.worldpay_charger",
                 "password": "xml2012launch",
-                "pending_callback": "http://bo-process-manager-europe.herokuapp.com/payment/gw/worldpay/pending"}
+                "pending_callback": "http://bo-process-manager-europe.herokuapp.com/payment_gateway/worldpay/pending"}
     },
     {"pk": 2, "model": "payment_gateways.paymentgateway",
     "fields": {"merchant": "", "endpoint": "", "name": "ADYEN", "class_name": "Adyen_Charger", "country": "BR",

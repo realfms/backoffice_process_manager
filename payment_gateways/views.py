@@ -139,7 +139,7 @@ class PaymentMethodController:
             if not url:
                 return ContractController._build_error_response('Problem with payment gateway')
 
-            return ContractController._build_redirect_response('Redirect to Payment Gateway', url)
+            return ContractController._build_redirect_response('Redirecting to Payment Gateway', url)
 
 ######################################################
 # ORDERS

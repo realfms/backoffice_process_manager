@@ -27,7 +27,7 @@ Created on 16/10/2012
 
 from django.db import models
 
-from common.constants.constants import ACTIVATION_STATUS
+from common.constants.constants import ACTIVATION_STATUS, DATE_FORMAT
 
 class PaymentGateway(models.Model):
 
@@ -63,5 +63,5 @@ class PaymentMethod(models.Model):
         return {
             'id':         self.id,
             'mask':       self.mask,
-            'expiration': self.expiration,
+            'expiration': None if not self.expiration else self.expiration.strftime(DATE_FORMAT)
         }

@@ -58,3 +58,10 @@ class PaymentMethod(models.Model):
     recurrent_order_code = models.CharField(max_length=10)
     
     status = models.CharField(max_length=10, choices=ACTIVATION_STATUS, default='PENDING')
+
+    def to_dict(self):
+        return {
+            'id':         self.id,
+            'mask':       self.mask,
+            'expiration': self.expiration,
+        }

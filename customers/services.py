@@ -116,12 +116,11 @@ class CustomerManager:
     def update_account_with_payment_details(self, params):
 
         email      = params.get('email',      None)
-        account_id = params.get('account_id', None)
 
-        if not email and not account_id:
+        if not email:
             return None
 
-        account = self._get_account(email, account_id)
+        account = self._get_account(email)
 
         if not account:
             return None
@@ -152,17 +151,8 @@ class CustomerManager:
 
         return account
 
-    ######################################################
-    # PRIVATE METHODS
-    ######################################################
-
-    def _get_account(self, email, account_id):
+    def get_account(self, email):
         try:
-            account = Account.objects.get(account_id=account_id)
+            return Account.objects.get(email=email)
         except Account.DoesNotExist:
-            try:
-                account = Account.objects.get(email=email)
-            except Account.DoesNotExist:
-                return None
-
-        return account
+            return None

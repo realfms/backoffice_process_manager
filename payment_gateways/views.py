@@ -26,13 +26,11 @@ Created on 16/10/2012
 '''
 
 from django.http        import HttpResponse
-from django.shortcuts   import render
-from django.http        import HttpResponseRedirect
 from django.db          import transaction
 from django.utils       import simplejson
 
 from processes.contracting_process import ContractingProcess
-from services                      import PaymentGatewayManager
+from services                      import PaymentGatewayManager, PaymentMethodManager
 from customers.services            import CustomerManager
 
 from django.views.decorators.csrf import csrf_exempt
@@ -98,6 +96,12 @@ class ContractController:
 
         return HttpResponse(json.dumps(ok_message), mimetype="application/json", status=200)
 
+    @classmethod
+    def _build_ok_with_data_response(cls, message, data):
+        ok_message = {'result': 'ok', 'message': message, 'data': data}
+
+        return HttpResponse(json.dumps(ok_message), mimetype="application/json", status=200)
+
 ######################################################
 # PAYMENT METHODS
 ######################################################
@@ -106,18 +110,32 @@ class PaymentMethodController:
 
     payment_gateways_manager = PaymentGatewayManager()
     customer_manager         = CustomerManager()
+    payment_method_manager   = PaymentMethodManager()
 
     @classmethod
     @csrf_exempt
-    def list(cls, request, account):
+    def list(cls, request):
 
-        if request.method == 'GET':
+        if request.method != 'GET':
+            return ContractController._build_error_response('Invalid HTTP method')
 
-            context = {}
+        params = request.GET
 
-            return render(request, 'payment_gateways/acquire_form.html', context)
-        else:
-            return HttpResponse('<h1>Invalid Method</h1>', status=405)
+        email = params.get('account', None)
+
+        if not email:
+            return ContractController._build_error_response('Missing account parameter')
+
+        account = cls.customer_manager.get_account(email)
+
+        if not account:
+            return ContractController._build_error_response('Invalid account')
+
+        payment_methods = cls.payment_method_manager.get_payment_methods(account, 'VALIDATED')
+
+        payment_methods = [pm.to_dict() for pm in payment_methods]
+
+        return ContractController._build_ok_with_data_response('Listing registered payment methods', payment_methods)
 
     @classmethod
     @csrf_exempt

@@ -47,6 +47,10 @@ class PaymentGateway(models.Model):
     
     country    = models.CharField(max_length = 3)
 
+    def __unicode__(self):
+        return self.name
+
+
 class PaymentMethod(models.Model):
 
     gateway = models.ForeignKey('PaymentGateway')
@@ -58,6 +62,9 @@ class PaymentMethod(models.Model):
     recurrent_order_code = models.CharField(max_length=10)
     
     status = models.CharField(max_length=10, choices=ACTIVATION_STATUS, default='PENDING')
+
+    def __unicode__(self):
+        return self.mask if self.mask else self.recurrent_order_code
 
     def to_dict(self):
         return {

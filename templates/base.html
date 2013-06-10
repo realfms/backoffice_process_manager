@@ -32,13 +32,28 @@
                 });
             }
 
+            function send_json(url, method, data, success) {
+                $.ajax({
+                     url: url,
+                     type: method,
+                     data: JSON.stringify(data),
+                     contentType: 'application/json',
+                     success: success,
+                     error: function(data) {
+                         var response = data.responseJSON;
+
+                         alert(response.message);
+                     }
+                });
+            }
+
             function redirect (data) {
                  alert(data.message);
                  window.location.href=data.url;
             }
 
             function show_response (data) {
-                 alert(data.message);;
+                 alert(data.message);
             }
 
             $.fn.serializeObject = function()

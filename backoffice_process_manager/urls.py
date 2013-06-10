@@ -1,13 +1,12 @@
 from django.conf.urls import patterns, include, url
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 
 import settings
 
 from payment_gateways.views import PaymentMethodController, ContractController
-from customers.views        import BillingAddressController
+from customers.views        import BillingAddressController, OrderController
 from processes.views        import ProcessesController
 from processes.tos          import ToSController
 from demo.views             import DemoController
@@ -17,6 +16,12 @@ from payment_gateways.adyen.callback    import AdyenCallbackController
 from payment_gateways.worldpay.callback import WorldpayCallbackController
 
 urlpatterns = patterns('',
+
+
+    ######################################################
+    # ADMIN
+    ######################################################
+    ('^admin/', include(admin.site.urls)),
 
     ######################################################
     # CONTRACT URLS
@@ -50,6 +55,7 @@ urlpatterns = patterns('',
     ######################################################
 
     # ordering API
+    url(r'^order/new$', OrderController.create),
 
     ######################################################
     # PROCESSES

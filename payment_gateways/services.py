@@ -134,6 +134,15 @@ class PaymentMethodManager:
     def get_payment_methods(self, account, status):
         return PaymentMethod.objects.filter(account=account, status=status)
 
+    def get_valid_payment_methods(self, account):
+        return PaymentMethod.objects.filter(account=account, status='VALIDATED')
+
+    def get_valid_payment_method(self, pm_id, account):
+        try:
+            return PaymentMethod.objects.get(id=pm_id, account=account, status='VALIDATED')
+        except PaymentMethod.DoesNotExist:
+            return None
+
     def store_payment_method(self, account, recurrent_order_code, gateway):
 
         # Creating PaymentMethod

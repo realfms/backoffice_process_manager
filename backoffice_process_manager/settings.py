@@ -160,6 +160,7 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
@@ -170,7 +171,8 @@ INSTALLED_APPS = (
     'payment_gateways',
     'processes',
     'gunicorn',
-    'demo'
+    'demo',
+    'ordering'
 )
 
 # A sample logging configuration. The only tangible logging

@@ -10,22 +10,105 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}css/paymentform.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/commons_fonts.css" />
 
+    <script>
+        var order_data = {};
+
+        function load_billing_address() {
+            var account = $('.account').first().val();
+            $.getJSON('/billing_address?account='+account, function(data) {
+
+              var address = data.data;
+
+              var items = [];
+
+              var ul = $('.billing-address').first();
+
+              ul.html('');
+
+              items.push('<li class="name">' + address['first_name'] + ' ' + address['last_name'] + '</li>');
+              items.push('<li>' + address['address'] + '</li>');
+              items.push('<li>' + address['city'] + '</li>');
+              items.push('<li>' + address['postal_code'] + '</li>');
+              items.push('<li>' + address['country'] + '</li>');
+
+              ul.append(items.join(''));
+            });
+        }
+
+        function load_payment_methods() {
+            var account = $('.account').first().val();
+
+            $.getJSON('/payment_method?account=' + account, function(data) {
+
+              var payment_methods = data.data;
+
+              var elected = [];
+
+              var ul = $('.payment-method').first();
+
+              ul.html('');
+
+              $.each(payment_methods, function () {
+                  elected.push('<li class="name">' + this.mask + '</li>');
+                  elected.push('<li>' + this.expiration + '</li>');
+              });
+
+              order_data['payment_method']= payment_methods[0].id
+
+              ul.append(elected.join(''));
+            });
+        }
+
+        function send_order() {
+            var account = $('.account').first().val();
+
+            var event = {'rated_by_billing':  {'billing_code': 'ER_SUBSCRIPTION', 'units': 1, 'exponent': 0} }
+
+            order_data['account'] = account;
+            order_data['events'] = [event];
+
+            send_json('/order/new', 'POST', order_data, show_response)
+        }
+
+        function get_data()  {
+            load_billing_address();
+            load_payment_methods()
+        }
+
+    </script>
+
     <style>
-        .billing li, .payment_method li{
+        .billing-address li, .payment-method li{
             display: block;
             float: none;
             font-size: 14px;
         }
 
-        .billing .name, .payment_method .name{
+        .billing-address .name, .payment-method .name{
             font-size: 18px;
             font-weight: bold;
+            margin-left: 21px;
         }
 
-        .billing,  .payment_method {
+        .billing-address,  .payment-method, .cart {
             height: auto;
             top: auto;
+            border: 1px solid gray;
+            min-height: 100px;
         }
+
+         .billing-address,  .payment-method {
+            float: left;
+            width: 598px;
+         }
+
+         .account {
+            padding-left: 30px;
+         }
+
+        .hire {
+            left: 20px;
+         }
 
     </style>
 </head>
@@ -36,18 +119,21 @@
                 <h1 class="titlePage">Your shopping cart<img src="{{ STATIC_URL }}img/lgo_telefonica_main.gif" class="logo"></h1>
         </header>
 
-        <ul class="billing">
-            <li class="name">Miguel Angel Cañas Vaz</li>
-            <li>Calle Infanta</li>
-            <li>Madrid</li>
-            <li>España</li>
-            <li>39494944</li>
+        <input class="account" type="text" value="mac@tid.es"/>
+        <button class="button hire" onclick="get_data()">Get data</button>
+
+        <ul class="cart">
         </ul>
 
-         <ul class="payment_method">
-            <li class="name">Card ending in 873</li>
-            <li>Expiring at 05/20</li>
+        <ul class="billing-address">
         </ul>
+
+        <ul class="payment-method">
+        </ul>
+
+        <p>
+			<button class="button hire" onclick="send_order()">Create order</button>
+		</p>
 
     </div>
 {% endblock %}

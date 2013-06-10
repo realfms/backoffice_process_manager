@@ -27,7 +27,7 @@ Created on 01/06/2013
 
 from django.db import models
 
-from common.constants.constants import ACTIVATION_STATUS, CHANNEL, COMPLETION_STATUS, DATE_FORMAT
+from common.constants.constants import ACTIVATION_STATUS, CHANNEL, DATE_FORMAT
 
 class Account(models.Model):
 
@@ -37,6 +37,9 @@ class Account(models.Model):
     channel = models.CharField(max_length=10, choices=CHANNEL)
 
     gender  = models.CharField(max_length=100, null=True)
+
+    def __unicode__(self):
+        return self.email
 
     def to_dict(self):
         return {
@@ -99,22 +102,3 @@ class Contract(models.Model):
 
             'status':      self.status,
         }
-    
-class Order(models.Model):
-
-    total    = models.IntegerField()
-    currency = models.CharField(max_length = 3)
-    country  = models.CharField(max_length = 3)
-    
-    order_code  = models.CharField(max_length=10)
-    
-    account        = models.ForeignKey('Account')
-    payment_method = models.ForeignKey('payment_gateways.PaymentMethod', null=True)
-
-    status = models.CharField(max_length=10, choices=COMPLETION_STATUS, default='PENDING')
-
-class Product(models.Model):
-    code = models.CharField(max_length=20, primary_key=True)
-
-    name = models.CharField(max_length=50)
-    desc = models.CharField(max_length=50)

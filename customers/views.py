@@ -29,6 +29,8 @@ Created on 01/06/2013
 from django.views.decorators.csrf import csrf_exempt
 
 from customers.services import CustomerManager
+from ordering.services  import OrderManager
+
 from payment_gateways.views import ContractController
 
 from django.db          import transaction
@@ -80,4 +82,30 @@ class BillingAddressController:
 
         billing_address = cls.customer_manager.get_billing_address(account)
 
-        return ContractController._build_ok_with_data_response('Listing registered payment methods', billing_address.to_dict())
+        return ContractController._build_ok_with_data_response('Listing registered billing address', billing_address.to_dict())
+
+
+######################################################
+# ORDERS
+######################################################
+
+class OrderController:
+
+    order_manager = OrderManager()
+
+    @classmethod
+    @transaction.commit_on_success
+    @csrf_exempt
+    def create(cls, request):
+        if request.method != 'POST':
+            return ContractController._build_error_response('Invalid HTTP method')
+
+        body   = request.body
+        params = simplejson.loads(body)
+
+        order = cls.order_manager.create_order(params)
+
+        if not order:
+            return ContractController._build_error_response('Missing parameters')
+
+        return ContractController._build_ok_response('Order created!')

@@ -25,9 +25,8 @@ Created on 01/06/2013
 @author: mac@tid.es
 '''
 
-from models import Account, Contract
-
-from customers.models import BillingAddress
+from models                    import Account, Contract
+from customers.models          import BillingAddress
 
 from common.dates.dates import format_date
 
@@ -118,44 +117,6 @@ class CustomerManager:
         contract.save()
 
         return contract
-
-    def update_account_with_payment_details(self, params):
-
-        email      = params.get('email',      None)
-
-        if not email:
-            return None
-
-        account = self._get_account(email)
-
-        if not account:
-            return None
-
-        first_name  = params.get('first_name',  None)
-        last_name   = params.get('last_name',   None)
-        address     = params.get('address',     None)
-        city        = params.get('city',        None)
-        country     = params.get('country',     None)
-        postal_code = params.get('postal_code', None)
-
-        if not first_name or not last_name or not address or not city or not country or not postal_code:
-            return None
-
-        gender      = params.get('gender',      None)
-        phone       = params.get('phone',       None)
-
-        account.first_name  = first_name
-        account.last_name   = last_name
-        account.address     = address
-        account.city        = city
-        account.postal_code = postal_code
-        account.gender      = gender
-        account.phone       = phone
-        account.country     = country
-
-        account.save()
-
-        return account
 
     def get_account(self, email):
         try:

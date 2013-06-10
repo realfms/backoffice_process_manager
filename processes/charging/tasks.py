@@ -27,7 +27,8 @@ Created on 15/10/2012
 
 from celery import task
 
-from customers.models          import Order, Account
+from customers.models          import Account
+from ordering.models           import Order
 from payment_gateways.services import PaymentGatewayManager
 
 from processes.task_manager import TaskManager

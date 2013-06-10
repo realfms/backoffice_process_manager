@@ -28,7 +28,7 @@ Created on 17/10/2012
 from processes.payment_method_process   import PaymentMethodProcess
 from payment_gateways.services          import PaymentGatewayManager
 from payment_gateways.models            import PaymentMethod
-from customers.models                   import Order
+from ordering.models                    import Order
 
 from common.distributed.distributed import compute_uuid
 

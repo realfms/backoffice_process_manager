@@ -31,13 +31,52 @@ from common.aws.s3 import get_bucket_key_content
 
 from catalogue import CATALOGUE, TAX
 
-def round_price(price):
-    return round(price*100)/100
-
-def download_and_parse_sdr(bucket_key, tef_account):
+def download_and_parse_sdr(bucket_key, account):
     xml = get_bucket_key_content(bucket_key)
     
-    return parse_sdr(xml, bucket_key, tef_account, CATALOGUE, TAX)
+    return parse_sdr(xml, bucket_key, account, CATALOGUE, TAX)
+
+def rate_from_order(order, line_items, billing_address):
+    return _rate_from_order(order, line_items, billing_address, TAX)
+
+def _rate_from_order(order, line_items, billing_address, tax):
+    result = {}
+
+    result['items']    = []
+    result['subtotal'] = 0
+
+    result['contract']    = ''
+    result['tef_account'] = billing_address['email']
+
+    for line_item in line_items:
+        product = line_item['product']
+        amount = line_item['quantity']
+
+        price = line_item['price']
+        description = line_item['description']
+
+        invoice_entry = create_invoice_entry(product, price, description, amount)
+
+        result['items'].append(invoice_entry)
+
+        result['subtotal'] += invoice_entry['total']
+
+    # Computing subtotal
+    result['total'] = round_price(tax * result['subtotal'])
+
+    # Computing subtotal
+    result['tax_rate'] = (tax - 1) * 100
+
+    # Computing taxes
+    result['taxes'] = round_price(result['total'] - result['subtotal'])
+
+    # Adding file_name for naming PDF
+    result['sdr_file_name'] = billing_address['email']
+
+    # Adding customer information
+    result['customer'] = generate_customer_info(billing_address)
+
+    return (result, None)
 
 def parse_sdr(xml, file_name, tef_account, catalogue, tax):
     doc = BeautifulSoup(xml)
@@ -93,6 +132,11 @@ def parse_sdr(xml, file_name, tef_account, catalogue, tax):
     
     return (result, None)
 
+def generate_customer_info(billing_address):
+    billing_address['name'] = billing_address['first_name'] + ' ' + billing_address['last_name']
+
+    return billing_address
+
 def create_invoice_entry(concept, price, description, amount):
     return {
             'concept': unicode(concept), 
@@ -128,3 +172,6 @@ def get_content(consumption, fieldName):
         return ""
 
     return data.string
+
+def round_price(price):
+    return round(price*100)/100

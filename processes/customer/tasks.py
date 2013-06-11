@@ -35,5 +35,3 @@ from processes.task_manager import TaskManager
 def get_customer_details_from_sf_task(success, sp_id):
     tm = TaskManager()
     return tm.process_task(sp_id, 'CUSTOMER DATA', success, lambda : customer_details_from_sf(tm.get_subprocess_data(sp_id)))
-
-

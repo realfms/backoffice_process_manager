@@ -36,14 +36,20 @@ from processes.task_manager import TaskManager
 from common.distributed.distributed import compute_uuid
 
 @task(ignore_result=True)
-def charge_user_task(success, sp_id):
+def charge_user_task(success, order, sp_id):
     tm = TaskManager()
 
-    data = tm.get_subprocess_data(sp_id)
+    json = tm.get_subprocess_data(sp_id)
 
-    return tm.process_task(sp_id, 'CHARGING',success, lambda : charge_user(data))
+    return tm.process_task(sp_id, 'CHARGING',success, lambda : charge_user(json, order))
 
-def charge_user(json):
+def charge_user(json, order_dict):
+    if order_dict:
+        PaymentGatewayManager().process_recurrent_payment(Order.objects.get(order_code=order_dict['order_code']))
+        return (json, None)
+
+    # No order provided!
+    # Rating an SDR file
     customer_data = json['customer']
 
     total    = int(json['total'] * 100)

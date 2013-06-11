@@ -3,12 +3,15 @@ from payment_gateways.services import PaymentMethodManager
 
 from models import Order, Product, LineItem
 
+from processes.order_to_cash_process import OrderToCashProcess
+
 from common.distributed.distributed import compute_uuid
 
 class OrderManager:
 
     customer_manager = CustomerManager()
     payment_method_manager = PaymentMethodManager()
+    order_to_cash_process  = OrderToCashProcess()
 
     def create_order(self, params):
 
@@ -21,6 +24,7 @@ class OrderManager:
 
         account = self.customer_manager.get_account(email)
         payment_method = self.payment_method_manager.get_valid_payment_method(pm_id, account)
+        billing_address = self.customer_manager.get_billing_address(account)
 
         if not account or not payment_method:
             return None
@@ -40,6 +44,8 @@ class OrderManager:
         order.save()
 
         line_items = [self.create_line_item(product, event, order) for (event, product) in zip(events, products)]
+
+        self.order_to_cash_process.start_online_order_to_cash_process(order, line_items, account, billing_address)
 
         return order
 

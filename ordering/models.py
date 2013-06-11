@@ -19,6 +19,14 @@ class Order(models.Model):
     def __unicode__(self):
         return self.order_code
 
+    def to_dict(self):
+        return {
+            'total':        self.total,
+            'currency':     self.currency,
+            'country':      self.country,
+            'order_code' :  self.order_code
+        }
+
 class LineItem(models.Model):
     order    = models.ForeignKey('Order')
     product  = models.ForeignKey('Product')
@@ -26,6 +34,14 @@ class LineItem(models.Model):
 
     def __unicode__(self):
         return unicode(self.order)
+
+    def to_dict(self):
+        return {
+            'product':     self.product.code,
+            'price':       self.product.price,
+            'description': self.product.desc,
+            'quantity' :   self.quantity
+        }
 
 class Product(models.Model):
     code = models.CharField(max_length=20, primary_key=True)

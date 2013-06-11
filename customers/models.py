@@ -69,6 +69,8 @@ class BillingAddress(models.Model):
             'first_name':  self.first_name,
             'last_name':   self.last_name,
 
+            'email':       self.account.email,
+
             'city':        self.city,
             'address':     self.address,
             'postal_code': self.postal_code,

@@ -27,7 +27,7 @@ Created on 15/10/2012
 
 from celery import task
 
-from rating                 import download_and_parse_sdr
+from rating                 import download_and_parse_sdr, rate_from_order
 from processes.task_manager import TaskManager
 
 
@@ -35,3 +35,8 @@ from processes.task_manager import TaskManager
 def download_and_parse_sdr_task(success, bucket_key, tef_account, sp_id):
     tm = TaskManager()
     return tm.process_task(sp_id, 'RATING', success, lambda : download_and_parse_sdr(bucket_key, tef_account))
+
+@task(ignore_result=True)
+def rate_from_order_task(success, order, line_items, billing_address, sp_id):
+    tm = TaskManager()
+    return tm.process_task(sp_id, 'RATING', success, lambda : rate_from_order(order, line_items, billing_address))

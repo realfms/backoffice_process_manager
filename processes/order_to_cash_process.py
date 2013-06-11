@@ -29,7 +29,7 @@ from models import BusinessProcess, SubProcess
 
 from customer.tasks      import get_customer_details_from_sf_task
 from charging.tasks      import charge_user_task
-from rating.tasks        import download_and_parse_sdr_task
+from rating.tasks        import download_and_parse_sdr_task, rate_from_order_task
 from pdf.tasks           import generate_pdf_and_upload_task
 from email.tasks         import send_email_task
 from notifications.tasks import create_order_summary_on_salesforce_task
@@ -41,38 +41,43 @@ class OrderToCashProcess(Process):
     ################################################################################
     # CREATE & START PROCESS
     ################################################################################
-    def start_order_to_cash_process(self, bucket_key, account):
+    def start_cdr_order_to_cash_process(self, bucket_key, account):
         
         process    = self.create_process_model(account,    'ORDER TO CASH')
         subprocess = self.create_subprocess_model(process, 'BILLING')
 
-        self._start_order_to_cash_process(bucket_key, account, subprocess)
+        self._start_salesforce_cdr_order_to_cash_process(bucket_key, account, subprocess)
 
-    def sync_order_to_cash(self, bucket_key, account):
+    def start_online_order_to_cash_process(self, order, line_items, account, billing_address):
 
         process    = self.create_process_model(account,    'ORDER TO CASH')
         subprocess = self.create_subprocess_model(process, 'BILLING')
 
-        sp_id      = subprocess.id
-        account_id = account.account_id
-
-        success = download_and_parse_sdr_task(True, bucket_key, account_id, sp_id)
-        success = get_customer_details_from_sf_task(success, sp_id)
-        success = generate_pdf_and_upload_task(success, sp_id)
-        success = send_email_task(success, sp_id)
-        success = charge_user_task(success, sp_id)
-
-        return success
+        self._start_standalone_online_order_to_cash_process(order, line_items, billing_address, subprocess)
     
     ################################################################################
     # PRIVATE METHODS
     ################################################################################
 
-    def _start_order_to_cash_process(self, bucket_key, account, subprocess):
+    def _start_salesforce_cdr_order_to_cash_process(self, bucket_key, account, subprocess):
         
         sp_id      = subprocess.id
         account_id = account.account_id
         
-        chain = download_and_parse_sdr_task.s(True, bucket_key, account_id, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id) | create_order_summary_on_salesforce_task.s(sp_id)
+        chain = download_and_parse_sdr_task.s(True, bucket_key, account_id, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(None, sp_id) | create_order_summary_on_salesforce_task.s(sp_id)
+
+        chain()
+
+    def _start_standalone_online_order_to_cash_process(self, order, line_items, billing_address, subprocess):
+
+        sp_id = subprocess.id
+
+        # Serializing data objects in order to remove no-serializable fields (database connections, etc)
+        # Every argument passed to Celery tasks must be JSON serializable => python dict for example, objects are not Json serializable
+        order_dict      = order.to_dict()
+        line_items_dict = [line_item.to_dict() for line_item in line_items]
+        billing_address_dict = billing_address.to_dict()
+
+        chain = rate_from_order_task.s(True, order_dict, line_items_dict, billing_address_dict, sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(order_dict, sp_id)
 
         chain()

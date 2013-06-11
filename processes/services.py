@@ -45,7 +45,7 @@ class ProcessManager:
         keys = get_sdr_request_keys()
 
         for key in keys:
-            self.order_to_cash_process.start_order_to_cash_process(key.name, self._get_account(key))
+            self.order_to_cash_process.start_cdr_order_to_cash_process(key.name, self._get_account(key))
 
     def sync_first_order_to_cash(self):
         keys = get_sdr_request_keys()

@@ -29,6 +29,7 @@ import manage
 
 from customers.services  import CustomerManager
 from contracting_process import ContractingProcess
+from ordering.services import OrderManager
 
 from models import BusinessProcess, SubProcess, Task
 
@@ -43,6 +44,7 @@ class TestContractingProcess(TestCase):
 
     customer_manager = CustomerManager()
     contracting_process = ContractingProcess()
+    order_manager = OrderManager()
 
     def setUp(self):
         self.dummy_account  = self.create_dummy_account()
@@ -58,8 +60,7 @@ class TestContractingProcess(TestCase):
 
         return self.customer_manager.store_contract(params, self.dummy_account)
 
-    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS = True, CELERY_ALWAYS_EAGER = True,
-                       BROKER_BACKEND = 'memory')
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS = True, CELERY_ALWAYS_EAGER = True, BROKER_BACKEND = 'memory')
     def test_valid_salesforce_contracting_process(self):
         fn = self.contracting_process._start_salesforce_contracting_process
 
@@ -84,4 +85,10 @@ class TestContractingProcess(TestCase):
 
         self.assertEquals(len(tasks), 0, 'Wrong number of tasks in standalone contracting process')
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS = True, CELERY_ALWAYS_EAGER = True, BROKER_BACKEND = 'memory')
+    def test_valid_online_standalone__order_to_cash_process(self):
 
+        events = [{'rated_by_billing': {'billing_code': 'ER_SUBSCRIPTION', 'units': 1, 'exponent': 0}}]
+        params = {'account': 'mac@tid.es', 'payment_method': 1, 'events': events}
+
+        self.order_manager.create_order(params)

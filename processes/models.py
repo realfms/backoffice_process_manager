@@ -27,11 +27,14 @@ Created on 16/10/2012
 
 
 from django.db import models
+from django.contrib import admin
 
 from customers.models import Account
 from datetime import datetime
 
 from django.utils.timezone import utc
+
+from django.core.files.base import ContentFile
 
 STATUS = (
     ('OK',       'OK'),
@@ -64,10 +67,10 @@ class SubProcess(models.Model):
 
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
     
-    result = models.TextField(blank=True, null=True)
+    result = models.FileField(upload_to='processes', null=True)
     
     def set_result(self, result):
-        self.result = result
+        self.result.save('subprocess_{0}.json'.format(self.id), ContentFile(result))
         self.save()
 
 class Task(models.Model):
@@ -94,3 +97,7 @@ class Task(models.Model):
 
     def set_now_as_end(self):
         self.end = datetime.utcnow().replace(tzinfo=utc)
+
+admin.site.register(BusinessProcess)
+admin.site.register(SubProcess)
+admin.site.register(Task)

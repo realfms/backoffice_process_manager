@@ -30,7 +30,7 @@ from django.test import TestCase
 
 from services import CustomerManager
 
-from customers.models import Account, Contract
+from customers.models import Account, OptIn
 
 class TestValidations(TestCase):
 
@@ -66,7 +66,7 @@ class TestValidations(TestCase):
 
         result = self.customer_manager.store_contract(params, account)
 
-        self.assertEquals(type(result), Contract, 'Should return a Contract instance')
+        self.assertEquals(type(result), OptIn, 'Should return a OptIn instance')
 
     def test_wrong_contract_with_invalid_date_format(self):
 
@@ -76,7 +76,7 @@ class TestValidations(TestCase):
 
         result = self.customer_manager.store_contract(params, account)
 
-        self.assertEquals(result, None, 'Contract validation should return None')
+        self.assertEquals(result, None, 'OptIn validation should return None')
 
     def test_wrong_contract_with_invalid_end_date(self):
 
@@ -87,4 +87,4 @@ class TestValidations(TestCase):
 
         result = self.customer_manager.store_contract(params, account)
 
-        self.assertEquals(result, None, 'Contract validation should return None')
+        self.assertEquals(result, None, 'OptIn validation should return None')

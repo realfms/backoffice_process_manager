@@ -26,6 +26,7 @@ Created on 16/10/2012
 '''
 
 from django.db import models
+from django.contrib import admin
 
 from common.constants.constants import ACTIVATION_STATUS, DATE_FORMAT
 
@@ -72,3 +73,6 @@ class PaymentMethod(models.Model):
             'mask':       self.mask,
             'expiration': None if not self.expiration else self.expiration.strftime(DATE_FORMAT)
         }
+
+admin.site.register(PaymentMethod)
+admin.site.register(PaymentGateway)

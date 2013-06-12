@@ -29,12 +29,14 @@ from xhtml2pdf import pisa
 from jinja2 import Template
 from datetime import date
 
+from ordering.models import Invoice
+
+from common.distributed.distributed import compute_uuid
+
 TEMPLATE_PATH = 'processes/pdf/template/invoice.html'
 HEAD_PATH     = 'processes/pdf/template/head.jpg'
 
 import codecs
-
-from common.aws.s3 import upload_invoice_to_s3
 
 def compute_invoice_details ():
     return {
@@ -62,7 +64,13 @@ def generate_pdf_and_upload(invoice_json):
         pdf = pisa.CreatePDF(template.render(invoice_json), f)
 
     if not pdf.err:
-        upload_invoice_to_s3(file_name)
+        with open (file_name, "r") as f:
+            invoice_code = compute_uuid()
+
+            invoice = Invoice(file_name=file_name, invoice_code=invoice_code)
+
+            invoice.set_content('{0}.pdf'.format(invoice_code), f)
+            invoice.save()
 
     invoice_json['pdf_file_name'] = file_name
 

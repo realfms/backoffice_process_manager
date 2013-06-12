@@ -65,6 +65,3 @@ def upload_file_to_s3(file_name, bucket):
 
 def upload_invoice_to_s3(file_name):
     upload_file_to_s3(file_name, PDF_INVOICES_BUCKET)
-
-def upload_sdr_to_s3(file_name):
-    upload_file_to_s3(file_name, SDR_REQUESTS_BUCKET)

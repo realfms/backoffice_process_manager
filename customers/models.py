@@ -27,6 +27,8 @@ Created on 01/06/2013
 
 from django.db import models
 
+from django.contrib import admin
+
 from common.constants.constants import ACTIVATION_STATUS, CHANNEL, DATE_FORMAT
 
 class Account(models.Model):
@@ -78,7 +80,7 @@ class BillingAddress(models.Model):
             'country':     self.country,
         }
 
-class Contract(models.Model):
+class OptIn(models.Model):
 
     account     = models.ForeignKey('Account')
     subprocess  = models.ForeignKey('processes.SubProcess', null=True)
@@ -104,3 +106,7 @@ class Contract(models.Model):
 
             'status':      self.status,
         }
+
+admin.site.register(Account)
+admin.site.register(BillingAddress)
+admin.site.register(OptIn)

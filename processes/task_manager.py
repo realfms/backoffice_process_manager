@@ -36,7 +36,10 @@ class TaskManager:
     def get_subprocess_data(self, sp_id):
         subprocess = SubProcess.objects.get(id=sp_id)
 
-        return simplejson.loads(subprocess.result)
+        if not subprocess.result:
+            return dict()
+
+        return simplejson.loads(subprocess.result.read())
 
     def process_task(self, sp_id, name, success, fn):
 

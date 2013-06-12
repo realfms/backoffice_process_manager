@@ -1,8 +1,10 @@
 from django.db import models
+from django.contrib import admin
 
 from common.constants.constants import COMPLETION_STATUS, SUBSCRIPTION_STATUS, BILLING_TYPE
 
-from django.contrib import admin
+from django.core.files.base import File
+
 
 class Order(models.Model):
     total    = models.IntegerField()
@@ -75,7 +77,21 @@ class Subscription(models.Model):
     def __unicode__(self):
         return unicode(self.account) + " " + unicode(self.product)
 
+class Invoice(models.Model):
+    invoice_code = models.CharField(max_length=20, unique=True)
+    file_name    = models.CharField(max_length=50)
+
+    content = models.FileField(upload_to='invoices')
+
+    def __unicode__(self):
+        return unicode(self.invoice_code)
+
+    def set_content(self, name, file):
+        self.content.save(name, File(file))
+        self.save()
+
 admin.site.register(Subscription)
 admin.site.register(Product)
 admin.site.register(Order)
 admin.site.register(LineItem)
+admin.site.register(Invoice)

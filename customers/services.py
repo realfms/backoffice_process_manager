@@ -25,7 +25,7 @@ Created on 01/06/2013
 @author: mac@tid.es
 '''
 
-from models                    import Account, Contract
+from models                    import Account, OptIn
 from customers.models          import BillingAddress
 
 from common.dates.dates import format_date
@@ -112,7 +112,7 @@ class CustomerManager:
         if end_date_string and not end_date:
             return None
 
-        contract = Contract(account=account, tos=tos, start_date=start_date, end_date=end_date, sign_date=sign_date)
+        contract = OptIn(account=account, tos=tos, start_date=start_date, end_date=end_date, sign_date=sign_date)
 
         contract.save()
 

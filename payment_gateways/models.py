@@ -57,8 +57,10 @@ class PaymentMethod(models.Model):
     gateway = models.ForeignKey('PaymentGateway')
     account = models.ForeignKey('customers.Account')
 
-    mask       = models.CharField(max_length=20, null=True)
-    expiration = models.DateTimeField(null=True)
+    mask = models.CharField(max_length=20, null=True)
+
+    month = models.IntegerField(null=True)
+    year  = models.IntegerField(null=True)
     
     recurrent_order_code = models.CharField(max_length=10)
     
@@ -71,7 +73,7 @@ class PaymentMethod(models.Model):
         return {
             'id':         self.id,
             'mask':       self.mask,
-            'expiration': None if not self.expiration else self.expiration.strftime(DATE_FORMAT)
+            'expiration': None if not self.month else "{0}/{1}".format(self.month, self.year)
         }
 
 admin.site.register(PaymentMethod)

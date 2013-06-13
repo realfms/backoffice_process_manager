@@ -34,13 +34,47 @@ from customers.services import CustomerManager
 
 from common.constants.constants import DATE_FORMAT
 
-import unittest
 import urlparse
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('.env')
 
-#@unittest.skip("Making tests faster")
+WORLDPAY_CALLBACK_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE paymentService PUBLIC "-//WorldPay//DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">
+<paymentService version="1.4" merchantCode="GLOBALBILLINGEUR">
+   <notify>
+     <orderStatusEvent orderCode="c99831a4b9">
+            <payment>
+                 <paymentMethod>ECMC-SSL</paymentMethod>
+                 <paymentMethodDetail>
+                    <card number="5454********5454" type="creditcard">
+                        <expiryDate><date month="00" year="2016"/></expiryDate>
+                    </card>
+                 </paymentMethodDetail>
+                 <amount value="100" currencyCode="EUR" exponent="2" debitCreditIndicator="credit"/>
+
+                 <lastEvent>AUTHORISED</lastEvent>
+                 <CVCResultCode description="APPROVED"/>
+                 <AVSResultCode description="APPROVED"/>
+
+                 <cardHolderName><![CDATA[A S Yadav]]></cardHolderName>
+                 <issuerCountryCode>N/A</issuerCountryCode>
+                 <balance accountType="IN_PROCESS_AUTHORISED"><amount value="100" currencyCode="EUR" exponent="2" debitCreditIndicator="credit"/></balance>
+                 <riskScore value="-79"/>
+            </payment>
+            <journal journalType="AUTHORISED">
+                 <bookingDate>
+                    <date dayOfMonth="06" month="11" year="2012"/>
+                 </bookingDate>
+                <accountTx accountType="IN_PROCESS_AUTHORISED" batchId="29">
+                    <amount value="100" currencyCode="EUR" exponent="2" debitCreditIndicator="credit"/>
+                </accountTx>
+            </journal>
+     </orderStatusEvent>
+ </notify>
+</paymentService>"""
+
+
 class TestPaymentDataAcquisition(TestCase):
 
     gateways_manager = PaymentGatewayManager()
@@ -91,62 +125,18 @@ class TestPaymentDataAcquisition(TestCase):
         self.assertEqual(num_before, 0, 'No payment method should be registered!')
         self.assertEqual(num_after,  1, '1 payment method should be registered!')
 
-    def test_worldpay_validated_payment_method_callback(self):
-        data = dict(urlparse.parse_qsl('orderKey=TELEFONICA^GLOBALBILLINGEUR^c99831a4b9&paymentStatus=AUTHORISED&mask=1&expiration=29-12-2019'))
-
-        # Marking callback data as VALID
-        data['paymentStatus'] = 'AUTHORISED'
-
-        charger, gateway = self.gateways_manager.get_charger_by_name("WORLDPAY")
-
-        num_before = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED'))
-
-        self.payment_method_manager.store_payment_method(self.dummy_account, 'c99831a4b9', gateway)
-
-        charger.update_order_status(data)
-
-        num_after = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED'))
-
-        self.assertEqual(num_before, 0, 'No VALIDATED payment method should be registered!')
-        self.assertEqual(num_after,  1, '1 VALIDATED payment method should be registered!')
-
-    def test_worldpay_pending_payment_method_callback(self):
-        data = dict(urlparse.parse_qsl('orderKey=TELEFONICA^GLOBALBILLINGEUR^c99831a4b9&paymentStatus=ERROR&mask=1&expiration=29/12/2019'))
-
-        # Marking callback data as ERROR
-        data['paymentStatus'] = 'ERROR'
-
-        charger, gateway = self.gateways_manager.get_charger_by_name("WORLDPAY")
-
-        num_before = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED'))
-
-        self.payment_method_manager.store_payment_method(self.dummy_account, 'c99831a4b9', gateway)
-
-        charger.update_order_status(data)
-
-        num_after = len(self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED'))
-
-        self.assertEqual(num_before, 0, 'No VALIDATED payment method should be registered!')
-        self.assertEqual(num_after,  0, 'No VALIDATED payment method should be registered!')
-
-    def test_worldpay_store_masked_card(self):
-        data = dict(urlparse.parse_qsl('orderKey=TELEFONICA^GLOBALBILLINGEUR^c99831a4b9&paymentStatus=ERROR&mask=1&expiration=29/12/2019'))
-
-        # Marking callback data as ERROR
-        data['paymentStatus'] = 'AUTHORISED'
-
-        data['mask']       = '4111 **** **** 1111'
-        data['expiration'] = '29/03/2014'
-
+    def test_worldpay_callback_xml(self):
         charger, gateway = self.gateways_manager.get_charger_by_name("WORLDPAY")
 
         self.payment_method_manager.store_payment_method(self.dummy_account, 'c99831a4b9', gateway)
 
-        charger.update_order_status(data)
+        charger.update_order_status(WORLDPAY_CALLBACK_XML)
 
-        payment_gateway = self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED')[0]
+        payment_method = self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED')[0]
 
-        self.assertEqual(payment_gateway.mask, data['mask'], 'Mask does not fit')
-        self.assertEqual(payment_gateway.expiration.strftime(DATE_FORMAT), data['expiration'], 'Expiration date does not fit')
+        payment_method_dict = payment_method.to_dict()
+
+        self.assertEqual(payment_method_dict['mask'], '5454********5454', 'Mask does not fit')
+        self.assertEqual(payment_method_dict['expiration'], '00/2016', 'Expiration date does not fit')
 
 

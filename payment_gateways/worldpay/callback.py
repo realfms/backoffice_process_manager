@@ -40,10 +40,8 @@ class WorldpayCallbackController:
     @transaction.commit_on_success
     @csrf_exempt
     def callback(cls, request):
-        # TO BE REVIEWED!
-        # A professional deployment doesn't parse the URL of a http redirect but is useful for testing
-        # Now testing data from redirection. A proper implementation of a callback will parse xml data comming from WP backend
-        data = request.GET.dict()
+
+        data = request.POST.body
 
         (charger, pgw) = cls.getCharger()
 

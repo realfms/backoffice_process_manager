@@ -66,7 +66,7 @@ class PaymentGateway(object):
     # Common data flows
     ########################################################### 
     
-    def identify_successful_flow(self, order_code, mask, expiration, status):
+    def identify_successful_flow(self, order_code, mask, month, year, status):
         try:
             payment_method = PaymentMethod.objects.get(recurrent_order_code=order_code, status='PENDING')
         except PaymentMethod.DoesNotExist:
@@ -74,7 +74,7 @@ class PaymentGateway(object):
 
         # Distinguising flows
         if payment_method:
-            return self._data_acquisition_flow(payment_method, mask, expiration, status)
+            return self._data_acquisition_flow(payment_method, mask, month, year, status)
 
         # Callback of recurrent payment flow
         try:
@@ -89,13 +89,14 @@ class PaymentGateway(object):
         print "ERROR: NEITHER ACQUISITION NOR RECURRENT FLOW IN ADYEN CALLBACK"
         return False
     
-    def _data_acquisition_flow(self, payment_method, mask, expiration, status):
+    def _data_acquisition_flow(self, payment_method, mask, month, year, status):
         # Callback of payment data acquisition flow
         print "DATA ACQUISITION FLOW"
         print status
 
-        payment_method.mask   = mask
-        payment_method.expiration = format_date(expiration)
+        payment_method.mask  = mask
+        payment_method.month = month
+        payment_method.year  = year
 
         payment_method.status = status
         payment_method.save()

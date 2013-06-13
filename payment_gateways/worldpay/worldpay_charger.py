@@ -112,19 +112,25 @@ class Worldpay_Charger (PaymentGateway):
         if not doc:
             return
 
-    def update_order_status(self, data):
-        order_key = data['orderKey']
-        status    = data['paymentStatus']
+    def update_order_status(self, xml):
 
-        mask       = data.get('mask', '4111 **** **** 1111')
-        expiration = data.get('expiration', '29/12/2016')
-        
-        size       = len(self.USERNAME) + 1
-        order_code = order_key[order_key.find(self.USERNAME)+size:]
+        doc = BeautifulSoup(xml)
+
+        order_status_event = doc.find('orderstatusevent')
+        payment_method_details = doc.find('paymentmethoddetail')
+        cvv_result = doc.find('cvcresultcode')
+        avs_result = doc.find('avsresultcode')
+
+        mask = 3
+        month = 3
+        year = 2019
+
+        status = 1
+        order_code = 2
 
         if status != "AUTHORISED":
             print "ERROR: PAYMENT GATEWAY PROBLEM"
-            print data
+            print xml
             return False
 
-        return self.identify_successful_flow(order_code, mask, expiration, 'VALIDATED')
+        return self.identify_successful_flow(order_code, mask, month, year, 'VALIDATED')

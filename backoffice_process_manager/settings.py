@@ -110,7 +110,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(FOLDER, 'static')
+STATIC_ROOT = os.path.join(FOLDER, 'static_cache')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -118,7 +118,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    #os.path.join(FOLDER, 'static'),
+    os.path.join(FOLDER, 'static'),
 )
 
 # List of finder classes that know how to find static files in

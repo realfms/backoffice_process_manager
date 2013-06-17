@@ -134,6 +134,9 @@ class PaymentMethodManager:
     def get_payment_methods(self, account, status):
         return PaymentMethod.objects.filter(account=account, status=status)
 
+    def get_payment_methods_by_order_code(self, order_code, status):
+        return PaymentMethod.objects.get(recurrent_order_code=order_code, status=status)
+
     def get_valid_payment_methods(self, account):
         return PaymentMethod.objects.filter(account=account, status='VALIDATED')
 

@@ -59,8 +59,8 @@ class PaymentMethod(models.Model):
 
     mask = models.CharField(max_length=20, null=True)
 
-    month = models.IntegerField(null=True)
-    year  = models.IntegerField(null=True)
+    month = models.CharField(max_length=2, null=True)
+    year  = models.CharField(max_length=4, null=True)
     
     recurrent_order_code = models.CharField(max_length=10)
     

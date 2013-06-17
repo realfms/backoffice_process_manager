@@ -116,21 +116,22 @@ class Worldpay_Charger (PaymentGateway):
 
         doc = BeautifulSoup(xml)
 
-        order_status_event = doc.find('orderstatusevent')
-        payment_method_details = doc.find('paymentmethoddetail')
-        cvv_result = doc.find('cvcresultcode')
-        avs_result = doc.find('avsresultcode')
+        event = doc.find('orderstatusevent')
+        payment_details = event.find('paymentmethoddetail')
+        card  = payment_details.find('card')
+        date = card.find('date')
 
-        mask = 3
-        month = 3
-        year = 2019
+        cvv_result = event.find('cvcresultcode')['description']
+        avs_result = event.find('avsresultcode')['description']
 
-        status = 1
-        order_code = 2
+        mask  = card['number']
+        month = date['month']
+        year  = date['year']
 
-        if status != "AUTHORISED":
+        order_code = event['ordercode']
+
+        if cvv_result != "APPROVED" or avs_result != "APPROVED":
             print "ERROR: PAYMENT GATEWAY PROBLEM"
-            print xml
             return False
 
         return self.identify_successful_flow(order_code, mask, month, year, 'VALIDATED')

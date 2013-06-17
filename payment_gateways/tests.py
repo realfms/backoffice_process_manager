@@ -48,7 +48,7 @@ WORLDPAY_CALLBACK_XML = """<?xml version="1.0" encoding="UTF-8"?>
                  <paymentMethod>ECMC-SSL</paymentMethod>
                  <paymentMethodDetail>
                     <card number="5454********5454" type="creditcard">
-                        <expiryDate><date month="00" year="2016"/></expiryDate>
+                        <expiryDate><date month="01" year="2016"/></expiryDate>
                     </card>
                  </paymentMethodDetail>
                  <amount value="100" currencyCode="EUR" exponent="2" debitCreditIndicator="credit"/>
@@ -128,15 +128,15 @@ class TestPaymentDataAcquisition(TestCase):
     def test_worldpay_callback_xml(self):
         charger, gateway = self.gateways_manager.get_charger_by_name("WORLDPAY")
 
-        self.payment_method_manager.store_payment_method(self.dummy_account, 'c99831a4b9', gateway)
+        payment_method = self.payment_method_manager.store_payment_method(self.dummy_account, 'c99831a4b9', gateway)
 
         charger.update_order_status(WORLDPAY_CALLBACK_XML)
 
-        payment_method = self.payment_method_manager.get_payment_methods(self.dummy_account, 'VALIDATED')[0]
+        payment_method = self.payment_method_manager.get_payment_methods_by_order_code('c99831a4b9', 'VALIDATED')
 
         payment_method_dict = payment_method.to_dict()
 
         self.assertEqual(payment_method_dict['mask'], '5454********5454', 'Mask does not fit')
-        self.assertEqual(payment_method_dict['expiration'], '00/2016', 'Expiration date does not fit')
+        self.assertEqual(payment_method_dict['expiration'], '01/2016', 'Expiration date does not fit')
 
 

@@ -48,6 +48,8 @@ EMAIL_BACKEND = 'django_ses.SESBackend'
 
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
+S3_URL = 'http://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+
 ######################################################
 
 DEBUG = True
@@ -208,6 +210,8 @@ LOGGING = {
 if os.environ.get('DATABASE_URL'):
     import dj_database_url
     DATABASES['default'] =  dj_database_url.config()
+
+    STATIC_URL = S3_URL
 
 ######################################################
 # CONFIGURING CELERY

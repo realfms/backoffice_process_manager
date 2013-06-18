@@ -64,6 +64,9 @@ class BillingAddress(models.Model):
     country     = models.CharField(max_length = 3)
     phone       = models.CharField(max_length = 10, null=True)
 
+    def __unicode__(self):
+        return unicode(self.account)
+
     def to_dict(self):
         return {
             'account_id':  self.account.account_id,
@@ -92,6 +95,9 @@ class OptIn(models.Model):
     end_date    = models.DateTimeField(null=True)
 
     status = models.CharField(max_length=10, choices=ACTIVATION_STATUS, default='PENDING')
+
+    def __unicode__(self):
+        return unicode(self.account)
 
     def to_dict(self):
         return {

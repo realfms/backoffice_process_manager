@@ -56,6 +56,9 @@ class BusinessProcess(models.Model):
 
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
 
+    def __unicode__(self):
+        return self.name
+
 class SubProcess(models.Model):
 
     process = models.ForeignKey(BusinessProcess)
@@ -68,7 +71,10 @@ class SubProcess(models.Model):
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
     
     result = models.FileField(upload_to='processes', null=True)
-    
+
+    def __unicode__(self):
+        return self.name
+
     def set_result(self, result):
         self.result.save('subprocess_{0}.json'.format(self.id), ContentFile(result))
         self.save()
@@ -85,6 +91,9 @@ class Task(models.Model):
     status = models.CharField(max_length=10, choices=STATUS, default='PENDING')
 
     remarkable_data = models.TextField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
 
     def set_status(self, status):
         self.status = status

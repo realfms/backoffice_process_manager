@@ -15,36 +15,27 @@ class WorldpayCallbackController:
     @classmethod
     @transaction.commit_on_success
     def success(cls, request):
-        # TO BE REMOVED when a callback in worldpay is properly configured
-        cls.callback(request)
-        
         return render(request, 'payment_gateways/success.html', {})
 
     @classmethod
     @transaction.commit_on_success
     def pending(cls, request):
-        # TO BE REMOVED when a callback in worldpay is properly configured
-        cls.callback(request)
-        
         return render(request, 'payment_gateways/pending.html', {})
 
     @classmethod
     @transaction.commit_on_success
     def error(cls, request):
-        # TO BE REMOVED when a callback in worldpay is properly configured
-        cls.callback(request)
-        
         return render(request, 'payment_gateways/error.html', {})
     
     @classmethod
     @transaction.commit_on_success
     @csrf_exempt
     def callback(cls, request):
-
         data = request.POST.body
 
         (charger, pgw) = cls.getCharger()
 
+        print data
         print "FROM WorldPay Callback: {0}".format(data)
 
         charger.update_order_status(data)

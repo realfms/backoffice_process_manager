@@ -76,6 +76,8 @@ def _rate_from_order(order, line_items, billing_address, tax):
     # Adding customer information
     result['customer'] = generate_customer_info(billing_address)
 
+    result['order'] = order
+
     return (result, None)
 
 def parse_sdr(xml, file_name, tef_account, catalogue, tax):

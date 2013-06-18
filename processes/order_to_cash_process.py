@@ -29,7 +29,7 @@ from models import BusinessProcess, SubProcess
 
 from customer.tasks      import get_customer_details_from_sf_task
 from charging.tasks      import charge_user_task
-from rating.tasks        import download_and_parse_sdr_task, rate_from_order_task
+from rating.tasks        import download_and_parse_sdr_task, rate_from_order_task, create_order_task
 from pdf.tasks           import generate_pdf_and_upload_task
 from email.tasks         import send_email_task
 from notifications.tasks import create_order_summary_on_salesforce_task
@@ -64,7 +64,7 @@ class OrderToCashProcess(Process):
         sp_id      = subprocess.id
         account_id = account.account_id
         
-        chain = download_and_parse_sdr_task.s(True, bucket_key, account_id, sp_id) | get_customer_details_from_sf_task.s(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(None, sp_id) | create_order_summary_on_salesforce_task.s(sp_id)
+        chain = download_and_parse_sdr_task.s(True, bucket_key, account_id, sp_id) | get_customer_details_from_sf_task.s(sp_id) | create_order_task(sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id) | create_order_summary_on_salesforce_task.s(sp_id)
 
         chain()
 
@@ -78,6 +78,6 @@ class OrderToCashProcess(Process):
         line_items_dict = [line_item.to_dict() for line_item in line_items]
         billing_address_dict = billing_address.to_dict()
 
-        chain = rate_from_order_task.s(True, order_dict, line_items_dict, billing_address_dict, sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(order_dict, sp_id)
+        chain = rate_from_order_task.s(True, order_dict, line_items_dict, billing_address_dict, sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id)
 
         chain()

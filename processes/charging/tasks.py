@@ -27,42 +27,22 @@ Created on 15/10/2012
 
 from celery import task
 
-from customers.models          import Account
 from ordering.models           import Order
 from payment_gateways.services import PaymentGatewayManager
 
 from processes.task_manager import TaskManager
 
-from common.distributed.distributed import compute_uuid
-
 @task(ignore_result=True)
-def charge_user_task(success, order, sp_id):
+def charge_user_task(success, sp_id):
     tm = TaskManager()
 
     json = tm.get_subprocess_data(sp_id)
 
-    return tm.process_task(sp_id, 'CHARGING',success, lambda : charge_user(json, order))
+    return tm.process_task(sp_id, 'CHARGING',success, lambda : charge_user(json))
 
-def charge_user(json, order_dict):
-    if order_dict:
-        PaymentGatewayManager().process_recurrent_payment(Order.objects.get(order_code=order_dict['order_code']))
-        return (json, None)
-
-    # No order provided!
-    # Rating an SDR file
-    customer_data = json['customer']
-
-    total    = int(json['total'] * 100)
-    currency = 'EUR'
-
-    account_id  = customer_data['tef_account']
-    country     = customer_data['country']
-    order_code  = compute_uuid()
-    
-    account = Account.objects.get(account_id=account_id)
-
-    order = Order(account=account, total=total, currency=currency, country=country, order_code=order_code, payment_method=None)
-    order.save()
+def charge_user(json):
+    order_dict = json['order']
+    order      = Order.objects.get(order_code=order_dict['order_code'])
 
     PaymentGatewayManager().process_recurrent_payment(order)
 

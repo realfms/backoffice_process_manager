@@ -29,7 +29,7 @@ from xhtml2pdf import pisa
 from jinja2 import Template
 from datetime import date
 
-from ordering.models import Invoice
+from ordering.models import Invoice, Order
 
 from common.distributed.distributed import compute_uuid
 
@@ -53,6 +53,8 @@ def generate_pdf_and_upload(invoice_json):
 
     invoice_json['invoice'] = compute_invoice_details()
 
+    order_data = invoice_json['order']
+
     pisa.showLogging()
 
     with codecs.open(TEMPLATE_PATH, 'r', 'utf-8') as f:
@@ -67,7 +69,11 @@ def generate_pdf_and_upload(invoice_json):
         with open (file_name, "r") as f:
             invoice_code = compute_uuid()
 
-            invoice = Invoice(file_name=file_name, invoice_code=invoice_code)
+            order_code = order_data['order_code']
+
+            order = Order.objects.get(order_code=order_code)
+
+            invoice = Invoice(file_name=file_name, invoice_code=invoice_code, order=order)
 
             invoice.set_content('{0}.pdf'.format(invoice_code), f)
             invoice.save()

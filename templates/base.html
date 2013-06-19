@@ -73,6 +73,17 @@
                 return o;
             };
 
+            function opt_in (data) {
+                show_response(data);
+                redirect({'message': 'UX defined by client app. Now redirecting to billing address form', 'url': '/demo/billing_address'});
+            }
+
+            function billing_address (data) {
+                show_response(data);
+                redirect({'message': 'UX defined by client app. Now redirecting to payment method form', 'url': '/demo/payment_method'});
+            }
+
+
         </script>
     
     <title>{% block title %}{% endblock %}</title>

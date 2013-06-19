@@ -48,7 +48,8 @@ EMAIL_BACKEND = 'django_ses.SESBackend'
 
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
-S3_URL = 'http://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+S3_URL = 'https://s3-eu-west-1.amazonaws.com/%s/' % AWS_STORAGE_BUCKET_NAME
+
 
 ######################################################
 

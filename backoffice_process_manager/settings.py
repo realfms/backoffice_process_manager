@@ -40,6 +40,8 @@ ADYEN_API_PASSWORD = os.environ.get('ADYEN_API_PASSWORD')
 AWS_ACCESS_KEY_ID     = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
+AWS_S3_SECURE_URLS = False
+
 AWS_STORAGE_BUCKET_NAME = 'com.telefonicadigital.bpm'
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'

@@ -26,10 +26,6 @@ Created on 30/10/2012
 '''
 
 from django.shortcuts import render
-from django.db        import transaction
-
-
-from services import ProcessManager
 
 class ToSController:
 

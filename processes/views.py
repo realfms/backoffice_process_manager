@@ -28,53 +28,60 @@ Created on 30/10/2012
 from django.shortcuts import render
 from django.db        import transaction
 
+from customers.views import ContractController
 
-from services import ProcessManager
+from order_to_cash_process import OrderToCashProcess
+from collections_process   import CollectionProcess
+from services              import BPMonitoringManager
+
+from django.views.decorators.csrf import csrf_exempt
+
+import json
 
 class ProcessesController:
 
-    processManager = ProcessManager()
+    order_to_cash_process = OrderToCashProcess()
+    collection_process    = CollectionProcess()
 
     @classmethod
     @transaction.commit_on_success
     def launch_invoicing(cls, request):
-        cls.processManager.start_order_to_cash()
+        cls.order_to_cash_process.start_order_to_cash()
 
         return render(request, 'processes/invoicing.html', {})
 
     @classmethod
+    @csrf_exempt
     @transaction.commit_on_success
-    def launch_sync_invoice(cls, request):
-        cls.processManager.sync_first_order_to_cash()
+    def launch_collections(cls, request):
+        if request.method != 'POST':
+            return ContractController._build_error_response('Invalid HTTP method')
+
+        body   = request.body
+        params = json.loads(body)
+
+        account_id = params.get('account', None)
+        start_date = params.get('start_date', None)
+        end_date   = params.get('end_date', None)
+
+        if not account_id or not start_date or not end_date:
+            return ContractController._build_error_response('Missing parameters')
+
+        result = cls.collection_process.start_collection_process(account_id, start_date, end_date)
+
+        if not result:
+            return ContractController._build_error_response('Invalid parameter')
 
         return render(request, 'processes/invoicing.html', {})
 
-    @classmethod
-    @transaction.commit_on_success
-    def launch_provision(cls, request):
-        cls.processManager.start_provision('tef_account_127', {})
+class BPMonitoringController:
 
-        return render(request, 'processes/running.html', {})
+    bp_monitoring_manager = BPMonitoringManager()
 
     @classmethod
+    @csrf_exempt
     @transaction.commit_on_success
     def get_processes(cls, request, user_id):
+        tree = cls.bp_monitoring_manager.get_process_tree(user_id)
 
-        processes = cls.processManager.get_processes_by_user(user_id)
-
-        subprocesses = {}
-        tasks = {}
-
-        for process in processes:
-            subprocess = cls.processManager.get_subprocesses_by_process(process)
-            subprocesses[process] = subprocess
-
-            for sub in subprocess:
-                tasks[sub] = cls.processManager.get_tasks_by_subprocess(sub)
-
-        args = {
-            "processes"   : processes,
-            "subprocesses": subprocesses,
-            "tasks"       : tasks
-            }
-        return render(request, 'processes/processes.html', args)
+        return render(request, 'processes/processes.html', tree)

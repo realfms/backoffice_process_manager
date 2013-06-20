@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Get Payment Method Dummy Screen{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="utf-8" />
+    <title>Payment Method</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/paymentform.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/commons_fonts.css" />
+</head>
+
+<body>
+    <div class="general">
+        <header class="header">
+                <h1 class="titlePage">Payment Method<img src="{{ STATIC_URL }}img/lgo_telefonica_main.gif" class="logo"></h1>
+        </header>
+
+        <section>
+            <article>
+
+            	<h2 id="welcome">Enter your email:</h2>
+
+                <div id="subscribe-form">
+
+                    <form id="form" class="top bottom" onsubmit="return false;">
+
+	                        <p><label>Email:</label>
+	                        <input class="form text" name="account" type="text" value="" /></p>
+
+                        	<p><label>Start date:</label>
+	                        <input class="form text" name="start_date" type="text" value="" /></p>
+
+                            <p><label>End date:</label>
+	                        <input class="form text" name="end_date" type="text" value="" /></p>
+	                        
+	                        {% csrf_token %}
+
+						<p>
+							<button class="button hire" onclick="send_form('/processes/launch_collections/', 'POST', '#form', show_response)">Accept</button>
+						</p>
+
+                    </form>
+                </div>
+            </article>
+        </section>
+    </div>
+{% endblock %}

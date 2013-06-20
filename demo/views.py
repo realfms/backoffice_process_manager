@@ -48,3 +48,7 @@ class DemoController():
     @classmethod
     def order(self, request):
         return render(request, 'demo/order.html', {})
+
+    @classmethod
+    def accounting(self, request):
+        return render(request, 'demo/accounting.html', {})

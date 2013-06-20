@@ -24,58 +24,55 @@ Created on 16/10/2012
 
 @author: mac@tid.es
 '''
-from common.aws.s3   import get_sdr_request_keys
 
 from processes.models import BusinessProcess
-from customers.models import Account
+from customers.services import CustomerManager
 
-from processes.order_to_cash_process import OrderToCashProcess
-from processes.provision_process     import ProvisionProcess
+class BPMonitoringManager:
 
-class ProcessManager:
+    customer_manager = CustomerManager()
 
-    def __init__(self):
-        self.order_to_cash_process = OrderToCashProcess()
-        self.provision_process     = ProvisionProcess()
+    ################################################################################
+    # PUBLIC METHODS
+    ################################################################################
 
-    def start_provision(self, account_id, event_data):
-        self.provision_process.start_provision_process(account_id, event_data)
+    def get_process_tree(self, account_id):
+        processes = self._get_processes_by_user(account_id)
 
-    def start_order_to_cash(self):
-        keys = get_sdr_request_keys()
+        subprocesses = {}
+        tasks = {}
 
-        for key in keys:
-            self.order_to_cash_process.start_cdr_order_to_cash_process(key.name, self._get_account(key))
+        for process in processes:
+            subprocess = self._get_subprocesses_by_process(process)
+            subprocesses[process] = subprocess
 
-    def sync_first_order_to_cash(self):
-        keys = get_sdr_request_keys()
+            for sub in subprocess:
+                tasks[sub] = self._get_tasks_by_subprocess(sub)
 
-        for key in keys:
-            self.order_to_cash_process.sync_order_to_cash(key.name, self._get_account(key))
-            break
+        args = {
+            "processes"   : processes,
+            "subprocesses": subprocesses,
+            "tasks"       : tasks
+        }
 
-    def get_processes_by_user(self, user_id):
-        processes = BusinessProcess.objects.filter(tef_account=user_id).order_by("start")
-
-        return processes.reverse()
-
-    def get_subprocesses_by_process(self, process):
-        return process.subprocess_set.all()
-
-    def get_tasks_by_subprocess(self, subprocess):
-        return subprocess.task_set.all()
+        return args
     
     ################################################################################
     # PRIVATE METHODS
     ################################################################################
-    
-    # return customers.model.Account
-    def _get_account(self, key):
-        # By convention, by removing the last 4 characters from key, the tef_account is returned!
-        account_id = key.name[0:-4]
-        
-        try:
-            return Account.objects.get(account_id=account_id)
-        except Exception, e:
-            print "Missing account: {0}".format(account_id)
-            return None
+
+    def _get_processes_by_user(self, email):
+        account = self.customer_manager.get_account(email)
+
+        if not account:
+            return []
+
+        processes = BusinessProcess.objects.filter(account=account).order_by("start")
+
+        return processes.reverse()
+
+    def _get_subprocesses_by_process(self, process):
+        return process.subprocess_set.all()
+
+    def _get_tasks_by_subprocess(self, subprocess):
+        return subprocess.task_set.all()

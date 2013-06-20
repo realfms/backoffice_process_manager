@@ -25,7 +25,7 @@ Created on 05/02/2013
 @author: mac@tid.es
 '''
 
-from models import BusinessProcess, SubProcess
+from common.aws.s3   import get_sdr_request_keys
 
 from customer.tasks      import get_customer_details_from_sf_task
 from charging.tasks      import charge_user_task
@@ -34,12 +34,20 @@ from pdf.tasks           import generate_pdf_and_upload_task
 from email.tasks         import send_email_task
 from notifications.tasks import create_order_summary_on_salesforce_task
 
+from customers.models import Account
+
 from process import Process
 
 class OrderToCashProcess(Process):
 
+    def start_order_to_cash(self):
+        keys = get_sdr_request_keys()
+
+        for key in keys:
+            self.start_cdr_order_to_cash_process(key.name, self._get_account(key))
+
     ################################################################################
-    # CREATE & START PROCESS
+    # CREATE & START PROCESSES
     ################################################################################
     def start_cdr_order_to_cash_process(self, bucket_key, account):
         
@@ -81,3 +89,14 @@ class OrderToCashProcess(Process):
         chain = rate_from_order_task.s(True, order_dict, line_items_dict, billing_address_dict, sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id)
 
         chain()
+
+        # return customers.model.Account
+    def _get_account(self, key):
+        # By convention, by removing the last 4 characters from key, the tef_account is returned!
+        account_id = key.name[0:-4]
+
+        try:
+            return Account.objects.get(account_id=account_id)
+        except Exception, e:
+            print "Missing account: {0}".format(account_id)
+            return None

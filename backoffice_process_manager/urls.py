@@ -7,10 +7,9 @@ import settings
 
 from payment_gateways.views import PaymentMethodController, ContractController
 from customers.views        import BillingAddressController, OrderController
-from processes.views        import ProcessesController
+from processes.views        import ProcessesController, BPMonitoringController
 from processes.tos          import ToSController
 from demo.views             import DemoController
-
 
 from payment_gateways.adyen.callback    import AdyenCallbackController
 from payment_gateways.worldpay.callback import WorldpayCallbackController
@@ -62,10 +61,14 @@ urlpatterns = patterns('',
     # PROCESSES
     ######################################################
 
-    url(r'^processes/launch_provision$',         ProcessesController.launch_provision),
+    url(r'^processes/launch_collections/$',      ProcessesController.launch_collections),
     url(r'^processes/launch_invoicing/$',        ProcessesController.launch_invoicing),
-    url(r'^processes/launch_sync_invoicing/$',   ProcessesController.launch_sync_invoice),
-    url(r'^processes/getinfo/(?P<user_id>\w+)$', ProcessesController.get_processes),
+
+    ######################################################
+    # BUSINESS PROCESS MONITORING
+    ######################################################
+
+    url(r'^monitoring/getinfo/(?P<user_id>\w+)$', BPMonitoringController.get_processes),
 
     ######################################################
     # TERMS OF SERVICE
@@ -82,6 +85,7 @@ urlpatterns = patterns('',
     url(r'^demo/billing_address$', DemoController.billing_address),
     url(r'^demo/payment_method$',  DemoController.payment_method),
     url(r'^demo/order$',           DemoController.order),
+    url(r'^demo/accounting$',      DemoController.accounting),
 
 
     ######################################################

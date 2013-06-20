@@ -27,7 +27,6 @@ Created on 16/10/2012
 
 from django.http        import HttpResponse
 from django.db          import transaction
-from django.utils       import simplejson
 
 from processes.contracting_process import ContractingProcess
 from services                      import PaymentGatewayManager, PaymentMethodManager
@@ -56,7 +55,7 @@ class ContractController:
             return cls._build_error_response('Invalid HTTP method')
 
         body   = request.body
-        params = simplejson.loads(body)
+        params = json.loads(body)
 
         channel = params.get('channel', None)
 
@@ -145,7 +144,7 @@ class PaymentMethodController:
         if request.method == 'POST':
 
             body   = request.body
-            params = simplejson.loads(body)
+            params = json.loads(body)
 
             email = params.get('account', None)
 

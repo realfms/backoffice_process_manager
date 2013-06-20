@@ -31,6 +31,14 @@ class Order(models.Model):
             'order_code' :  self.order_code
         }
 
+    def to_dict_for_revenue_report(self):
+        return {
+            '1':            self.total,
+            'currency':     self.currency,
+            'country':      self.country,
+            'order_code' :  self.order_code
+        }
+
 class LineItem(models.Model):
     order    = models.ForeignKey('Order')
     product  = models.ForeignKey('Product')
@@ -91,6 +99,12 @@ class Invoice(models.Model):
 
     def __unicode__(self):
         return unicode(self.invoice_code)
+
+    def to_dict(self):
+        return {
+            'id':         self.id
+        }
+
 
     def set_content(self, name, file):
         self.content.save(name, File(file))

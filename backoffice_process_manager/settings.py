@@ -236,6 +236,5 @@ CELERY_IMPORTS = ( 'processes.charging.tasks',
                    'processes.pdf.tasks',
                    'processes.customer.tasks',
                    'processes.email.tasks',
-                   'processes.notifications.tasks',
-                   'processes.provision.tasks'
+                   'processes.notifications.tasks'
                 )

@@ -89,7 +89,7 @@ class WorldpayCallbackController:
         cls.process_callback(xml)
         ############################################################
 
-        return render(request, 'payment_gateways/success.html', {})
+        return render(request, 'payment_gateways/success.html', {'url': '/demo/order'})
 
     @classmethod
     @transaction.commit_on_success

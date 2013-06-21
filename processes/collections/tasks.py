@@ -49,13 +49,13 @@ def generate_journal(json, orders):
 
 def generate_revenue_report(orders):
     # wb = load_workbook(filename = r'processes/collections/templates/revenue_report.xlsx', keep_vba=True)
-    wb = load_workbook(filename = r'processes/collections/templates/revenue_report.xlsx')
+    wb = load_workbook(filename = 'processes/collections/templates/revenue_report.xlsx')
 
     ws = wb.get_active_sheet()
 
     [ws.append(order) for order in orders]
 
-    filename = r'processes/collections/results/revenue_report.xlsx'
+    filename = 'processes/collections/results/revenue_report.xlsx'
 
     wb.save(filename=filename)
 

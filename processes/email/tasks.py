@@ -41,7 +41,7 @@ def send_invoice_email_task(success, sp_id):
     customer_email = json['customer']['email']
     file_name      = json['pdf_file_name']
 
-    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(INVOCE_EMAIL_TITLE, INVOICE_EMAIL_BODY, EMAIL_FROM, customer_email, file_name, json))
+    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(INVOCE_EMAIL_TITLE, INVOICE_EMAIL_BODY, EMAIL_FROM, customer_email, file_name, 'application/pdf', json))
 
 @task(ignore_result=True)
 def send_collections_email_task(success, customer_email, sp_id):
@@ -51,4 +51,4 @@ def send_collections_email_task(success, customer_email, sp_id):
 
     file_name = json['file_name']
 
-    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(COLLECTIONS_EMAIL_TITLE, COLLECTIONS_EMAIL_BODY, EMAIL_FROM, customer_email, file_name, json))
+    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(COLLECTIONS_EMAIL_TITLE, COLLECTIONS_EMAIL_BODY, EMAIL_FROM, customer_email, file_name, 'application/vnd.ms-excel', json))

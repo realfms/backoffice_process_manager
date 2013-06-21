@@ -27,12 +27,12 @@ Created on 30/10/2012
 
 from django.core.mail import EmailMessage
 
-def send_email(title, body, from_address, customer_email, file_name, json):
+def send_email(title, body, from_address, customer_email, file_name, content_type, json):
     
     email_message = EmailMessage(title, body, from_address,
                                  [customer_email], [], headers = {})
     
-    email_message.attach_file(file_name, 'application/pdf')
+    email_message.attach_file(file_name, content_type)
     
     email_message.send(fail_silently=True)
     

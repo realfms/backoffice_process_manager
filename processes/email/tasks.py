@@ -51,4 +51,4 @@ def send_collections_email_task(success, customer_email, sp_id):
 
     file_name = json['file_name']
 
-    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(COLLECTIONS_EMAIL_TITLE, COLLECTIONS_EMAIL_BODY, EMAIL_FROM, customer_email, file_name, 'application/vnd.ms-excel', json))
+    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(COLLECTIONS_EMAIL_TITLE, COLLECTIONS_EMAIL_BODY, EMAIL_FROM, customer_email, file_name, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', json))

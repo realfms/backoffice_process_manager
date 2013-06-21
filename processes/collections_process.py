@@ -55,6 +55,8 @@ class CollectionProcess(Process):
 
         self._start_collection_process(subprocess, account, start_date, end_date)
 
+        return True
+
     ######################################################
     # PRIVATE
     ######################################################

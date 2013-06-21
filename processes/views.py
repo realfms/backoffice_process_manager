@@ -72,7 +72,7 @@ class ProcessesController:
         if not result:
             return ContractController._build_error_response('Invalid parameter')
 
-        return render(request, 'processes/invoicing.html', {})
+        return ContractController._build_ok_response('Collection process started properly! An email will  be sent shortly!')
 
 class BPMonitoringController:
 

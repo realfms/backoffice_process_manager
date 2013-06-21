@@ -31,10 +31,12 @@ from customer.tasks      import get_customer_details_from_sf_task
 from charging.tasks      import charge_user_task
 from rating.tasks        import download_and_parse_sdr_task, rate_from_order_task, create_order_task
 from pdf.tasks           import generate_pdf_and_upload_task
-from email.tasks         import send_email_task
+from email.tasks         import send_invoice_email_task
 from notifications.tasks import create_order_summary_on_salesforce_task
 
 from customers.models import Account
+
+from django.test.utils import override_settings
 
 from process import Process
 
@@ -67,6 +69,7 @@ class OrderToCashProcess(Process):
     # PRIVATE METHODS
     ################################################################################
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS = True, CELERY_ALWAYS_EAGER = True, BROKER_BACKEND = 'memory')
     def _start_salesforce_cdr_order_to_cash_process(self, bucket_key, account, subprocess):
         
         sp_id      = subprocess.id
@@ -86,7 +89,7 @@ class OrderToCashProcess(Process):
         line_items_dict = [line_item.to_dict() for line_item in line_items]
         billing_address_dict = billing_address.to_dict()
 
-        chain = rate_from_order_task.s(True, order_dict, line_items_dict, billing_address_dict, sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_email_task.s(sp_id) | charge_user_task.s(sp_id)
+        chain = rate_from_order_task.s(True, order_dict, line_items_dict, billing_address_dict, sp_id) | generate_pdf_and_upload_task.s(sp_id) | send_invoice_email_task.s(sp_id) | charge_user_task.s(sp_id)
 
         chain()
 

@@ -26,13 +26,10 @@ Created on 30/10/2012
 '''
 
 from django.core.mail import EmailMessage
-from common.aws.constants import EMAIL_FROM, EMAIL_TITLE, EMAIL_BODY
 
-def send_email(json):
-    customer_email = json['customer']['email']
-    file_name      = json['pdf_file_name']
+def send_email(title, body, from_address, customer_email, file_name, json):
     
-    email_message = EmailMessage(EMAIL_TITLE, EMAIL_BODY, EMAIL_FROM,
+    email_message = EmailMessage(title, body, from_address,
                                  [customer_email], [], headers = {})
     
     email_message.attach_file(file_name, 'application/pdf')

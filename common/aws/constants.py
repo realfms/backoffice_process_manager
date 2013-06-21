@@ -35,5 +35,9 @@ SDR_RESPONSES_BUCKET = 'com.telefonicadigital.bpm.sdr.responses'
 PDF_INVOICES_BUCKET  = 'com.telefonicadigital.bpm.pdf.invoices'
 
 EMAIL_FROM  = 'mac@tid.es'
-EMAIL_TITLE = 'Your invoice from Telefónica Digital'
-EMAIL_BODY  = 'Please, find attached your invoice'
+
+INVOCE_EMAIL_TITLE = 'Your invoice from Telefónica Digital'
+INVOICE_EMAIL_BODY  = 'Please, find attached your invoice'
+
+COLLECTIONS_EMAIL_TITLE = 'Collections Reports'
+COLLECTIONS_EMAIL_BODY  = 'Please, find attached the Revenue Report'

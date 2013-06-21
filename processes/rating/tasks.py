@@ -55,7 +55,10 @@ def create_order(json):
     # Rating an SDR file
     customer_data = json['customer']
 
-    total    = int(json['total'] * 100)
+    total  = json['total']
+    amount = json['subtotal']
+    vat    = json['taxes']
+
     currency = 'EUR'
 
     account_id  = customer_data['tef_account']
@@ -64,7 +67,7 @@ def create_order(json):
 
     account = Account.objects.get(account_id=account_id)
 
-    order = Order(account=account, total=total, currency=currency, country=country, order_code=order_code, payment_method=None)
+    order = Order(account=account, total=total, currency=currency, country=country, order_code=order_code, payment_method=None, amount=amount, vat=vat)
     order.save()
 
     json['order'] = order.to_dict()

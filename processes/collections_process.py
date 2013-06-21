@@ -27,14 +27,13 @@ Created on 29/05/2013
 
 from process import Process
 
-from common.constants.constants import DATE_FORMAT
+from common.dates.dates import format_date
 
 from customers.services import CustomerManager
 from ordering.models import Order
 
 from collections.tasks import generate_journal_task, generate_revenue_report_task
-
-from datetime import datetime
+from email.tasks import send_collections_email_task
 
 class CollectionProcess(Process):
 
@@ -54,26 +53,27 @@ class CollectionProcess(Process):
         process    = self.create_process_model(account,    'COLLECTION')
         subprocess = self.create_subprocess_model(process, 'HARVESTING INVOICE DATA')
 
-        self._start_collection_process(subprocess, start_date, end_date)
+        self._start_collection_process(subprocess, account, start_date, end_date)
 
     ######################################################
     # PRIVATE
     ######################################################
 
-    def _start_collection_process(self, subprocess, start_date, end_date):
+    def _start_collection_process(self, subprocess, account, start_date, end_date):
 
-        sp_id   = subprocess.id
+        sp_id = subprocess.id
+        email = account.email
 
-        orders = [order.to_dict() for order in Order.objects.filter(date__gte=start_date, date__lte=end_date)]
+        orders = [order.to_dict_for_revenue_report() for order in Order.objects.filter(date__gte=start_date, date__lte=end_date)]
 
-        chain = generate_revenue_report_task.s(True, orders, sp_id) | generate_journal_task.s(orders, sp_id)
+        chain = generate_revenue_report_task.s(True, orders, sp_id) | generate_journal_task.s(orders, sp_id) | send_collections_email_task.s(email, sp_id)
 
         chain()
 
     def _validate_params(self, account_id, start, end):
         try:
-            start_date =  datetime.strptime(start, DATE_FORMAT)
-            end_date = datetime.strptime(end, DATE_FORMAT)
+            start_date =  format_date(start)
+            end_date = format_date(end)
         except:
             return (None, None, None)
 

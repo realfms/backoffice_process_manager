@@ -30,10 +30,14 @@ import manage
 from customers.services  import CustomerManager
 from contracting_process import ContractingProcess
 from ordering.services import OrderManager
+from collections_process import CollectionProcess
 
 from models import BusinessProcess, SubProcess, Task
+from ordering.models import Order
 
 from django.test.utils import override_settings
+
+from datetime import datetime
 
 # Loading environment variables prior to initialice django framework
 manage.read_env('.env')
@@ -44,7 +48,6 @@ class TestContractingProcess(TestCase):
 
     customer_manager = CustomerManager()
     contracting_process = ContractingProcess()
-    order_manager = OrderManager()
 
     def setUp(self):
         self.dummy_account  = self.create_dummy_account()
@@ -85,10 +88,28 @@ class TestContractingProcess(TestCase):
 
         self.assertEquals(len(tasks), 0, 'Wrong number of tasks in standalone contracting process')
 
+class TestOrderToCashProcess(TestCase):
+
+    order_manager = OrderManager()
+
     @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS = True, CELERY_ALWAYS_EAGER = True, BROKER_BACKEND = 'memory')
-    def test_valid_online_standalone__order_to_cash_process(self):
+    def test_valid_online_standalone_order_to_cash_process(self):
 
         events = [{'rated_by_billing': {'billing_code': 'ER_SUBSCRIPTION', 'units': 1, 'exponent': 0}}]
         params = {'account': 'mac@tid.es', 'payment_method': 1, 'events': events}
 
-        self.order_manager.create_order(params)
+        order = self.order_manager.create_order(params)
+
+        self.assertEqual(type(order), Order, 'Return type mismatch! Order expected')
+        self.assertEqual(order.payment_method.id, 1, 'Payment method not properly stored')
+
+class TestCollectionsProcess(TestCase):
+
+    collections_process = CollectionProcess()
+
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS = True, CELERY_ALWAYS_EAGER = True, BROKER_BACKEND = 'memory')
+    def test_generates_excel_files(self):
+
+        today = datetime.strftime(datetime.now(), '%d/%m/%Y')
+
+        self.collections_process.start_collection_process('mac@tid.es', '01/01/2013', today)

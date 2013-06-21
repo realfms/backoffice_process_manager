@@ -34,23 +34,28 @@ from openpyxl.reader.excel import load_workbook
 @task(ignore_result=True)
 def generate_journal_task(success, orders, sp_id):
     tm = TaskManager()
-    return tm.process_task(sp_id, 'GENERATING JOURNAL', success, lambda : generate_journal(orders))
+
+    json = tm.get_subprocess_data(sp_id)
+
+    return tm.process_task(sp_id, 'GENERATING JOURNAL', success, lambda : generate_journal(json, orders))
 
 @task(ignore_result=True)
 def generate_revenue_report_task(success, orders, sp_id):
     tm = TaskManager()
     return tm.process_task(sp_id, 'GENERATING REVENUES REPORT', success, lambda : generate_revenue_report(orders))
 
-def generate_journal(orders):
-    return (True, None)
+def generate_journal(json, orders):
+    return (json, None)
 
 def generate_revenue_report(orders):
-    wb = load_workbook(filename = r'templates/revenue_report.xlsx', keep_vba=True)
+    wb = load_workbook(filename = r'processes/collections/templates/revenue_report.xlsx', keep_vba=True)
 
     ws = wb.get_active_sheet()
 
     [ws.append(order) for order in orders]
 
-    wb.save(filename = r'results/revenue_report.xlsx')
+    filename = r'processes/collections/results/revenue_report.xlsx'
 
-    return (True, None)
+    wb.save(filename=filename)
+
+    return ({'file_name': filename}, None)

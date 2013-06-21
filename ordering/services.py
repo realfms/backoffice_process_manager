@@ -30,17 +30,18 @@ class OrderManager:
             return None
 
         products = [self.get_product(event) for event in events]
-        subtotal = sum([product.price for product in products])
+        amount   = sum([product.price for product in products])
 
         subs = filter(None, [product.create_subscription(account, payment_method) for product in products])
 
-        total = subtotal*1.20
+        total = amount*1.20
+        vat   = total - amount
 
         currency = 'GBP'
         country = 'ES'
         order_code = compute_uuid()
 
-        order = Order(account=account, payment_method=payment_method, total=total, currency=currency, country=country, order_code=order_code)
+        order = Order(account=account, payment_method=payment_method, total=total, currency=currency, country=country, order_code=order_code, vat=vat, amount=amount)
         order.save()
 
         line_items = [self.create_line_item(product, event, order) for (event, product) in zip(events, products)]

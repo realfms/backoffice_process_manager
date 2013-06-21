@@ -1,13 +1,17 @@
 from django.db import models
 from django.contrib import admin
 
-from common.constants.constants import COMPLETION_STATUS, SUBSCRIPTION_STATUS, BILLING_TYPE
+from common.constants.constants import COMPLETION_STATUS, SUBSCRIPTION_STATUS, BILLING_TYPE, DATE_FORMAT
+
+from customers.models import BillingAddress
 
 from django.core.files.base import File
 
-
 class Order(models.Model):
-    total    = models.IntegerField()
+    total  = models.IntegerField()
+    vat    = models.IntegerField()
+    amount = models.IntegerField()
+
     currency = models.CharField(max_length = 3)
     country  = models.CharField(max_length = 3)
 
@@ -32,11 +36,18 @@ class Order(models.Model):
         }
 
     def to_dict_for_revenue_report(self):
+
+        invoice = Invoice.objects.get(order=self)
+        billing = BillingAddress.objects.get(account=self.account)
+
         return {
-            '1':            self.total,
-            'currency':     self.currency,
-            'country':      self.country,
-            'order_code' :  self.order_code
+            'A': invoice.invoice_code,
+            'B': invoice.date.strftime(DATE_FORMAT),
+            'C': billing.get_full_name(),
+            'D': '',
+            'E': self.amount,
+            'F': self.vat,
+            'G': self.total,
         }
 
 class LineItem(models.Model):
@@ -99,12 +110,6 @@ class Invoice(models.Model):
 
     def __unicode__(self):
         return unicode(self.invoice_code)
-
-    def to_dict(self):
-        return {
-            'id':         self.id
-        }
-
 
     def set_content(self, name, file):
         self.content.save(name, File(file))

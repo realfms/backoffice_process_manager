@@ -64,8 +64,11 @@ class BillingAddress(models.Model):
     country     = models.CharField(max_length = 3)
     phone       = models.CharField(max_length = 10, null=True)
 
+    def get_full_name(self):
+        return "{0} {1}".format(unicode(self.first_name), unicode(self.last_name))
+
     def __unicode__(self):
-        return unicode(self.account)
+        return self.account.email
 
     def to_dict(self):
         return {

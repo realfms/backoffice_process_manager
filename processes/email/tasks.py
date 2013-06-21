@@ -30,8 +30,25 @@ from celery import task
 from email import send_email
 from processes.task_manager import TaskManager
 
-@task(ignore_result=True)
-def send_email_task(success, sp_id):
-    tm = TaskManager()
-    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(tm.get_subprocess_data(sp_id)))
+from common.aws.constants import EMAIL_FROM, INVOCE_EMAIL_TITLE, INVOICE_EMAIL_BODY, COLLECTIONS_EMAIL_BODY, COLLECTIONS_EMAIL_TITLE
 
+@task(ignore_result=True)
+def send_invoice_email_task(success, sp_id):
+    tm = TaskManager()
+
+    json = tm.get_subprocess_data(sp_id)
+
+    customer_email = json['customer']['email']
+    file_name      = json['pdf_file_name']
+
+    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(INVOCE_EMAIL_TITLE, INVOICE_EMAIL_BODY, EMAIL_FROM, customer_email, file_name, json))
+
+@task(ignore_result=True)
+def send_collections_email_task(success, customer_email, sp_id):
+    tm = TaskManager()
+
+    json = tm.get_subprocess_data(sp_id)
+
+    file_name = json['file_name']
+
+    return tm.process_task(sp_id, 'SENDING EMAIL', success, lambda : send_email(COLLECTIONS_EMAIL_TITLE, COLLECTIONS_EMAIL_BODY, EMAIL_FROM, customer_email, file_name, json))

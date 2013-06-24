@@ -48,7 +48,7 @@ class Order(models.Model):
             billing = None
 
         return {
-            'A': invoice.code if invoice else None,
+            'A': invoice.invoice_code if invoice else None,
             'B': invoice.date.strftime(DATE_FORMAT) if invoice else None,
             'C': billing.get_full_name() if billing else None,
             'D': '',

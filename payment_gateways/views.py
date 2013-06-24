@@ -75,7 +75,7 @@ class ContractController:
 
         cls.contracting_process.start_contracting_process(contract, stand_alone_fn)
 
-        return cls._build_ok_response('Contracting process started properly')
+        return cls._build_ok_response('Contracting process started properly!')
 
     @classmethod
     def _build_error_response(cls, message):

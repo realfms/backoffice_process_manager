@@ -37,13 +37,20 @@ class Order(models.Model):
 
     def to_dict_for_revenue_report(self):
 
-        invoice = Invoice.objects.get(order=self)
-        billing = BillingAddress.objects.get(account=self.account)
+        try:
+            invoice = Invoice.objects.get(order=self)
+        except Invoice.DoesNotExist:
+            invoice = None
+
+        try:
+            billing = BillingAddress.objects.get(account=self.account)
+        except BillingAddress.DoesNotExist:
+            billing = None
 
         return {
-            'A': invoice.invoice_code,
-            'B': invoice.date.strftime(DATE_FORMAT),
-            'C': billing.get_full_name(),
+            'A': invoice.code if invoice else None,
+            'B': invoice.date.strftime(DATE_FORMAT) if invoice else None,
+            'C': billing.get_full_name() if billing else None,
             'D': '',
             'E': self.amount,
             'F': self.vat,

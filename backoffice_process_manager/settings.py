@@ -8,6 +8,12 @@ import os
 FOLDER = os.getcwd()
 
 #######################################################
+# DATABASE CONFIG
+#######################################################
+
+DB_HOST = os.environ.get('DB_HOST')
+
+#######################################################
 # CHANNEL TO MARKET
 #######################################################
 
@@ -60,7 +66,7 @@ DATABASES = {
         'NAME': 'bpm',                        # Or path to database file if using sqlite3.
         'USER': 'root',                       # Not used with sqlite3.
         'PASSWORD': '',                       # Not used with sqlite3.
-        'HOST': 'localhost',                  # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': DB_HOST,                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3306',                       # Set to empty string for default. Not used with sqlite3.
         'OPTIONS': {
             'use_unicode': True,

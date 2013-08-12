@@ -43,17 +43,6 @@ AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_S3_SECURE_URLS = False
 AWS_QUERYSTRING_AUTH = False
 
-AWS_STORAGE_BUCKET_NAME = 'com.telefonicadigital.bpm'
-
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
-EMAIL_BACKEND = 'django_ses.SESBackend'
-
-STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
-S3_URL = 'https://s3-eu-west-1.amazonaws.com/%s/' % AWS_STORAGE_BUCKET_NAME
-
-
 ######################################################
 
 DEBUG = True
@@ -178,8 +167,7 @@ INSTALLED_APPS = (
     'processes',
     'gunicorn',
     'demo',
-    'ordering',
-    'storages'
+    'ordering'
 )
 
 # A sample logging configuration. The only tangible logging

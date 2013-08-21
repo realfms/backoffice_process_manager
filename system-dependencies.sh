@@ -7,3 +7,5 @@ sudo /sbin/chkconfig mysqld on
 sudo /sbin/service mysqld start
 
 #mysqladmin -u root password 'new-password'
+
+./install-base.sh

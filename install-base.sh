@@ -2,7 +2,7 @@
 
 echo  "Installing base platform dependencies!"
 
-yum erase -y ruby rubygems
+sudo yum erase -y ruby rubygems
 sudo rm /usr/bin/gem /usr/bin/ruby
 
 sudo yum -y install git python27 python-pip

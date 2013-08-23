@@ -21,7 +21,7 @@ rpm -qa | grep ruby-1.9 >/dev/null 2>&1
 if [ $? -eq 1 ]
 then
 	echo "Uninstall old ruby to install new one"
-	sudo yum erase -y ruby-1.8 rubygems-1.3
+	sudo yum erase -y ruby rubygems
 	sudo rm /usr/bin/gem /usr/bin/ruby
 
 	#FMS - Download from repo the ruby19 package to /dev/shm and install

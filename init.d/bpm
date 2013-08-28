@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+#
+# Starts BPM
+
+# Basic support for the Linux Standard Base Specification 1.0.0 (to be used by
+# insserv for example)
+### BEGIN INIT INFO
+# Provides: bpm
+# Required-Start: $local_fs
+# Required-Stop: $local_fs
+# X-Start-Before: $network
+# X-Stop-After: $network
+# Default-Start: 2 3 5
+# Default-Stop: 0 6
+# Short-Description: BPM
+# Description: Controls the execution of BPM
+### END INIT INFO
+
+BPMDIR=/opt/pdi/bpm/backoffice_process_manager-automator
+EXECCMD="foreman start"
+STOPCMD="pkill foreman"
+
+start()
+{
+	#Start the server with nohup and store PID
+	cd $BPMDIR
+
+	#Load virtenv
+	source venv/bin/activate
+	nohup foreman start >/dev/null 2>&1 &
+}
+
+stop()
+{
+	$STOPCMD
+}
+
+restart()
+{
+	stop
+	start
+}
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    restart
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|restart}"
+    exit 2
+esac
+
+exit $?
+
